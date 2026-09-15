@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Node / Electron
+node_modules/
+apps/desktop/dist-electron/
+apps/frontend/dist/
+npm-debug.log*
+
+# Build / IDE
+build/dist/
+.idea/
+.vscode/
+*.log
+
+# Données générées par les tests E2E
+dataset/output/*.geojson
+dataset/output/*.json
+
+# OS
+Thumbs.db
+.DS_Store
