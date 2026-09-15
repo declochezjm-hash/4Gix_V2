@@ -1,0 +1,76 @@
+{
+  "workflows": [
+    {
+      "id": "d533f2fb-42bc-47fb-902f-973edf13006b",
+      "name": "Essais",
+      "definition": {
+        "nodes": [
+          {
+            "id": "csv_reader-1",
+            "type": "etl",
+            "position": {
+              "x": 20.67513597396558,
+              "y": -46.86680933840054
+            },
+            "data": {
+              "label": "CSV — Pl reno",
+              "nodeType": "csv_reader",
+              "category": "Reader",
+              "isSpatial": true,
+              "params": {
+                "path": "/workspace/uploads/a0c4c33dc6-Pl reno.csv",
+                "encoding": "",
+                "delimiter": ";"
+              },
+              "schema": {
+                "title": "CSV Reader",
+                "description": "Détecte séparateur et encodage ; carte si colonnes X/Y ou lon/lat.",
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "title": "Fichier CSV"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "title": "Encodage",
+                    "description": "Vide = détection automatique (UTF-8, ISO-8859-1, …)."
+                  },
+                  "delimiter": {
+                    "type": "string",
+                    "title": "Séparateur",
+                    "description": "Un caractère. Vide = détection (, ; tab)."
+                  }
+                },
+                "required": [
+                  "path"
+                ]
+              },
+              "status": "COMPLETED",
+              "inputHandles": [
+                "input"
+              ],
+              "outputHandles": [
+                "output"
+              ],
+              "paletteGroup": "",
+              "notes": "",
+              "disabled": false,
+              "durationMs": 803.44,
+              "error": null
+            },
+            "measured": {
+              "width": 148,
+              "height": 99
+            },
+            "selected": true,
+            "dragging": false
+          }
+        ],
+        "edges": []
+      },
+      "created_at": "2026-09-15T17:24:42.379857+00:00",
+      "updated_at": "2026-09-15T17:28:27.714781+00:00"
+    }
+  ]
+}

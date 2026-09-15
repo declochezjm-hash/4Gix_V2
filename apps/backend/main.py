@@ -21,22 +21,25 @@ BACKEND_ROOT = Path(__file__).resolve().parent
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from api.catalog import router as catalog_router  # noqa: E402
+from api.v1 import router as api_v1_router  # noqa: E402
+from api.workflows import router as workflows_router  # noqa: E402
 from engine.router import EngineRouter  # noqa: E402
-from engine.sirenspark.session_manager import get_session_manager  # noqa: E402
+from engine.spark.session_manager import get_session_manager  # noqa: E402
 
 HOST = os.environ.get("FOURGIX_HOST", "127.0.0.1")
 PORT = int(os.environ.get("FOURGIX_PORT", "8000"))
 
-app = FastAPI(title="4GIx V02 Backend", version="0.1.0")
+app = FastAPI(title="4GIx V02 Backend", version="0.3.0")
 router = EngineRouter()
+
+app.include_router(catalog_router)
+app.include_router(workflows_router)
+app.include_router(api_v1_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1",
-        "http://localhost",
-        f"http://{HOST}:{PORT}",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,8 +47,6 @@ app.add_middleware(
 
 
 class GraphSpec(BaseModel):
-    """Graphe React Flow 4GIx (nœuds + arêtes)."""
-
     nodes: list[Dict[str, Any]] = Field(default_factory=list)
     edges: list[Dict[str, Any]] = Field(default_factory=list)
     execution_id: Optional[str] = None
@@ -55,7 +56,7 @@ class GraphSpec(BaseModel):
 
 def _normalize_result(raw: Dict[str, Any], execution_id: str) -> Dict[str, Any]:
     status = raw.get("status") or "ROUTED"
-    ui_status = "COMPLETED" if status in {"ROUTED", "EMPTY"} else "FAILED"
+    ui_status = "COMPLETED" if status == "ROUTED" else "FAILED"
     return {
         "execution_id": execution_id,
         "workflow_id": raw.get("workflow_id"),
@@ -64,22 +65,45 @@ def _normalize_result(raw: Dict[str, Any], execution_id: str) -> Dict[str, Any]:
         "routing": raw.get("routing"),
         "definition": raw.get("definition"),
         "results": raw.get("results") or [],
+        "snapshots": raw.get("snapshots") or [],
         "errors": raw.get("errors") or [],
-        "node_count": len(raw.get("routing", {}).get("assignments") or {}),
         "duration_ms": raw.get("duration_ms", 0),
+        "node_count": len(raw.get("routing", {}).get("assignments") or {}),
     }
 
 
-@app.get("/api/health")
-def health() -> Dict[str, Any]:
+def _health_payload() -> Dict[str, Any]:
     session = get_session_manager()
     return {
         "status": "ok",
-        "service": "4gix-backend",
+        "service": "4gix",
         "host": HOST,
         "port": PORT,
         "spark_active": session.is_active,
     }
+
+
+@app.get("/")
+def api_root() -> Dict[str, Any]:
+    """Point d'entrée JSON — l'éditeur graphique est servi par Vite (port 5173)."""
+    return {
+        "name": "4GIx V02 Backend",
+        "docs": "/docs",
+        "redoc": "/redoc",
+        "health": "/api/health",
+        "catalog": "/api/nodes",
+        "workflows": "/api/workflows",
+        "execute": "/api/execute",
+        "upload": "/api/v1/upload",
+        "ws_execute": "/api/ws/execute",
+        "ui_dev": "http://127.0.0.1:5173/",
+    }
+
+
+@app.get("/health")
+@app.get("/api/health")
+def health() -> Dict[str, Any]:
+    return _health_payload()
 
 
 @app.post("/api/shutdown")
@@ -97,16 +121,14 @@ def shutdown() -> Dict[str, str]:
 @app.post("/api/execute")
 def execute_graph(spec: GraphSpec) -> Dict[str, Any]:
     execution_id = spec.execution_id or str(uuid.uuid4())
-    started = time.perf_counter()
     try:
         raw = router.execute_dag(spec.model_dump())
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-    raw["duration_ms"] = round((time.perf_counter() - started) * 1000, 3)
     raw["workflow_id"] = spec.workflow_id
     result = _normalize_result(raw, execution_id)
-    if result["status"] == "FAILED" and result["errors"]:
-        raise HTTPException(status_code=400, detail="; ".join(result["errors"]))
+    if result["status"] == "FAILED":
+        raise HTTPException(status_code=400, detail="; ".join(result["errors"]) or "Échec")
     return result
 
 
@@ -123,7 +145,6 @@ async def execute_graph_ws(websocket: WebSocket) -> None:
             asyncio.run_coroutine_threadsafe(queue.put(event), loop)
 
         def run() -> None:
-            started = time.perf_counter()
             emit(
                 {
                     "type": "started",
@@ -135,18 +156,20 @@ async def execute_graph_ws(websocket: WebSocket) -> None:
                     },
                 }
             )
-            for node_id in (payload.get("nodes") or []):
-                nid = node_id.get("id") if isinstance(node_id, dict) else None
-                if nid:
+
+            def on_node_event(node_id: str, status: str, snapshot: Optional[Dict[str, Any]]) -> None:
+                if status == "RUNNING":
                     emit(
                         {
                             "type": "node_running",
-                            "payload": {"node_id": nid, "status": "RUNNING"},
+                            "payload": {"node_id": node_id, "status": "RUNNING"},
                         }
                     )
+                elif snapshot:
+                    emit({"type": "snapshot", "payload": snapshot})
+
             try:
-                raw = router.execute_dag(payload)
-                raw["duration_ms"] = round((time.perf_counter() - started) * 1000, 3)
+                raw = router.execute_dag(payload, on_node_event=on_node_event)
                 result = _normalize_result(raw, execution_id)
                 event_type = "completed" if result["status"] == "COMPLETED" else "failed"
                 emit({"type": event_type, "payload": result})

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -10,15 +10,22 @@ const HEALTH_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/api/health`;
 const SHUTDOWN_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/api/shutdown`;
 const HEALTH_TIMEOUT_MS = 60_000;
 const HEALTH_INTERVAL_MS = 400;
+const VITE_DEV_URL = process.env.FOURGIX_VITE_URL || "http://127.0.0.1:5173";
 
 /** @type {import('child_process').ChildProcess | null} */
 let backendProcess = null;
+/** @type {import('child_process').ChildProcess | null} */
+let backendSpawnedByShell = false;
 /** @type {BrowserWindow | null} */
 let mainWindow = null;
 let isQuitting = false;
 
 function repoRoot() {
   return path.resolve(__dirname, "..", "..");
+}
+
+function frontendDistIndex() {
+  return path.join(repoRoot(), "apps", "frontend", "dist", "index.html");
 }
 
 function backendEntryPath() {
@@ -43,6 +50,20 @@ function resolvePythonExecutable() {
   return "python3";
 }
 
+function checkHealthOnce() {
+  return new Promise((resolve) => {
+    const req = http.get(HEALTH_URL, (res) => {
+      res.resume();
+      resolve(res.statusCode === 200);
+    });
+    req.on("error", () => resolve(false));
+    req.setTimeout(2000, () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
 function spawnBackend() {
   const python = resolvePythonExecutable();
   const script = backendEntryPath();
@@ -59,6 +80,7 @@ function spawnBackend() {
     stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true,
   });
+  backendSpawnedByShell = true;
 
   backendProcess.stdout?.on("data", (chunk) => {
     console.log(`[backend] ${chunk.toString().trim()}`);
@@ -69,6 +91,7 @@ function spawnBackend() {
   backendProcess.on("exit", (code, signal) => {
     console.log(`[backend] exit code=${code} signal=${signal}`);
     backendProcess = null;
+    backendSpawnedByShell = false;
   });
 }
 
@@ -92,7 +115,11 @@ function waitForHealth() {
 
       function schedule() {
         if (Date.now() > deadline) {
-          reject(new Error(`Backend indisponible après ${HEALTH_TIMEOUT_MS}ms (${HEALTH_URL})`));
+          reject(
+            new Error(
+              `Backend indisponible (${HEALTH_URL}). Port ${BACKEND_PORT} libre ?`,
+            ),
+          );
           return;
         }
         setTimeout(tick, HEALTH_INTERVAL_MS);
@@ -102,22 +129,67 @@ function waitForHealth() {
   });
 }
 
-function resolveFrontendUrl() {
+function checkViteDevServer() {
+  return new Promise((resolve) => {
+    const req = http.get(VITE_DEV_URL, (res) => {
+      res.resume();
+      resolve(res.statusCode && res.statusCode < 500);
+    });
+    req.on("error", () => resolve(false));
+    req.setTimeout(1500, () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
+async function ensureBackend() {
+  if (process.env.FOURGIX_SKIP_BACKEND === "1") {
+    return;
+  }
+  const alreadyUp = await checkHealthOnce();
+  if (alreadyUp) {
+    console.log(`[backend] Déjà actif sur ${HEALTH_URL}`);
+    return;
+  }
+  spawnBackend();
+  await waitForHealth();
+}
+
+async function loadFrontend(window) {
   if (process.env.FOURGIX_FRONTEND_URL) {
-    return process.env.FOURGIX_FRONTEND_URL;
+    await window.loadURL(process.env.FOURGIX_FRONTEND_URL);
+    return;
   }
-  const distIndex = path.join(repoRoot(), "apps", "frontend", "dist", "index.html");
+
+  const useDev = process.env.FOURGIX_DEV === "1";
+  const distIndex = frontendDistIndex();
+
+  if (useDev) {
+    const viteUp = await checkViteDevServer();
+    if (viteUp) {
+      await window.loadURL(VITE_DEV_URL);
+      return;
+    }
+    console.warn(
+      `[frontend] ${VITE_DEV_URL} indisponible — bascule sur le build dist.`,
+    );
+  }
+
   if (fs.existsSync(distIndex)) {
-    return `file://${distIndex.replace(/\\/g, "/")}`;
+    await window.loadFile(distIndex);
+    return;
   }
-  if (process.env.FOURGIX_DEV === "1") {
-    return "http://127.0.0.1:5173";
-  }
+
   const fallback = path.join(__dirname, "fallback.html");
   if (fs.existsSync(fallback)) {
-    return `file://${fallback.replace(/\\/g, "/")}`;
+    await window.loadFile(fallback);
+    return;
   }
-  return `http://${BACKEND_HOST}:${BACKEND_PORT}/api/health`;
+
+  throw new Error(
+    "Aucune UI trouvée. Lancez : cd apps/frontend && npm install && npm run build",
+  );
 }
 
 function createWindow() {
@@ -126,6 +198,7 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 640,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -134,8 +207,18 @@ function createWindow() {
     },
   });
 
-  const url = resolveFrontendUrl();
-  mainWindow.loadURL(url);
+  mainWindow.once("ready-to-show", () => {
+    mainWindow?.show();
+  });
+
+  loadFrontend(mainWindow).catch((err) => {
+    console.error(err);
+    dialog.showErrorBox(
+      "4GIx — interface introuvable",
+      `${err.message}\n\nBuild : cd apps/frontend && npm run build\nDev : cd apps/frontend && npm run dev (avec FOURGIX_DEV=1)`,
+    );
+  });
+
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
@@ -161,7 +244,7 @@ function postShutdown() {
 }
 
 async function stopBackend() {
-  if (!backendProcess) {
+  if (!backendProcess || !backendSpawnedByShell) {
     return;
   }
   await postShutdown();
@@ -173,16 +256,17 @@ async function stopBackend() {
     }
   }
   backendProcess = null;
+  backendSpawnedByShell = false;
 }
 
 async function bootstrap() {
-  spawnBackend();
-  await waitForHealth();
+  await ensureBackend();
   createWindow();
 }
 
 app.whenReady().then(bootstrap).catch((err) => {
   console.error(err);
+  dialog.showErrorBox("4GIx — démarrage impossible", String(err.message || err));
   app.quit();
 });
 
@@ -204,13 +288,12 @@ app.on("window-all-closed", async () => {
 });
 
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0 && backendProcess) {
+  if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });
 
 ipcMain.handle("dialog:openFile", async (_event, options = {}) => {
-  const { dialog } = require("electron");
   const filters = options.filters || [
     { name: "Données SIG", extensions: ["shp", "gpkg", "csv", "geojson", "json"] },
     { name: "Shapefile", extensions: ["shp"] },

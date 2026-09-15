@@ -13,7 +13,7 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from engine.router import EngineRouter  # noqa: E402
-from engine.sirenspark.executor import DefinitionExecutor  # noqa: E402
+from engine.spark.pipeline_executor import PipelineExecutor  # noqa: E402
 
 DATASET_DIR = REPO_ROOT / "dataset"
 CSV_PATH = DATASET_DIR / "eclairage_public.csv"
@@ -99,16 +99,16 @@ class FullPipelineIntegrationTests(unittest.TestCase):
         self.assertIsNotNone(result["definition"])
         self.assertEqual(result["errors"], [])
 
-        spark_result = next(
-            item for item in result["results"] if item.get("engine") == "sirenspark"
+        pipeline_result = next(
+            item for item in result["results"] if item.get("engine") == "pipeline"
         )
-        self.assertEqual(spark_result["status"], "COMPLETED")
+        self.assertEqual(pipeline_result["status"], "COMPLETED")
         self.assertIn(str(OUTPUT_GEOJSON.resolve()), [
-            str(Path(p).resolve()) for p in spark_result.get("written_files") or []
+            str(Path(p).resolve()) for p in pipeline_result.get("written_files") or []
         ])
 
         self.assertTrue(OUTPUT_GEOJSON.is_file(), "Le fichier GeoJSON de sortie doit exister.")
-        summary = DefinitionExecutor.validate_geojson(OUTPUT_GEOJSON)
+        summary = PipelineExecutor.validate_geojson(OUTPUT_GEOJSON)
         self.assertEqual(summary["type"], "FeatureCollection")
         self.assertGreaterEqual(summary["feature_count"], 1)
 

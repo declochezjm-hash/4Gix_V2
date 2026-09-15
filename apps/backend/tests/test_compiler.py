@@ -1,4 +1,4 @@
-"""Tests de compilation React Flow 4GIx → Definition SirenSpark."""
+"""Tests de compilation React Flow 4GIx → Definition pipeline."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
-from engine.sirenspark.compiler import DagToSirenSparkCompiler  # noqa: E402
-from engine.sirenspark.models import Definition  # noqa: E402
+from engine.spark.compiler import DagToPipelineCompiler  # noqa: E402
+from engine.spark.models import Definition  # noqa: E402
 
 
 def _sample_csv_filter_writer_graph() -> dict:
@@ -76,9 +76,9 @@ def _sample_csv_filter_writer_graph() -> dict:
     }
 
 
-class DagToSirenSparkCompilerTests(unittest.TestCase):
+class DagToPipelineCompilerTests(unittest.TestCase):
     def test_compile_csv_filter_filewriter(self) -> None:
-        compiler = DagToSirenSparkCompiler()
+        compiler = DagToPipelineCompiler()
         definition = compiler.compile(_sample_csv_filter_writer_graph())
 
         self.assertIsInstance(definition, Definition)

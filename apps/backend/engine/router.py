@@ -1,30 +1,26 @@
-"""Routeur d'exécution hybride : SirenSpark (Spark/Sedona) vs moteur natif 4GIx."""
+"""Orchestration des workflows DAG 4GIx (compilation + exécution)."""
 
 from __future__ import annotations
 
+import logging
+import os
 import re
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence, Set
+import time
+from typing import Any, Callable, Dict, List, Optional, Set
 
-from .sirenspark.compiler import CompilerError, DagToSirenSparkCompiler
-from .sirenspark.executor import DefinitionExecutor, PipelineExecutionError
-from .sirenspark.models import Definition
+from .spark.compiler import CompilerError, DagToPipelineCompiler
+from .spark.pipeline_executor import PipelineExecutionError, PipelineExecutor
+from .spark.spark_project_exporter import is_spark_compatible
+from .spark.spark_runtime_executor import SparkRuntimeExecutionError, SparkRuntimeExecutor
 
-ENGINE_SIRENSPARK = "sirenspark"
+logger = logging.getLogger(__name__)
+
+ENGINE_DISTRIBUTED = "distributed"
 ENGINE_NATIVE = "native"
 
-# Nœuds exécutés localement (GeoPandas/GDAL, raster, agents IA).
 NATIVE_NODE_TYPES: Set[str] = {
-    "gpkg_reader",
-    "gpkg_writer",
     "geotiff_reader",
     "raster_clipper",
-    "zonal_statistics",
-    "dxf_reader",
-    "ifc_reader",
-    "kml_reader",
-    "excel_reader",
-    "rest_wfs_reader",
     "auto_architect_agent",
     "composer_agent",
     "direct_agent_processor",
@@ -32,11 +28,15 @@ NATIVE_NODE_TYPES: Set[str] = {
     "code_node",
 }
 
-# Nœuds compilables / exécutables par Spark + Sedona.
-SIRENSPARK_NODE_TYPES: Set[str] = {
+DISTRIBUTED_NODE_TYPES: Set[str] = {
     "csv_reader",
+    "shp_reader",
     "shapefile_reader",
+    "gpkg_reader",
     "geojson_reader",
+    "excel_reader",
+    "kml_reader",
+    "dxf_reader",
     "attribute_filter",
     "filter",
     "filter_transformer",
@@ -45,12 +45,9 @@ SIRENSPARK_NODE_TYPES: Set[str] = {
     "spatial_join",
     "joiner",
     "file_writer",
-    "shapefile_writer",
-    "geojson_writer",
-    "csv_writer",
-    "postgis_reader",
-    "postgis_writer",
 }
+
+NodeEventCallback = Callable[[str, str, Optional[Dict[str, Any]]], None]
 
 
 def _normalize_node_type(node_type: str) -> str:
@@ -67,162 +64,127 @@ def _extract_node_type(node: Dict[str, Any]) -> str:
     return _normalize_node_type(str(raw))
 
 
-def _extract_engine_override(node: Dict[str, Any]) -> Optional[str]:
-    data = node.get("data") or {}
-    params = node.get("params") or data.get("params") or {}
-    override = params.get("_engine") or data.get("engine")
-    if not override:
-        return None
-    value = str(override).strip().lower()
-    if value in {ENGINE_SIRENSPARK, ENGINE_NATIVE}:
-        return value
-    return None
-
-
-@dataclass
-class RoutingPlan:
-    """Résultat de l'analyse moteur par nœud."""
-
-    assignments: Dict[str, str] = field(default_factory=dict)
-    sirenspark_nodes: List[str] = field(default_factory=list)
-    native_nodes: List[str] = field(default_factory=list)
-
-    def engine_for(self, node_id: str) -> str:
-        return self.assignments.get(node_id, ENGINE_NATIVE)
-
-
-class SirenSparkEngine:
-    """Exécuteur Spark/Sedona (compilation + exécution locale du pipeline)."""
-
-    def __init__(self, executor: Optional[DefinitionExecutor] = None) -> None:
-        self.executor = executor or DefinitionExecutor()
-
-    def execute(self, definition: Definition, graph: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        try:
-            result = self.executor.run(definition)
-        except PipelineExecutionError as exc:
-            return {
-                "engine": ENGINE_SIRENSPARK,
-                "status": "FAILED",
-                "error": str(exc),
-                "definition": definition.model_dump(),
-            }
-        return {
-            "engine": ENGINE_SIRENSPARK,
-            "status": result.get("status", "COMPLETED"),
-            "step_count": len(definition.steps),
-            "definition": definition.model_dump(),
-            "written_files": result.get("written_files") or [],
-            "row_counts": result.get("row_counts") or {},
-        }
-
-
-class NativeEngine:
-    """Exécuteur local 4GIx (GPKG, rasters, agents). Stub jusqu'au Recflow natif."""
-
-    def execute(
-        self,
-        graph: Dict[str, Any],
-        node_ids: Optional[Sequence[str]] = None,
-    ) -> Dict[str, Any]:
-        ids = list(node_ids) if node_ids is not None else [
-            str(node.get("id")) for node in (graph.get("nodes") or []) if node.get("id")
-        ]
-        return {
-            "engine": ENGINE_NATIVE,
-            "status": "READY",
-            "node_ids": ids,
-            "node_count": len(ids),
-        }
-
-
 class EngineRouter:
-    """Analyse un DAG 4GIx, compile le sous-graphe Spark et aiguille l'exécution."""
+    """Compile et exécute un graphe React Flow de bout en bout."""
 
     def __init__(
         self,
-        compiler: Optional[DagToSirenSparkCompiler] = None,
-        sirenspark_engine: Optional[SirenSparkEngine] = None,
-        native_engine: Optional[NativeEngine] = None,
+        compiler: Optional[DagToPipelineCompiler] = None,
+        executor: Optional[PipelineExecutor] = None,
+        spark_executor: Optional[SparkRuntimeExecutor] = None,
     ) -> None:
-        self.compiler = compiler or DagToSirenSparkCompiler()
-        self.sirenspark_engine = sirenspark_engine or SirenSparkEngine()
-        self.native_engine = native_engine or NativeEngine()
+        self.compiler = compiler or DagToPipelineCompiler()
+        self.executor = executor or PipelineExecutor()
+        self.spark_executor = spark_executor or SparkRuntimeExecutor()
+        self.spark_mode = os.environ.get("FOURGIX_SPARK_ENGINE", "auto").lower()
 
-    def analyze(self, graph: Dict[str, Any]) -> RoutingPlan:
-        plan = RoutingPlan()
+    def analyze(self, graph: Dict[str, Any]) -> Dict[str, Any]:
+        assignments: Dict[str, str] = {}
+        distributed: List[str] = []
+        native: List[str] = []
         for node in graph.get("nodes") or []:
             node_id = str(node.get("id") or "").strip()
             if not node_id:
                 continue
-            engine = self._resolve_engine(node)
-            plan.assignments[node_id] = engine
-            if engine == ENGINE_SIRENSPARK:
-                plan.sirenspark_nodes.append(node_id)
-            else:
-                plan.native_nodes.append(node_id)
-        return plan
-
-    def execute_dag(self, graph: Dict[str, Any]) -> Dict[str, Any]:
-        """Compile le sous-graphe SirenSpark et délègue chaque segment à son exécuteur."""
-        plan = self.analyze(graph)
-        results: List[Dict[str, Any]] = []
-        definition: Optional[Definition] = None
-        errors: List[str] = []
-
-        if plan.sirenspark_nodes:
-            try:
-                definition = self.compiler.compile(graph, node_ids=plan.sirenspark_nodes)
-                results.append(self.sirenspark_engine.execute(definition, graph))
-            except CompilerError as exc:
-                errors.append(str(exc))
-                results.append(
-                    {
-                        "engine": ENGINE_SIRENSPARK,
-                        "status": "FAILED",
-                        "error": str(exc),
-                    }
-                )
-
-        if plan.native_nodes:
-            results.append(self.native_engine.execute(graph, node_ids=plan.native_nodes))
-
-        status = "FAILED" if errors else "ROUTED"
-        if not plan.sirenspark_nodes and not plan.native_nodes:
-            status = "EMPTY"
-        for item in results:
-            if item.get("engine") == ENGINE_SIRENSPARK and item.get("status") == "FAILED":
-                status = "FAILED"
-                errors.append(str(item.get("error") or "Échec SirenSpark"))
-            if item.get("engine") == ENGINE_SIRENSPARK and item.get("status") == "COMPLETED":
-                status = "ROUTED"
-
+            ntype = _extract_node_type(node)
+            engine = (
+                ENGINE_NATIVE
+                if ntype in NATIVE_NODE_TYPES or ntype.endswith("_agent")
+                else ENGINE_DISTRIBUTED
+            )
+            assignments[node_id] = engine
+            (native if engine == ENGINE_NATIVE else distributed).append(node_id)
         return {
-            "status": status,
-            "routing": {
-                "assignments": plan.assignments,
-                "sirenspark_nodes": plan.sirenspark_nodes,
-                "native_nodes": plan.native_nodes,
-            },
-            "definition": definition.model_dump() if definition else None,
-            "results": results,
-            "errors": errors,
+            "assignments": assignments,
+            "distributed_nodes": distributed,
+            "native_nodes": native,
         }
 
-    def _resolve_engine(self, node: Dict[str, Any]) -> str:
-        override = _extract_engine_override(node)
-        if override:
-            return override
-        node_type = _extract_node_type(node)
-        compact = node_type.replace("_", "")
-        if node_type in NATIVE_NODE_TYPES or compact in {item.replace("_", "") for item in NATIVE_NODE_TYPES}:
-            return ENGINE_NATIVE
-        if node_type in SIRENSPARK_NODE_TYPES or compact in {
-            item.replace("_", "") for item in SIRENSPARK_NODE_TYPES
-        }:
-            return ENGINE_SIRENSPARK
-        if node_type.endswith("_agent"):
-            return ENGINE_NATIVE
-        if "raster" in node_type or node_type.startswith("gpkg"):
-            return ENGINE_NATIVE
-        return ENGINE_NATIVE
+    def execute_dag(
+        self,
+        graph: Dict[str, Any],
+        on_node_event: Optional[NodeEventCallback] = None,
+    ) -> Dict[str, Any]:
+        started = time.perf_counter()
+        routing = self.analyze(graph)
+        errors: List[str] = []
+        unsupported = [
+            nid
+            for nid in routing["native_nodes"]
+            if _extract_node_type(self._node_by_id(graph, nid) or {}) in NATIVE_NODE_TYPES
+        ]
+        if unsupported:
+            errors.append(
+                f"Nœuds non encore implémentés: {', '.join(unsupported)}"
+            )
+            return self._failed(routing, errors, started)
+
+        definition = None
+        try:
+            definition = self.compiler.compile(graph)
+            engine_name, result = self._run_definition(definition, on_node_event)
+        except (CompilerError, PipelineExecutionError, SparkRuntimeExecutionError) as exc:
+            errors.append(str(exc))
+            return self._failed(routing, errors, started, definition=definition)
+
+        duration_ms = round((time.perf_counter() - started) * 1000, 3)
+        return {
+            "status": "ROUTED",
+            "duration_ms": duration_ms,
+            "routing": routing,
+            "definition": definition.model_dump(),
+            "results": [
+                {
+                    "engine": engine_name,
+                    "status": result.get("status"),
+                    "written_files": result.get("written_files") or [],
+                    "row_counts": result.get("row_counts") or {},
+                }
+            ],
+            "snapshots": result.get("snapshots") or [],
+            "errors": [],
+        }
+
+    def _run_definition(
+        self,
+        definition: Any,
+        on_node_event: Optional[NodeEventCallback],
+    ) -> tuple[str, Dict[str, Any]]:
+        use_spark = self.spark_mode in {"1", "true", "always", "spark"}
+        compatible = is_spark_compatible(definition)
+        if self.spark_mode == "never":
+            return "pipeline", self.executor.run(definition, on_node_event=on_node_event)
+        if use_spark or (self.spark_mode == "auto" and compatible):
+            try:
+                return "spark_runtime", self.spark_executor.run(
+                    definition, on_node_event=on_node_event
+                )
+            except SparkRuntimeExecutionError as exc:
+                if use_spark:
+                    raise
+                logger.warning("Spark indisponible, repli GeoPandas: %s", exc)
+        return "pipeline", self.executor.run(definition, on_node_event=on_node_event)
+
+    @staticmethod
+    def _node_by_id(graph: Dict[str, Any], node_id: str) -> Optional[Dict[str, Any]]:
+        for node in graph.get("nodes") or []:
+            if str(node.get("id")) == node_id:
+                return node
+        return None
+
+    @staticmethod
+    def _failed(
+        routing: Dict[str, Any],
+        errors: List[str],
+        started: float,
+        definition: Any = None,
+    ) -> Dict[str, Any]:
+        return {
+            "status": "FAILED",
+            "duration_ms": round((time.perf_counter() - started) * 1000, 3),
+            "routing": routing,
+            "definition": definition.model_dump() if definition else None,
+            "results": [],
+            "snapshots": [],
+            "errors": errors,
+        }

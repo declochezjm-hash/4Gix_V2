@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "start": "electron .",
+    "start:built": "electron .",
     "dev": "cross-env FOURGIX_DEV=1 electron .",
+    "build:ui": "npm --prefix ../frontend run build",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist:win": "electron-builder --win"
