@@ -11,6 +11,9 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import pandas as pd
 
 from core.csv_io import read_csv_file, tabular_preview
+from core.paths import resolve_workspace_path
+from core.shapefile_preview import geodataframe_execution_preview
+from core.shapefile_zip import resolve_shapefile_path
 from core.tabular_geo import dataframe_to_geodataframe
 from engine.native.gpkg import read_gpkg_layer
 
@@ -88,15 +91,15 @@ class PipelineExecutor:
             return frame, meta
         if step.type in {"ShapefileReader"}:
             frame = self._read_shapefile(step)
-            meta["preview"] = {"row_count": len(frame), "crs": str(getattr(frame, "crs", None))}
+            meta["preview"] = geodataframe_execution_preview(frame)
             return frame, meta
         if step.type in {"GpkgReader"}:
             frame = self._read_gpkg(step)
-            meta["preview"] = {"row_count": len(frame), "crs": str(getattr(frame, "crs", None))}
+            meta["preview"] = geodataframe_execution_preview(frame)
             return frame, meta
         if step.type in {"GeoJsonReader"}:
             frame = self._read_geojson(step)
-            meta["preview"] = {"row_count": len(frame), "crs": str(getattr(frame, "crs", None))}
+            meta["preview"] = geodataframe_execution_preview(frame)
             return frame, meta
         if step.type in {"FilterTransformer"}:
             source_id = self._single_input(step)
@@ -172,12 +175,34 @@ class PipelineExecutor:
         )
 
     def _read_shapefile(self, step: Step):
+        import os
+
         import geopandas as gpd
 
-        filepath = Path(step.options.filepath or "")
-        if not filepath.is_file():
-            raise PipelineExecutionError(f"Shapefile introuvable: {filepath}")
-        return gpd.read_file(filepath)
+        opts = step.options.model_dump()
+        filepath = Path(opts.get("filepath") or "")
+        zip_path_raw = (opts.get("zip_path") or "").strip()
+        zip_path: Optional[Path] = None
+        if zip_path_raw:
+            try:
+                zip_path = resolve_workspace_path(zip_path_raw)
+            except ValueError:
+                zip_path = Path(zip_path_raw)
+        layer_name = (opts.get("layer_name") or "").strip() or None
+        encoding = (opts.get("encoding") or "").strip() or None
+        try:
+            shp_path = resolve_shapefile_path(
+                filepath,
+                layer_name=layer_name,
+                zip_path=zip_path,
+            )
+        except (FileNotFoundError, ValueError) as exc:
+            raise PipelineExecutionError(str(exc)) from exc
+        os.environ.setdefault("SHAPE_RESTORE_SHX", "YES")
+        kwargs: Dict[str, Any] = {}
+        if encoding:
+            kwargs["encoding"] = encoding
+        return gpd.read_file(shp_path, **kwargs)
 
     def _read_gpkg(self, step: Step):
         filepath = Path(step.options.filepath or "")

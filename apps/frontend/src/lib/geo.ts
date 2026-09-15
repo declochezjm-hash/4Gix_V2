@@ -37,6 +37,7 @@ export function asFeatureCollection(
 			return { type: "FeatureCollection", features: [value as GeoJsonFeature] };
 		}
 		if (record.data) return asFeatureCollection(record.data);
+		if (record.map_geojson) return asFeatureCollection(record.map_geojson);
 		if (record.geojson) return asFeatureCollection(record.geojson);
 		if (
 			record.preview &&
@@ -96,6 +97,10 @@ export function tableRowsFromData(value: unknown): {
 	}
 	if (value && typeof value === "object") {
 		const record = value as Record<string, unknown>;
+		const fromGeo = asFeatureCollection(record);
+		if (fromGeo?.features.length) {
+			return tableRowsFromData(fromGeo);
+		}
 		if (Array.isArray(record.records)) {
 			const rows = record.records as Record<string, unknown>[];
 			const columns: string[] = [];

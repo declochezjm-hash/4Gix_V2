@@ -17,15 +17,16 @@ Write-Host "Build interface React..."
 npm run build --prefix "$Root\apps\frontend"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$health = try {
-  (Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/health" -UseBasicParsing -TimeoutSec 2).StatusCode
-} catch { 0 }
-
-if ($health -ne 200) {
-  Write-Host "Demarrage backend Python (port 8000)..."
-  Start-Process -FilePath "python" -ArgumentList "$Root\apps\backend\main.py" -WorkingDirectory "$Root\apps\backend" -WindowStyle Minimized
-  Start-Sleep -Seconds 2
+$backendPid = (Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue |
+  Select-Object -ExpandProperty OwningProcess -Unique | Select-Object -First 1)
+if ($backendPid) {
+  Write-Host "Redemarrage backend Python (port 8000)..."
+  Stop-Process -Id $backendPid -Force -ErrorAction SilentlyContinue
+  Start-Sleep -Seconds 1
 }
+Write-Host "Demarrage backend Python (port 8000)..."
+Start-Process -FilePath "python" -ArgumentList "$Root\apps\backend\main.py" -WorkingDirectory "$Root\apps\backend" -WindowStyle Minimized
+Start-Sleep -Seconds 2
 
 Write-Host "Lancement Electron..." -ForegroundColor Green
 Set-Location "$Root\apps\desktop"

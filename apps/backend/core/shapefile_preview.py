@@ -6,6 +6,7 @@ import json
 from typing import Any, Dict, List, Optional, Tuple
 
 import geopandas as gpd
+import pandas as pd
 
 MAP_CRS = "EPSG:4326"
 MAX_PREVIEW_FEATURES = 2500
@@ -62,3 +63,49 @@ def shapefile_read_outputs(
         metadata["preview_feature_count"] = preview_limit
 
     return native, map_geojson, metadata
+
+
+def geodataframe_execution_preview(
+    gdf: gpd.GeoDataFrame,
+    *,
+    preview_limit: int = MAX_PREVIEW_FEATURES,
+) -> Dict[str, Any]:
+    """Aperçu OUTPUT (carte, tableau, schéma) après exécution d'un lecteur spatial."""
+    geojson, map_geojson, meta = shapefile_read_outputs(gdf, preview_limit=preview_limit)
+    feature_count = int(meta.get("feature_count") or len(gdf))
+    columns = list(meta.get("columns") or [])
+    records: List[Dict[str, Any]] = []
+    attr_cols = [col for col in gdf.columns if col != "geometry"]
+    for _, row in gdf.head(preview_limit).iterrows():
+        item: Dict[str, Any] = {}
+        for col in attr_cols:
+            value = row[col]
+            if value is None or (hasattr(value, "__bool__") and pd.isna(value)):
+                item[str(col)] = None
+            elif hasattr(value, "item"):
+                try:
+                    item[str(col)] = value.item()
+                except (ValueError, AttributeError):
+                    item[str(col)] = str(value)
+            else:
+                item[str(col)] = value
+        geom = row.geometry
+        if geom is not None and not pd.isna(geom):
+            item["_geom"] = str(getattr(geom, "geom_type", type(geom).__name__))
+        records.append(item)
+
+    preview: Dict[str, Any] = {
+        "row_count": feature_count,
+        "total": feature_count,
+        "crs": meta.get("crs"),
+        "columns": columns,
+        "bbox": meta.get("bbox"),
+        "geometry_types": meta.get("geometry_types"),
+        "geojson": geojson,
+        "map_geojson": map_geojson,
+        "records": records,
+    }
+    if meta.get("preview_truncated"):
+        preview["preview_truncated"] = True
+        preview["preview_feature_count"] = meta.get("preview_feature_count")
+    return preview

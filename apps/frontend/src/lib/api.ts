@@ -101,7 +101,20 @@ export type FlowNodeData = {
 	inputSnapshot?: unknown;
 };
 
-export const API_BASE = import.meta.env.VITE_API_URL || "";
+function resolveApiBase(): string {
+	const configured = import.meta.env.VITE_API_URL?.trim();
+	if (configured) return configured.replace(/\/$/, "");
+	if (
+		typeof window !== "undefined" &&
+		(window.location.protocol === "http:" ||
+			window.location.protocol === "https:")
+	) {
+		return "";
+	}
+	return "http://127.0.0.1:8000";
+}
+
+export const API_BASE = resolveApiBase();
 
 const STEP_ARCHITECT_TIMEOUT_MS = 90_000;
 

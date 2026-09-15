@@ -154,11 +154,16 @@ class EngineRouter:
         compatible = is_spark_compatible(definition)
         if self.spark_mode == "never":
             return "pipeline", self.executor.run(definition, on_node_event=on_node_event)
-        if use_spark or (self.spark_mode == "auto" and compatible):
+        # Spark ne fournit pas encore les snapshots carte/tableau — réservé à FOURGIX_SPARK_ENGINE=spark.
+        if use_spark and compatible:
             try:
-                return "spark_runtime", self.spark_executor.run(
+                spark_result = self.spark_executor.run(
                     definition, on_node_event=on_node_event
                 )
+                pipeline_result = self.executor.run(definition, on_node_event=None)
+                spark_result["snapshots"] = pipeline_result.get("snapshots") or []
+                spark_result["row_counts"] = pipeline_result.get("row_counts") or {}
+                return "spark_runtime", spark_result
             except SparkRuntimeExecutionError as exc:
                 if use_spark:
                     raise

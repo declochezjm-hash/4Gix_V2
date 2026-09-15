@@ -80,6 +80,7 @@ def _health_payload() -> Dict[str, Any]:
         "host": HOST,
         "port": PORT,
         "spark_active": session.is_active,
+        "spatial_preview_v": 2,
     }
 
 

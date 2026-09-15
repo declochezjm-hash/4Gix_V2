@@ -9,7 +9,7 @@ from typing import Any, Dict
 
 from .csv_io import detect_csv_delimiter, resolve_csv_encoding
 from .paths import workspace_subdir, workspace_uri
-from .shapefile_zip import _safe_upload_name, validate_zip_shapefile
+from .shapefile_zip import _safe_upload_name, import_shapefile_zip_bytes, validate_zip_shapefile
 
 GEOTIFF_SUFFIXES = {".tif", ".tiff", ".geotiff"}
 GEOJSON_SUFFIXES = {".geojson", ".json"}
@@ -144,6 +144,18 @@ def process_upload(raw: bytes, filename: str) -> Dict[str, Any]:
     if not raw:
         raise ValueError("Fichier vide.")
     detected_type = detect_data_type(filename, raw)
+    if detected_type == "shapefile" and Path(filename).suffix.lower() == ".zip":
+        imported = import_shapefile_zip_bytes(raw, filename=filename)
+        meta = imported["metadata"]
+        shp_stored = Path(meta["shapefile_path"])
+        return {
+            "filename": Path(filename).name,
+            "filepath": str(shp_stored.resolve()),
+            "workspace_path": meta["shapefile_workspace_path"],
+            "detected_type": detected_type,
+            "suggested_node": imported["suggested_node"],
+            "import_metadata": meta,
+        }
     stored = save_upload(raw, filename)
     suggested = suggested_reader(detected_type, filename, stored)
     return {

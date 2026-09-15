@@ -54,6 +54,10 @@ import {
 } from "../lib/directProcess";
 import { SHAPEFILE_INCOMPLETE_CHAT_MESSAGE } from "../lib/shapefileGuidance";
 import {
+	fetchSpatialPreview,
+	shouldEnrichSpatialPreview,
+} from "../lib/spatialPreview";
+import {
 	coerceCanvasNode,
 	normalizeImportedWorkflowDefinition,
 	parseWorkflowJsonDocument,
@@ -1531,6 +1535,28 @@ export const useDagStore = create<DagState>((set, get) => ({
 	},
 }));
 
+async function enrichSnapshotIfNeeded(
+	nodes: Node<FlowNodeData>[],
+	snapshot: NodeSnapshot,
+): Promise<NodeSnapshot> {
+	const node = nodes.find((item) => item.id === snapshot.node_id);
+	if (
+		!node ||
+		!shouldEnrichSpatialPreview(node.data.nodeType, snapshot.preview)
+	) {
+		return snapshot;
+	}
+	try {
+		const preview = await fetchSpatialPreview(
+			node.data.nodeType,
+			node.data.params as Record<string, unknown>,
+		);
+		return { ...snapshot, preview };
+	} catch {
+		return snapshot;
+	}
+}
+
 async function executeViaSocket(
 	get: () => DagState,
 	set: (
@@ -1595,18 +1621,31 @@ async function executeViaSocket(
 					const snapshot = message.payload as unknown as NodeSnapshot;
 					const failed =
 						snapshot.status === "FAILED" || snapshot.status === "error";
-					set({
-						snapshots: { ...get().snapshots, [snapshot.node_id]: snapshot },
-						nodes: applyStatus(
-							get().nodes,
-							snapshot.node_id,
-							failed ? "FAILED" : "COMPLETED",
-							{
-								durationMs: snapshot.duration_ms,
-								error: snapshot.error || null,
+					const applySnapshot = (resolved: NodeSnapshot) => {
+						set({
+							snapshots: {
+								...get().snapshots,
+								[resolved.node_id]: resolved,
 							},
-						),
-					});
+							nodes: applyStatus(
+								get().nodes,
+								resolved.node_id,
+								failed ? "FAILED" : "COMPLETED",
+								{
+									durationMs: resolved.duration_ms,
+									error: resolved.error || null,
+								},
+							),
+						});
+					};
+					applySnapshot(snapshot);
+					void enrichSnapshotIfNeeded(get().nodes, snapshot).then(
+						(enriched) => {
+							if (enriched.preview !== snapshot.preview) {
+								applySnapshot(enriched);
+							}
+						},
+					);
 				}
 				if (message.type === "completed" || message.type === "failed") {
 					const result = message.payload as unknown as ExecutionResult;
@@ -1615,6 +1654,19 @@ async function executeViaSocket(
 					};
 					for (const snapshot of result.snapshots || []) {
 						snapshots[snapshot.node_id] = snapshot;
+					}
+					for (const snapshot of result.snapshots || []) {
+						void enrichSnapshotIfNeeded(get().nodes, snapshot).then(
+							(enriched) => {
+								if (enriched.preview === snapshot.preview) return;
+								set({
+									snapshots: {
+										...get().snapshots,
+										[enriched.node_id]: enriched,
+									},
+								});
+							},
+						);
 					}
 					const failedRun =
 						result.status === "FAILED" || result.status === "error";

@@ -7,7 +7,7 @@ import uuid
 import zipfile
 from io import BytesIO
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import geopandas as gpd
 
@@ -96,6 +96,43 @@ def _extract_shapefile_sidecars(zip_path: Path, inner_shp: str) -> Path:
             f"Extraction Shapefile incomplète pour {inner_shp} dans {zip_path.name}.",
         )
     return shp_out
+
+
+def resolve_shapefile_path(
+    filepath: Path,
+    *,
+    layer_name: Optional[str] = None,
+    zip_path: Optional[Path] = None,
+) -> Path:
+    """Résout un chemin .shp sur disque (extraction depuis .zip si nécessaire)."""
+    if filepath.suffix.lower() == ".shp" and filepath.is_file():
+        return filepath
+
+    archive = filepath if filepath.suffix.lower() == ".zip" else zip_path
+    if archive is None or not archive.is_file():
+        if filepath.is_file():
+            return filepath
+        raise FileNotFoundError(f"Shapefile introuvable: {filepath}")
+
+    with zipfile.ZipFile(archive) as zf:
+        entries = [_posix(name) for name in zf.namelist() if not name.endswith("/")]
+    shape_sets = discover_shapefile_sets(entries)
+    if not shape_sets:
+        raise ValueError(
+            f"Archive {archive.name} sans Shapefile complet (.shp + .shx + .dbf).",
+        )
+
+    chosen = shape_sets[0]
+    if layer_name:
+        layer_key = layer_name.strip().lower()
+        for item in shape_sets:
+            name = str(item.get("layer_name") or "").lower()
+            stem = str(item.get("stem") or "").lower()
+            if layer_key in {name, PurePosixPath(stem).name.lower()}:
+                chosen = item
+                break
+
+    return _extract_shapefile_sidecars(archive, chosen["shp_path_in_zip"])
 
 
 def import_shapefile_zip_bytes(raw: bytes, *, filename: str) -> Dict[str, Any]:

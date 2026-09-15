@@ -148,7 +148,13 @@ async function ensureBackend() {
     return;
   }
   const alreadyUp = await checkHealthOnce();
-  if (alreadyUp) {
+  const restartInDev =
+    !app.isPackaged && process.env.FOURGIX_KEEP_BACKEND !== "1";
+  if (alreadyUp && restartInDev) {
+    console.log("[backend] Rechargement du code Python (mode dev)…");
+    await postShutdown();
+    await new Promise((resolve) => setTimeout(resolve, 900));
+  } else if (alreadyUp) {
     console.log(`[backend] Déjà actif sur ${HEALTH_URL}`);
     return;
   }

@@ -113,6 +113,12 @@ class DagToPipelineCompiler:
         if filepath:
             payload["filepath"] = self._normalize_filepath(filepath)
             payload.pop("path", None)
+        zip_path = payload.get("zip_path")
+        if zip_path:
+            try:
+                payload["zip_path"] = str(self._normalize_filepath(zip_path))
+            except ValueError:
+                payload["zip_path"] = str(zip_path).strip()
 
         source_srid = self._to_srid(payload.get("source_srid") or payload.get("source_crs"))
         target_srid = self._to_srid(
