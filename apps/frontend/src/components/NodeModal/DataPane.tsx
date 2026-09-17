@@ -39,7 +39,7 @@ export function DataPane({
 	const [port, setPort] = useState<string>("");
 	const [filter, setFilter] = useState("");
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-	const [mapFitNonce, setMapFitNonce] = useState(0);
+	const [mapFitNonce, _setMapFitNonce] = useState(0);
 	const mapView = useDagStore((s) => s.mapView);
 	const setMapView = useDagStore((s) => s.setMapView);
 	const activePort = port && ports.includes(port) ? port : ports[0] || "";
@@ -48,12 +48,9 @@ export function DataPane({
 		mapGeojsonFromInspection(scoped) ||
 		mapGeojsonFromInspection(data) ||
 		asFeatureCollection(scoped);
-	const mapBbox =
-		bboxFromInspection(scoped) || bboxFromInspection(data) || undefined;
+	const mapBbox = bboxFromInspection(scoped) || bboxFromInspection(data) || undefined;
 	const table = tableRowsFromData(scoped);
-	const hasGeometry = Boolean(
-		mapGeojson?.features.some((feature) => feature.geometry),
-	);
+	const hasGeometry = Boolean(mapGeojson?.features.some((feature) => feature.geometry));
 	const filteredRows = useMemo(() => {
 		const query = filter.trim().toLowerCase();
 		if (!query) {
@@ -70,8 +67,7 @@ export function DataPane({
 			);
 	}, [filter, table.columns, table.rows]);
 
-	const completed =
-		executionStatus === "COMPLETED" || executionStatus === "success";
+	const completed = executionStatus === "COMPLETED" || executionStatus === "success";
 
 	const entityTotal = table.total || table.rows.length;
 
@@ -87,7 +83,7 @@ export function DataPane({
 			return;
 		}
 		setTab("schema");
-	}, [dataKey, completed, raster, table.rows.length]);
+	}, [completed, raster, table.rows.length]);
 
 	return (
 		<section className="inspector-pane">
@@ -242,8 +238,7 @@ function AttributeTable({
 		return <div className="empty">Aucune entité à inspecter.</div>;
 	}
 
-	const effectivePageSize =
-		pageSize === "all" ? Math.max(1, rows.length) : pageSize;
+	const effectivePageSize = pageSize === "all" ? Math.max(1, rows.length) : pageSize;
 	const totalPages = Math.max(1, Math.ceil(rows.length / effectivePageSize));
 	const safePage = Math.min(currentPage, totalPages - 1);
 	const sliceStart = safePage * effectivePageSize;
@@ -278,9 +273,7 @@ function AttributeTable({
 						type="button"
 						className="attribute-table__page-btn"
 						disabled={safePage >= totalPages - 1}
-						onClick={() =>
-							setCurrentPage((page) => Math.min(totalPages - 1, page + 1))
-						}
+						onClick={() => setCurrentPage((page) => Math.min(totalPages - 1, page + 1))}
 					>
 						Suivant
 					</button>

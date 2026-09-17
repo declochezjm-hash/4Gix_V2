@@ -6,10 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import type { MapViewState } from "../../lib/api";
-import {
-	asFeatureCollection,
-	type GeoJsonFeatureCollection,
-} from "../../lib/geo";
+import { asFeatureCollection, type GeoJsonFeatureCollection } from "../../lib/geo";
 
 type MapViewerProps = {
 	geojson?: unknown;
@@ -42,12 +39,9 @@ function extendBounds(
 	walk(geom.coordinates);
 }
 
-function elevationOf(feature: {
-	properties?: Record<string, unknown>;
-}): number {
+function elevationOf(feature: { properties?: Record<string, unknown> }): number {
 	const props = feature.properties || {};
-	const raw =
-		props.height ?? props.Elevation ?? props.OverallHeight ?? props.z_mean;
+	const raw = props.height ?? props.Elevation ?? props.OverallHeight ?? props.z_mean;
 	const value = Number(raw);
 	return Number.isFinite(value) && value > 0 ? value : 8;
 }
@@ -199,7 +193,7 @@ export function MapViewer({
 	useEffect(() => {
 		const map = mapRef.current;
 		if (!map) return;
-		if (!fitBbox || fitBbox.length !== 4) return;
+		if (fitBbox?.length !== 4) return;
 		const applyFit = () => {
 			applyingRef.current = true;
 			map.fitBounds(
@@ -228,9 +222,7 @@ export function MapViewer({
 		if (!map) return;
 		const data = asFeatureCollection(geojson) || EMPTY;
 		const apply = () => {
-			const source = map.getSource("preview") as
-				| maplibregl.GeoJSONSource
-				| undefined;
+			const source = map.getSource("preview") as maplibregl.GeoJSONSource | undefined;
 			if (source) source.setData(data as FeatureCollection);
 			const highlight =
 				selectedIndex != null && data.features[selectedIndex]
@@ -239,9 +231,7 @@ export function MapViewer({
 							features: [data.features[selectedIndex]],
 						}
 					: EMPTY;
-			const sel = map.getSource("preview-sel") as
-				| maplibregl.GeoJSONSource
-				| undefined;
+			const sel = map.getSource("preview-sel") as maplibregl.GeoJSONSource | undefined;
 			if (sel) sel.setData(highlight as FeatureCollection);
 			overlayRef.current?.setProps({
 				layers: mode3d

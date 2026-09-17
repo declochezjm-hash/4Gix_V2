@@ -8,12 +8,7 @@ type EdgeContextMenuProps = {
 	onClose: () => void;
 };
 
-export function EdgeContextMenu({
-	edgeId,
-	x,
-	y,
-	onClose,
-}: EdgeContextMenuProps) {
+export function EdgeContextMenu({ edgeId, x, y, onClose }: EdgeContextMenuProps) {
 	const removeEdge = useDagStore((s) => s.removeEdge);
 	const ref = useRef<HTMLDivElement | null>(null);
 
@@ -27,12 +22,7 @@ export function EdgeContextMenu({
 	}, [onClose]);
 
 	return (
-		<div
-			ref={ref}
-			className="n8n-context-menu"
-			style={{ left: x, top: y }}
-			role="menu"
-		>
+		<div ref={ref} className="n8n-context-menu" style={{ left: x, top: y }} role="menu">
 			<button
 				type="button"
 				className="is-danger"

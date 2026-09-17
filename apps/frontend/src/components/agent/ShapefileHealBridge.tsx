@@ -21,9 +21,7 @@ export function ShapefileHealBridge() {
 	const nodes = useDagStore((s) => s.nodes);
 	const edges = useDagStore((s) => s.edges);
 	const snapshots = useDagStore((s) => s.snapshots);
-	const shapefileProactivePrompt = useDagStore(
-		(s) => s.shapefileProactivePrompt,
-	);
+	const shapefileProactivePrompt = useDagStore((s) => s.shapefileProactivePrompt);
 	const clearShapefileProactivePrompt = useDagStore(
 		(s) => s.clearShapefileProactivePrompt,
 	);
@@ -47,23 +45,17 @@ export function ShapefileHealBridge() {
 	]);
 
 	useEffect(() => {
-		if (
-			!lastExecution ||
-			String(lastExecution.status).toUpperCase() !== "FAILED"
-		) {
+		if (!lastExecution || String(lastExecution.status).toUpperCase() !== "FAILED") {
 			return;
 		}
 		if (lastHealExecutionIdRef.current === lastExecution.execution_id) return;
 
 		const failedSnap = (lastExecution.snapshots || []).find(
 			(snap) =>
-				String(snap.status).toUpperCase() === "FAILED" ||
-				snap.status === "error",
+				String(snap.status).toUpperCase() === "FAILED" || snap.status === "error",
 		);
 		const errText =
-			failedSnap?.error ||
-			lastExecution.error ||
-			"Échec d'exécution sans détail.";
+			failedSnap?.error || lastExecution.error || "Échec d'exécution sans détail.";
 		const failedNodeId = failedSnap?.node_id;
 		if (!failedNodeId) return;
 
@@ -71,8 +63,7 @@ export function ShapefileHealBridge() {
 		const nodeType = failedNode?.data.nodeType;
 		const isShapefileHeal =
 			nodeType === "shapefile_reader" && isShapefileIncompleteError(errText);
-		const isExcelHeal =
-			nodeType === "excel_reader" || isOpenpyxlMissingError(errText);
+		const isExcelHeal = nodeType === "excel_reader" || isOpenpyxlMissingError(errText);
 		if (!isShapefileHeal && !isExcelHeal) return;
 
 		lastHealExecutionIdRef.current = lastExecution.execution_id;
@@ -82,13 +73,7 @@ export function ShapefileHealBridge() {
 			failed_node_id: failedNodeId,
 			global_objective: "",
 			source_node_id: failedNodeId,
-			current_graph: graphForStepArchitectRequest(
-				nodes,
-				edges,
-				snapshots,
-				[],
-				[],
-			),
+			current_graph: graphForStepArchitectRequest(nodes, edges, snapshots, [], []),
 		})
 			.then((heal) => {
 				const content =

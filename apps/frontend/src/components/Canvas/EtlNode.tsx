@@ -46,8 +46,7 @@ function statusLabel(payload: FlowNodeData): string {
 	if (payload.disabled) return "Deactivated";
 	const status = payload.status || "idle";
 	if (status === "RUNNING" || status === "running") return "Running…";
-	if (status === "FAILED" || status === "error")
-		return payload.error || "Failed";
+	if (status === "FAILED" || status === "error") return payload.error || "Failed";
 	if (status === "COMPLETED" || status === "success") {
 		return payload.durationMs != null
 			? `Success · ${Math.round(payload.durationMs)} ms`
@@ -66,12 +65,8 @@ export function EtlNode({ id, data, selected }: NodeProps) {
 	});
 	const openNodePanel = useDagStore((s) => s.openNodePanel);
 	const canvasLocked = useDagStore((s) => s.canvasLocked);
-	const inHandles = payload.inputHandles?.length
-		? payload.inputHandles
-		: ["input"];
-	const outHandles = payload.outputHandles?.length
-		? payload.outputHandles
-		: ["output"];
+	const inHandles = payload.inputHandles?.length ? payload.inputHandles : ["input"];
+	const outHandles = payload.outputHandles?.length ? payload.outputHandles : ["output"];
 	const status = payload.status || "idle";
 	const failed = status === "FAILED" || status === "error";
 	const running = status === "RUNNING" || status === "running";

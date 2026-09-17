@@ -106,8 +106,7 @@ function resolveApiBase(): string {
 	if (configured) return configured.replace(/\/$/, "");
 	if (
 		typeof window !== "undefined" &&
-		(window.location.protocol === "http:" ||
-			window.location.protocol === "https:")
+		(window.location.protocol === "http:" || window.location.protocol === "https:")
 	) {
 		return "";
 	}
@@ -308,10 +307,7 @@ export type ShapefileZipImportResult = {
 	};
 };
 
-export function formatApiErrorDetail(
-	payload: unknown,
-	fallback: string,
-): string {
+export function formatApiErrorDetail(payload: unknown, fallback: string): string {
 	if (!payload || typeof payload !== "object") return fallback;
 	const detail = (payload as { detail?: unknown }).detail;
 	if (typeof detail === "string") return detail;
@@ -344,9 +340,7 @@ export async function executeFmwFile(file: File): Promise<FmeEngineRunResult> {
 	});
 	const payload = await response.json();
 	if (!response.ok) {
-		throw new Error(
-			formatApiErrorDetail(payload, "Exécution .fmw impossible."),
-		);
+		throw new Error(formatApiErrorDetail(payload, "Exécution .fmw impossible."));
 	}
 	return payload as FmeEngineRunResult;
 }
@@ -376,9 +370,7 @@ export function isGeoJsonDataFilename(name: string): boolean {
 export function isGeoTiffDataFilename(name: string): boolean {
 	const lower = name.toLowerCase();
 	return (
-		lower.endsWith(".tif") ||
-		lower.endsWith(".tiff") ||
-		lower.endsWith(".geotiff")
+		lower.endsWith(".tif") || lower.endsWith(".tiff") || lower.endsWith(".geotiff")
 	);
 }
 
@@ -417,9 +409,7 @@ export async function fileLooksLikeGeoJSON(file: File): Promise<boolean> {
 		if (!sample) return false;
 		const parsed = JSON.parse(sample) as { type?: string };
 		const kind = parsed?.type;
-		return (
-			kind === "FeatureCollection" || kind === "Feature" || kind === "Geometry"
-		);
+		return kind === "FeatureCollection" || kind === "Feature" || kind === "Geometry";
 	} catch {
 		return false;
 	}
@@ -455,9 +445,7 @@ export async function zipLooksLikeShapefile(file: File): Promise<boolean> {
 		const buffer = await file.arrayBuffer();
 		const text = new TextDecoder("latin1").decode(buffer);
 		const lower = text.toLowerCase();
-		return (
-			lower.includes(".shp") && lower.includes(".dbf") && lower.includes(".shx")
-		);
+		return lower.includes(".shp") && lower.includes(".dbf") && lower.includes(".shx");
 	} catch {
 		return true;
 	}
@@ -468,13 +456,10 @@ export async function importShapefileZip(
 ): Promise<ShapefileZipImportResult> {
 	const body = new FormData();
 	body.append("file", file);
-	const response = await fetch(
-		`${API_BASE}/api/v1/datasets/import-shapefile-zip`,
-		{
-			method: "POST",
-			body,
-		},
-	);
+	const response = await fetch(`${API_BASE}/api/v1/datasets/import-shapefile-zip`, {
+		method: "POST",
+		body,
+	});
 	const payload = await response.json();
 	if (!response.ok) {
 		throw new Error(
@@ -552,9 +537,7 @@ export async function directProcessAgent(payload: {
 		const detail =
 			typeof body.detail === "string"
 				? body.detail
-				: body.detail?.error ||
-					body.detail?.log ||
-					"Échec du traitement direct.";
+				: body.detail?.error || body.detail?.log || "Échec du traitement direct.";
 		throw new Error(detail);
 	}
 	return body as DirectProcessResult;
@@ -632,8 +615,7 @@ export async function executionHealAgent(payload: {
 		body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
 	} catch {
 		throw new Error(
-			raw.trim().slice(0, 240) ||
-				`Réponse invalide du serveur (${response.status}).`,
+			raw.trim().slice(0, 240) || `Réponse invalide du serveur (${response.status}).`,
 		);
 	}
 	if (!response.ok) {
@@ -675,8 +657,7 @@ export async function stepArchitectAgent(payload: {
 		body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
 	} catch {
 		throw new Error(
-			raw.trim().slice(0, 240) ||
-				`Réponse invalide du serveur (${response.status}).`,
+			raw.trim().slice(0, 240) || `Réponse invalide du serveur (${response.status}).`,
 		);
 	}
 	if (!response.ok) {

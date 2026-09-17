@@ -1,4 +1,4 @@
-"""Prévisualisation GeoJSON pour Shapefile importé."""
+"""GeoJSON et métadonnées pour prévisualisation Shapefile."""
 
 from __future__ import annotations
 
@@ -70,7 +70,7 @@ def geodataframe_execution_preview(
     *,
     preview_limit: int = MAX_PREVIEW_FEATURES,
 ) -> Dict[str, Any]:
-    """Aperçu OUTPUT (carte, tableau, schéma) après exécution d'un lecteur spatial."""
+    """Construit l'aperçu carte/tableau pour un GeoDataFrame."""
     geojson, map_geojson, meta = shapefile_read_outputs(gdf, preview_limit=preview_limit)
     feature_count = int(meta.get("feature_count") or len(gdf))
     columns = list(meta.get("columns") or [])

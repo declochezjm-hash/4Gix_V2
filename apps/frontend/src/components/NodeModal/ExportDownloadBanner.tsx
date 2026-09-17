@@ -34,9 +34,7 @@ export function ExportDownloadBanner({
 							.then(() => onDismiss?.())
 							.catch((err: unknown) => {
 								setError(
-									err instanceof Error
-										? err.message
-										: "Échec du téléchargement.",
+									err instanceof Error ? err.message : "Échec du téléchargement.",
 								);
 							})
 							.finally(() => setBusy(false));

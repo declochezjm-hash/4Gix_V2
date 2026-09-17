@@ -1,10 +1,7 @@
 import { Loader2, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import {
-	parseChatHistory,
-	type DirectChatTurn,
-} from "../../lib/directProcess";
+import { type DirectChatTurn, parseChatHistory } from "../../lib/directProcess";
 import { useDagStore } from "../../store/dagStore";
 
 export function DirectAgentChatPanel({ nodeId }: { nodeId: string }) {
@@ -16,8 +13,7 @@ export function DirectAgentChatPanel({ nodeId }: { nodeId: string }) {
 	const history = parseChatHistory(node?.data.params?.chat_history);
 	const storedPrompt =
 		typeof node?.data.params?.prompt === "string" ? node.data.params.prompt : "";
-	const running =
-		node?.data.status === "RUNNING" || node?.data.status === "running";
+	const running = node?.data.status === "RUNNING" || node?.data.status === "running";
 
 	const [prompt, setPrompt] = useState(storedPrompt);
 
@@ -35,16 +31,16 @@ export function DirectAgentChatPanel({ nodeId }: { nodeId: string }) {
 	return (
 		<div className="direct-agent-chat">
 			<p className="direct-agent-chat__hint">
-				Enchaînez des instructions : chaque envoi réutilise le jeu de données
-				entrant (nœud parent) et met à jour la sortie de ce nœud.
+				Enchaînez des instructions : chaque envoi réutilise le jeu de données entrant
+				(nœud parent) et met à jour la sortie de ce nœud.
 			</p>
 			<ul className="direct-agent-chat__history">
 				{history.length === 0 ? (
 					<li className="direct-agent-chat__empty">Aucun prompt exécuté.</li>
 				) : (
-					history.map((turn: DirectChatTurn, index) => (
+					history.map((turn: DirectChatTurn) => (
 						<li
-							key={`${turn.executedAt}-${index}`}
+							key={`${turn.executedAt}:${turn.prompt}`}
 							className={
 								turn.ok
 									? "direct-agent-chat__turn"
@@ -65,7 +61,7 @@ export function DirectAgentChatPanel({ nodeId }: { nodeId: string }) {
 				<textarea
 					className="direct-agent-chat__input"
 					rows={3}
-					placeholder='Ex. « Calcule la surface », puis « Garde uniquement les surfaces > 500 »'
+					placeholder="Ex. « Calcule la surface », puis « Garde uniquement les surfaces > 500 »"
 					value={prompt}
 					disabled={running}
 					onChange={(e) => setPrompt(e.target.value)}

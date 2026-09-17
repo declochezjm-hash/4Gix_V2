@@ -23,10 +23,10 @@ export {
 	Image,
 	Layers,
 	Search,
+	Sparkles,
 	Terminal,
 	Wand2,
 	Zap,
-	Sparkles,
 } from "lucide-react";
 
 const GROUP_ICONS: Record<N8nGroupId, LucideIcon> = {
@@ -46,8 +46,7 @@ export function catalogEntryIcon(
 	entry: Pick<CatalogNode, "node_type" | "category"> | null | undefined,
 ): LucideIcon {
 	const safe = entry ?? { node_type: "unknown_node", category: "Transformer" };
-	const type =
-		safe.node_type != null ? String(safe.node_type).trim() : "unknown_node";
+	const type = safe.node_type != null ? String(safe.node_type).trim() : "unknown_node";
 	const iconEntry = {
 		node_type: type || "unknown_node",
 		category: safe.category ?? "Transformer",

@@ -12,9 +12,7 @@ export type GeoJsonFeatureCollection = {
 	total?: number;
 };
 
-export function isFeatureCollection(
-	value: unknown,
-): value is GeoJsonFeatureCollection {
+export function isFeatureCollection(value: unknown): value is GeoJsonFeatureCollection {
 	return Boolean(
 		value &&
 			typeof value === "object" &&
@@ -23,9 +21,7 @@ export function isFeatureCollection(
 	);
 }
 
-export function asFeatureCollection(
-	value: unknown,
-): GeoJsonFeatureCollection | null {
+export function asFeatureCollection(value: unknown): GeoJsonFeatureCollection | null {
 	if (!value) return null;
 	if (isFeatureCollection(value)) return value;
 	if (typeof value === "object") {
@@ -55,14 +51,9 @@ export function asFeatureCollection(
 		const nested: GeoJsonFeature[] = [];
 		for (const [key, item] of Object.entries(record)) {
 			if (
-				[
-					"preview_png_base64",
-					"path",
-					"crs",
-					"stats",
-					"ports",
-					"metadata",
-				].includes(key)
+				["preview_png_base64", "path", "crs", "stats", "ports", "metadata"].includes(
+					key,
+				)
 			)
 				continue;
 			const fc = asFeatureCollection(item);
@@ -91,8 +82,7 @@ export function tableRowsFromData(value: unknown): {
 			}
 			return props;
 		});
-		const total =
-			typeof fc.total === "number" ? fc.total : fc.features.length;
+		const total = typeof fc.total === "number" ? fc.total : fc.features.length;
 		return { columns, rows, total };
 	}
 	if (value && typeof value === "object") {
@@ -109,8 +99,7 @@ export function tableRowsFromData(value: unknown): {
 					if (!columns.includes(key)) columns.push(key);
 				}
 			}
-			const total =
-				typeof record.total === "number" ? record.total : rows.length;
+			const total = typeof record.total === "number" ? record.total : rows.length;
 			return { columns, rows, total };
 		}
 	}
@@ -134,10 +123,8 @@ export function asRasterPreview(value: unknown): RasterPreview | null {
 			? (record.data as Record<string, unknown>)
 			: record;
 	const src =
-		(typeof payload.preview_png_base64 === "string" &&
-			payload.preview_png_base64) ||
-		(typeof record.preview_png_base64 === "string" &&
-			record.preview_png_base64) ||
+		(typeof payload.preview_png_base64 === "string" && payload.preview_png_base64) ||
+		(typeof record.preview_png_base64 === "string" && record.preview_png_base64) ||
 		"";
 	const isRaster =
 		payload.type === "RasterDataset" ||
@@ -191,9 +178,7 @@ export function vertexCount(
 	return walk(geom.coordinates);
 }
 
-export function bboxOf(
-	geom?: { coordinates?: unknown } | null,
-): number[] | null {
+export function bboxOf(geom?: { coordinates?: unknown } | null): number[] | null {
 	if (!geom) return null;
 	let minx = Infinity;
 	let miny = Infinity;
@@ -248,9 +233,7 @@ export function bboxFromInspection(value: unknown): number[] | null {
 		if (
 			Array.isArray(fromMeta) &&
 			fromMeta.length === 4 &&
-			fromMeta.every(
-				(item) => typeof item === "number" && Number.isFinite(item),
-			)
+			fromMeta.every((item) => typeof item === "number" && Number.isFinite(item))
 		) {
 			return fromMeta as number[];
 		}
@@ -258,10 +241,7 @@ export function bboxFromInspection(value: unknown): number[] | null {
 	return null;
 }
 
-export function inspectFeature(
-	feature: GeoJsonFeature | undefined,
-	crsHint?: string,
-) {
+export function inspectFeature(feature: GeoJsonFeature | undefined, crsHint?: string) {
 	const geom = feature?.geometry || null;
 	const props = feature?.properties || {};
 	return {

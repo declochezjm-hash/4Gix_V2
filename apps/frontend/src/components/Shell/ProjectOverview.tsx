@@ -62,19 +62,14 @@ export function ProjectOverview() {
 	const [workflowScopeFilter, setWorkflowScopeFilter] =
 		useState<WorkflowScopeFilter>("all");
 	const [workflowSort, setWorkflowSort] = useState<WorkflowSort>("updated");
-	const [highlightWorkflowId, setHighlightWorkflowId] = useState<string | null>(
-		null,
-	);
+	const [highlightWorkflowId, setHighlightWorkflowId] = useState<string | null>(null);
 	const filtersRef = useRef<HTMLDivElement>(null);
 	const menuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (!menuOpenId) return;
 		const onPointerDown = (event: MouseEvent) => {
-			if (
-				menuRef.current &&
-				!menuRef.current.contains(event.target as HTMLElement)
-			) {
+			if (menuRef.current && !menuRef.current.contains(event.target as HTMLElement)) {
 				setMenuOpenId(null);
 			}
 		};
@@ -111,8 +106,7 @@ export function ProjectOverview() {
 		let rows = [...workflows];
 		if (q) {
 			rows = rows.filter(
-				(w) =>
-					w.name.toLowerCase().includes(q) || w.id.toLowerCase().includes(q),
+				(w) => w.name.toLowerCase().includes(q) || w.id.toLowerCase().includes(q),
 			);
 		}
 		if (workflowScopeFilter === "open" && workflowId) {
@@ -292,9 +286,7 @@ export function ProjectOverview() {
 							: "Passer en vue détaillée"
 					}
 					onClick={() =>
-						setViewMode((mode) =>
-							mode === "comfortable" ? "compact" : "comfortable",
-						)
+						setViewMode((mode) => (mode === "comfortable" ? "compact" : "comfortable"))
 					}
 				>
 					{viewMode === "comfortable" ? (
@@ -317,112 +309,101 @@ export function ProjectOverview() {
 				) : null}
 
 				{(pageItems as WorkflowRecord[]).map((record) => {
-							const count =
-								(record.definition?.nodes as unknown[] | undefined)?.length ??
-								0;
-							const updated = formatRelative(
-								record.updated_at || record.created_at,
-							);
-							const created = formatCreated(record.created_at);
-							return (
-								<li
-									key={record.id}
-									className={
-										highlightWorkflowId === record.id
-											? "overview-card is-highlighted"
-											: "overview-card"
-									}
+					const count =
+						(record.definition?.nodes as unknown[] | undefined)?.length ?? 0;
+					const updated = formatRelative(record.updated_at || record.created_at);
+					const created = formatCreated(record.created_at);
+					return (
+						<li
+							key={record.id}
+							className={
+								highlightWorkflowId === record.id
+									? "overview-card is-highlighted"
+									: "overview-card"
+							}
+						>
+							<button
+								type="button"
+								className="overview-card__main"
+								onClick={() => openWorkflow(record)}
+							>
+								<strong>{record.name}</strong>
+								<span className="overview-card__meta">
+									Dernière mise à jour {updated} | Créé {created} · {count} nœud(s)
+								</span>
+							</button>
+							<div className="overview-card__aside">
+								<div
+									className="overview-card__menu-wrap"
+									ref={menuOpenId === record.id ? menuRef : undefined}
 								>
 									<button
 										type="button"
-										className="overview-card__main"
-										onClick={() => openWorkflow(record)}
+										className="overview-card__menu-btn"
+										aria-label="Actions"
+										onClick={() =>
+											setMenuOpenId(menuOpenId === record.id ? null : record.id)
+										}
 									>
-										<strong>{record.name}</strong>
-										<span className="overview-card__meta">
-											Dernière mise à jour {updated} | Créé {created} · {count}{" "}
-											nœud(s)
-										</span>
+										<MoreVertical size={18} />
 									</button>
-									<div className="overview-card__aside">
+									{menuOpenId === record.id ? (
 										<div
-											className="overview-card__menu-wrap"
-											ref={menuOpenId === record.id ? menuRef : undefined}
+											className="overview-card__menu"
+											role="menu"
+											onMouseDown={(event) => event.stopPropagation()}
 										>
 											<button
 												type="button"
-												className="overview-card__menu-btn"
-												aria-label="Actions"
-												onClick={() =>
-													setMenuOpenId(
-														menuOpenId === record.id ? null : record.id,
-													)
-												}
+												role="menuitem"
+												onClick={() => {
+													openWorkflow(record);
+													setMenuOpenId(null);
+												}}
 											>
-												<MoreVertical size={18} />
+												Ouvrir
 											</button>
-											{menuOpenId === record.id ? (
-												<div
-													className="overview-card__menu"
-													role="menu"
-													onMouseDown={(event) => event.stopPropagation()}
-												>
-													<button
-														type="button"
-														role="menuitem"
-														onClick={() => {
-															openWorkflow(record);
-															setMenuOpenId(null);
-														}}
-													>
-														Ouvrir
-													</button>
-													<button
-														type="button"
-														role="menuitem"
-														onClick={() => {
-															void runDuplicateWorkflow(record.id);
-														}}
-													>
-														Dupliquer
-													</button>
-													<button
-														type="button"
-														role="menuitem"
-														onClick={() => promptRenameWorkflow(record)}
-													>
-														Renommer
-													</button>
-													<button
-														type="button"
-														role="menuitem"
-														className="is-danger"
-														onClick={() => confirmDeleteWorkflow(record)}
-													>
-														Supprimer
-													</button>
-												</div>
-											) : null}
+											<button
+												type="button"
+												role="menuitem"
+												onClick={() => {
+													void runDuplicateWorkflow(record.id);
+												}}
+											>
+												Dupliquer
+											</button>
+											<button
+												type="button"
+												role="menuitem"
+												onClick={() => promptRenameWorkflow(record)}
+											>
+												Renommer
+											</button>
+											<button
+												type="button"
+												role="menuitem"
+												className="is-danger"
+												onClick={() => confirmDeleteWorkflow(record)}
+											>
+												Supprimer
+											</button>
 										</div>
-									</div>
-								</li>
-							);
-						})}
+									) : null}
+								</div>
+							</div>
+						</li>
+					);
+				})}
 			</ul>
 
 			<footer className="project-overview__footer">
 				<div className="project-overview__pager">
-					<span className="project-overview__total">
-						Total {activeList.length}
-					</span>
+					<span className="project-overview__total">Total {activeList.length}</span>
 					<div className="project-overview__page-nums">
 						{Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
 							let pageNum = i;
 							if (totalPages > 7) {
-								const start = Math.max(
-									0,
-									Math.min(safePage - 3, totalPages - 7),
-								);
+								const start = Math.max(0, Math.min(safePage - 3, totalPages - 7));
 								pageNum = start + i;
 							}
 							return (

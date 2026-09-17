@@ -50,6 +50,7 @@ type RawComposerSsePayload = {
 	code?: string;
 	diff?: string;
 	detail?: string;
+	choices?: ComposerMappingChoice[];
 };
 
 const GHOST_EDGE_STYLE = {
@@ -109,9 +110,7 @@ function asFlowNodeData(raw: Record<string, unknown>): FlowNodeData {
 		label: String(raw.label ?? "Nœud"),
 		nodeType: String(raw.nodeType ?? raw.node_type ?? "transformer"),
 		category:
-			category === "Reader" ||
-			category === "Transformer" ||
-			category === "Writer"
+			category === "Reader" || category === "Transformer" || category === "Writer"
 				? category
 				: "Transformer",
 		isSpatial: Boolean(raw.isSpatial ?? raw.is_spatial),
@@ -127,9 +126,7 @@ function asFlowNodeData(raw: Record<string, unknown>): FlowNodeData {
 	};
 }
 
-function ghostNodeFromBackend(
-	result: Record<string, unknown>,
-): Node<FlowNodeData> {
+function ghostNodeFromBackend(result: Record<string, unknown>): Node<FlowNodeData> {
 	const dataRaw =
 		typeof result.data === "object" && result.data
 			? (result.data as Record<string, unknown>)
@@ -154,12 +151,8 @@ function ghostEdgeFromBackend(result: Record<string, unknown>): Edge {
 		id: String(result.id ?? `ghost-edge-${crypto.randomUUID()}`),
 		source: String(result.source),
 		target: String(result.target),
-		sourceHandle: String(
-			result.sourceHandle ?? result.source_handle ?? "output",
-		),
-		targetHandle: String(
-			result.targetHandle ?? result.target_handle ?? "input",
-		),
+		sourceHandle: String(result.sourceHandle ?? result.source_handle ?? "output"),
+		targetHandle: String(result.targetHandle ?? result.target_handle ?? "input"),
 		type: N8N_EDGE_TYPE,
 		animated: true,
 		data: { isGhost: true, pathStyle: "default" as const },
@@ -167,9 +160,7 @@ function ghostEdgeFromBackend(result: Record<string, unknown>): Edge {
 	};
 }
 
-function normalizeComposerEvent(
-	raw: RawComposerSsePayload,
-): ComposerMessage | null {
+function normalizeComposerEvent(raw: RawComposerSsePayload): ComposerMessage | null {
 	const type = raw.type as ComposerMessageType | undefined;
 	if (!type) return null;
 	if (type === "thought") return { type, content: raw.content };
@@ -242,9 +233,7 @@ export function useComposerAgent() {
 	const [proposedNodes, setProposedNodes] = useState<Node<FlowNodeData>[]>([]);
 	const [proposedEdges, setProposedEdges] = useState<Edge[]>([]);
 	const [error, setError] = useState<string | null>(null);
-	const [mappingChoices, setMappingChoices] = useState<ComposerMappingChoice[]>(
-		[],
-	);
+	const [mappingChoices, setMappingChoices] = useState<ComposerMappingChoice[]>([]);
 	const lastPromptRef = useRef<string>("");
 	const abortRef = useRef<AbortController | null>(null);
 
@@ -353,9 +342,7 @@ export function useComposerAgent() {
 				}
 			} catch (err) {
 				if (!controller.signal.aborted) {
-					setError(
-						err instanceof Error ? err.message : "Échec de l’agent Composer.",
-					);
+					setError(err instanceof Error ? err.message : "Échec de l’agent Composer.");
 				}
 			} finally {
 				if (abortRef.current === controller) abortRef.current = null;

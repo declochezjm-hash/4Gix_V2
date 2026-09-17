@@ -72,21 +72,8 @@ export function ComposerDrawer() {
 
 	const launchStepPlan = useCallback(async () => {
 		if (!sourceNodeId || !globalObjective.trim()) return;
-		await startStepArchitect(
-			globalObjective,
-			sourceNodeId,
-			nodes,
-			edges,
-			snapshots,
-		);
-	}, [
-		edges,
-		globalObjective,
-		nodes,
-		snapshots,
-		sourceNodeId,
-		startStepArchitect,
-	]);
+		await startStepArchitect(globalObjective, sourceNodeId, nodes, edges, snapshots);
+	}, [edges, globalObjective, nodes, snapshots, sourceNodeId, startStepArchitect]);
 
 	const submitTargeted = useCallback(async () => {
 		const trimmed = targetedPrompt.trim();
@@ -232,9 +219,7 @@ export function ComposerDrawer() {
 							<button
 								type="button"
 								className="composer-drawer__primary"
-								disabled={
-									stepLoading || !globalObjective.trim() || !sourceNodeId
-								}
+								disabled={stepLoading || !globalObjective.trim() || !sourceNodeId}
 								onClick={() => void launchStepPlan()}
 							>
 								{stepLoading ? "Planification…" : "Générer le plan"}
@@ -251,9 +236,7 @@ export function ComposerDrawer() {
 								<h3>Étape courante</h3>
 								<p>{stepSummary}</p>
 								{nextStepHint ? (
-									<p className="step-architect__hint">
-										Ensuite : {nextStepHint}
-									</p>
+									<p className="step-architect__hint">Ensuite : {nextStepHint}</p>
 								) : null}
 							</section>
 						) : null}
@@ -283,12 +266,7 @@ export function ComposerDrawer() {
 							className="composer-drawer__adjust"
 							disabled={!globalPlan.length || stepLoading}
 							onClick={() =>
-								void regenerateCurrentStep(
-									adjustStepPrompt,
-									nodes,
-									edges,
-									snapshots,
-								)
+								void regenerateCurrentStep(adjustStepPrompt, nodes, edges, snapshots)
 							}
 						>
 							Ajuster l&apos;étape
@@ -337,9 +315,7 @@ export function ComposerDrawer() {
 								))}
 							</div>
 						) : null}
-						{error ? (
-							<p className="composer-agent-panel__error">{error}</p>
-						) : null}
+						{error ? <p className="composer-agent-panel__error">{error}</p> : null}
 						{mappingChoices.length ? (
 							<section className="composer-agent-panel__mapping-choices">
 								<h3>Propositions de mappage</h3>
@@ -373,8 +349,8 @@ export function ComposerDrawer() {
 						{hasProposals ? (
 							<div className="composer-agent-panel__review">
 								<p>
-									{proposedNodes.length} nœud(s) · {proposedEdges.length}{" "}
-									liaison(s) en prévisualisation
+									{proposedNodes.length} nœud(s) · {proposedEdges.length} liaison(s) en
+									prévisualisation
 								</p>
 								<div>
 									<button

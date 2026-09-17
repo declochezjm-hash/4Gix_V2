@@ -1,43 +1,47 @@
 {
-  "name": "4gix-desktop",
-  "version": "0.1.0",
-  "description": "Shell Electron 4GIx V02 — sidecar Python FastAPI + UI React Flow",
-  "main": "main.js",
-  "private": true,
-  "scripts": {
-    "start": "electron .",
-    "start:built": "electron .",
-    "dev": "cross-env FOURGIX_DEV=1 electron .",
-    "build:ui": "npm --prefix ../frontend run build",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win"
-  },
-  "build": {
-    "appId": "com.4gix.desktop",
-    "productName": "4GIx V02",
-    "directories": {
-      "output": "dist-electron"
-    },
-    "files": [
-      "main.js",
-      "preload.js",
-      "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "../backend",
-        "to": "backend",
-        "filter": ["**/*"]
-      }
-    ],
-    "win": {
-      "target": ["nsis"]
-    }
-  },
-  "devDependencies": {
-    "cross-env": "^7.0.3",
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
-  }
+	"name": "4gix-desktop",
+	"version": "0.1.0",
+	"description": "Shell Electron 4GIx V02 — sidecar Python FastAPI + UI React Flow",
+	"main": "main.js",
+	"private": true,
+	"scripts": {
+		"start": "electron .",
+		"start:built": "electron .",
+		"dev": "cross-env FOURGIX_DEV=1 electron .",
+		"build:ui": "npm --prefix ../frontend run build",
+		"pack": "electron-builder --dir",
+		"dist": "electron-builder",
+		"dist:win": "electron-builder --win"
+	},
+	"build": {
+		"appId": "com.4gix.desktop",
+		"productName": "4GIx V02",
+		"directories": {
+			"output": "dist-electron"
+		},
+		"files": [
+			"main.js",
+			"preload.js",
+			"package.json"
+		],
+		"extraResources": [
+			{
+				"from": "../backend",
+				"to": "backend",
+				"filter": [
+					"**/*"
+				]
+			}
+		],
+		"win": {
+			"target": [
+				"nsis"
+			]
+		}
+	},
+	"devDependencies": {
+		"cross-env": "^7.0.3",
+		"electron": "^33.2.0",
+		"electron-builder": "^25.1.8"
+	}
 }

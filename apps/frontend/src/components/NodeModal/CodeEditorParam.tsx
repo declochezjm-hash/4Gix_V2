@@ -1,4 +1,5 @@
 import Editor, { type Monaco } from "@monaco-editor/react";
+import type { editor, Position } from "monaco-editor";
 import { useMemo, useRef } from "react";
 import {
 	DEFAULT_PYTHON_CODE,
@@ -37,11 +38,7 @@ type CodeEditorParamProps = {
 	mode: string;
 	language: string;
 	code: string;
-	onChange: (patch: {
-		mode?: string;
-		language?: string;
-		code?: string;
-	}) => void;
+	onChange: (patch: { mode?: string; language?: string; code?: string }) => void;
 };
 
 export function CodeEditorParam({
@@ -58,7 +55,7 @@ export function CodeEditorParam({
 		const register = (lang: string, snippets: typeof PYTHON_SNIPPETS) => {
 			monaco.languages.registerCompletionItemProvider(lang, {
 				triggerCharacters: [".", " "],
-				provideCompletionItems: (model, position) => {
+				provideCompletionItems: (model: editor.ITextModel, position: Position) => {
 					const word = model.getWordUntilPosition(position);
 					const range = {
 						startLineNumber: position.lineNumber,
@@ -83,8 +80,7 @@ export function CodeEditorParam({
 	};
 
 	const modeLabel = useMemo(
-		() =>
-			mode === "per_item" ? "Run for Each Item" : "Run Once for All Items",
+		() => (mode === "per_item" ? "Run for Each Item" : "Run Once for All Items"),
 		[mode],
 	);
 

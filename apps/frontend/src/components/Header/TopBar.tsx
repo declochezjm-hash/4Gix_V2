@@ -1,10 +1,6 @@
 import { Anvil, Moon, Sun } from "lucide-react";
 import { type ChangeEvent, useRef, useState } from "react";
-import {
-	type ColorTheme,
-	getStoredTheme,
-	toggleColorTheme,
-} from "../../lib/theme";
+import { type ColorTheme, getStoredTheme, toggleColorTheme } from "../../lib/theme";
 import { useDagStore } from "../../store/dagStore";
 
 export function TopBar() {
@@ -18,9 +14,7 @@ export function TopBar() {
 	const nodes = useDagStore((s) => s.nodes);
 
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const [colorTheme, setColorTheme] = useState<ColorTheme>(() =>
-		getStoredTheme(),
-	);
+	const [colorTheme, setColorTheme] = useState<ColorTheme>(() => getStoredTheme());
 
 	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
@@ -31,25 +25,16 @@ export function TopBar() {
 	return (
 		<header className="topbar">
 			<div className="brand">
-				<Anvil
-					className="brand__anvil"
-					size={22}
-					strokeWidth={1.25}
-					aria-hidden
-				/>
+				<Anvil className="brand__anvil" size={22} strokeWidth={1.25} aria-hidden />
 				<span className="logo">4GIx</span>
 				<button
 					type="button"
 					className="theme-toggle"
 					title={
-						colorTheme === "dark"
-							? "Passer en mode clair"
-							: "Passer en mode sombre"
+						colorTheme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"
 					}
 					aria-label={
-						colorTheme === "dark"
-							? "Passer en mode clair"
-							: "Passer en mode sombre"
+						colorTheme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"
 					}
 					onClick={() => setColorTheme(toggleColorTheme(colorTheme))}
 				>
@@ -106,8 +91,8 @@ export function TopBar() {
 					<span
 						className={`status status--${String(lastExecution.status).toLowerCase()}`}
 					>
-						{lastExecution.status} · {Math.round(lastExecution.duration_ms)} ms
-						· {lastExecution.node_count} nœuds
+						{lastExecution.status} · {Math.round(lastExecution.duration_ms)} ms ·{" "}
+						{lastExecution.node_count} nœuds
 					</span>
 				) : (
 					<span className="status">{nodes.length} nœud(s)</span>

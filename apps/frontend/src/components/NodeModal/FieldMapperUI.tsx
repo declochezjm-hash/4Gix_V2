@@ -55,10 +55,7 @@ export function FieldMapperUI({
 	const rulesRef = useRef<FieldRule[]>([]);
 
 	const [rules, setRules] = useState<FieldRule[]>(() => {
-		const initial = operationsToRules(
-			parseOperations(operationsJson),
-			inputColumns,
-		);
+		const initial = operationsToRules(parseOperations(operationsJson), inputColumns);
 		rulesRef.current = initial;
 		return initial;
 	});
@@ -77,16 +74,13 @@ export function FieldMapperUI({
 	);
 
 	useEffect(() => {
-		const initial = operationsToRules(
-			parseOperations(operationsJson),
-			inputColumns,
-		);
+		const initial = operationsToRules(parseOperations(operationsJson), inputColumns);
 		rulesRef.current = initial;
 		setRules(initial);
 		setRawJson(operationsJson);
 		lastPushedJsonRef.current = operationsJson;
 		dirtyRef.current = false;
-	}, [nodeId]);
+	}, [operationsJson, inputColumns]);
 
 	useEffect(() => {
 		if (dirtyRef.current) {
@@ -112,9 +106,7 @@ export function FieldMapperUI({
 	const updateRule = (id: string, patch: Partial<FieldRule>) => {
 		dirtyRef.current = true;
 		setRules((prev) => {
-			const next = prev.map((rule) =>
-				rule.id === id ? { ...rule, ...patch } : rule,
-			);
+			const next = prev.map((rule) => (rule.id === id ? { ...rule, ...patch } : rule));
 			rulesRef.current = next;
 			return next;
 		});
@@ -156,11 +148,7 @@ export function FieldMapperUI({
 		onOperationsChange(rawJson);
 		if (mode === "visual") {
 			setRules((prev) => {
-				const next = operationsToRules(
-					parseOperations(rawJson),
-					inputColumns,
-					prev,
-				);
+				const next = operationsToRules(parseOperations(rawJson), inputColumns, prev);
 				rulesRef.current = next;
 				return next;
 			});
@@ -193,8 +181,8 @@ export function FieldMapperUI({
 			{mode === "json" ? (
 				<div className="field-mapper__json">
 					<p className="muted">
-						Liste d&apos;opérations <code>rename | delete | create</code> pour
-						le moteur Edit Fields.
+						Liste d&apos;opérations <code>rename | delete | create</code> pour le moteur
+						Edit Fields.
 					</p>
 					<textarea
 						className="sql-field field-mapper__textarea"
@@ -286,9 +274,7 @@ export function FieldMapperUI({
 											<td>
 												<input
 													type="text"
-													disabled={
-														rule.action === "keep" || rule.action === "remove"
-													}
+													disabled={rule.action === "keep" || rule.action === "remove"}
 													placeholder={
 														rule.action === "rename"
 															? "Nouveau nom de colonne"
@@ -320,11 +306,7 @@ export function FieldMapperUI({
 						</table>
 					</div>
 
-					<button
-						type="button"
-						className="field-mapper__add"
-						onClick={addCustomField}
-					>
+					<button type="button" className="field-mapper__add" onClick={addCustomField}>
 						<Plus size={16} strokeWidth={2} aria-hidden />
 						Add New Field
 					</button>

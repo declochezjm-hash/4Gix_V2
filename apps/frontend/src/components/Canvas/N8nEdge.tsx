@@ -11,13 +11,8 @@ import type { EdgePathStyle } from "../../lib/canvasEdges";
 import { useDagStore } from "../../store/dagStore";
 
 function resolvePathStyle(data: EdgeProps["data"]): EdgePathStyle {
-	const fromData = (data as { pathStyle?: EdgePathStyle } | undefined)
-		?.pathStyle;
-	if (
-		fromData === "step" ||
-		fromData === "smoothstep" ||
-		fromData === "default"
-	) {
+	const fromData = (data as { pathStyle?: EdgePathStyle } | undefined)?.pathStyle;
+	if (fromData === "step" || fromData === "smoothstep" || fromData === "default") {
 		return fromData;
 	}
 	return "default";
@@ -40,9 +35,7 @@ export function N8nEdge({
 	selected,
 	data,
 }: EdgeProps) {
-	const openNodePanelForEdgeInsert = useDagStore(
-		(s) => s.openNodePanelForEdgeInsert,
-	);
+	const openNodePanelForEdgeInsert = useDagStore((s) => s.openNodePanelForEdgeInsert);
 	const canvasLocked = useDagStore((s) => s.canvasLocked);
 	const globalPathStyle = useDagStore((s) => s.edgePathStyle);
 	const [hovered, setHovered] = useState(false);
@@ -69,15 +62,7 @@ export function N8nEdge({
 			sourcePosition,
 			targetPosition,
 		});
-	}, [
-		pathStyle,
-		sourceX,
-		sourceY,
-		targetX,
-		targetY,
-		sourcePosition,
-		targetPosition,
-	]);
+	}, [pathStyle, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition]);
 
 	const active = Boolean((data as { active?: boolean })?.active) || selected;
 	const stroke = active ? "#F97316" : "#52525B";
@@ -97,19 +82,13 @@ export function N8nEdge({
 				targetHandle: targetHandleId || "input",
 			});
 		},
-		[
-			id,
-			openNodePanelForEdgeInsert,
-			source,
-			sourceHandleId,
-			target,
-			targetHandleId,
-		],
+		[id, openNodePanelForEdgeInsert, source, sourceHandleId, target, targetHandleId],
 	);
 
 	return (
 		<g
 			className="n8n-edge"
+			aria-label="Liaison de workflow"
 			onMouseEnter={() => setHovered(true)}
 			onMouseLeave={() => setHovered(false)}
 		>

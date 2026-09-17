@@ -5,10 +5,7 @@ export type EdgePathStyle = "default" | "step" | "smoothstep";
 
 export const N8N_EDGE_TYPE = "n8nEdge";
 
-export function normalizeCanvasEdges(
-	edges: Edge[],
-	pathStyle: EdgePathStyle,
-): Edge[] {
+export function normalizeCanvasEdges(edges: Edge[], pathStyle: EdgePathStyle): Edge[] {
 	return edges.map((edge) => ({
 		...edge,
 		type: N8N_EDGE_TYPE,
@@ -25,9 +22,15 @@ export function normalizeCanvasEdges(
 export function buildCanvasEdge(
 	connection: Connection,
 	pathStyle: EdgePathStyle,
-): Connection & Pick<Edge, "type" | "interactionWidth" | "style" | "data"> {
+): Edge {
+	const sourceHandle = connection.sourceHandle ?? "output";
+	const targetHandle = connection.targetHandle ?? "input";
 	return {
-		...connection,
+		id: `edge-${connection.source}-${sourceHandle}-${connection.target}-${targetHandle}`,
+		source: connection.source,
+		target: connection.target,
+		sourceHandle,
+		targetHandle,
 		type: N8N_EDGE_TYPE,
 		data: { pathStyle },
 		interactionWidth: 28,
@@ -43,8 +46,7 @@ export function stripEdgesFromSourceHandle(
 		(edge) =>
 			!(
 				edge.source === connection.source &&
-				(edge.sourceHandle || "output") ===
-					(connection.sourceHandle || "output")
+				(edge.sourceHandle || "output") === (connection.sourceHandle || "output")
 			),
 	);
 }

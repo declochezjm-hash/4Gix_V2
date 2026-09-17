@@ -6,10 +6,9 @@ import {
 	useMemo,
 	useState,
 } from "react";
-
-import type { StepArchitectPreviousStep } from "../../lib/api";
 import { useComposerAgent } from "../../hooks/useComposerAgent";
 import { useStepArchitect } from "../../hooks/useStepArchitect";
+import type { StepArchitectPreviousStep } from "../../lib/api";
 import { useDagStore } from "../../store/dagStore";
 
 type ComposerAgentContextValue = ReturnType<typeof useComposerAgent> &
@@ -23,9 +22,7 @@ type ComposerAgentContextValue = ReturnType<typeof useComposerAgent> &
 		setAdjustStepPrompt: (value: string) => void;
 	};
 
-const ComposerAgentContext = createContext<ComposerAgentContextValue | null>(
-	null,
-);
+const ComposerAgentContext = createContext<ComposerAgentContextValue | null>(null);
 
 export function ComposerAgentProvider({ children }: { children: ReactNode }) {
 	const agent = useComposerAgent();
@@ -36,25 +33,18 @@ export function ComposerAgentProvider({ children }: { children: ReactNode }) {
 	);
 	const [adjustStepPrompt, setAdjustStepPrompt] = useState("");
 
-	const applyComposerReplacement = useDagStore(
-		(s) => s.applyComposerReplacement,
-	);
+	const applyComposerReplacement = useDagStore((s) => s.applyComposerReplacement);
 	const appendStepProposals = useDagStore((s) => s.appendStepProposals);
-	const nodes = useDagStore((s) => s.nodes);
-	const edges = useDagStore((s) => s.edges);
-	const snapshots = useDagStore((s) => s.snapshots);
+	const _nodes = useDagStore((s) => s.nodes);
+	const _edges = useDagStore((s) => s.edges);
+	const _snapshots = useDagStore((s) => s.snapshots);
 
-	const hasProposals =
-		agent.proposedNodes.length > 0 || agent.proposedEdges.length > 0;
+	const hasProposals = agent.proposedNodes.length > 0 || agent.proposedEdges.length > 0;
 
 	const acceptAll = useCallback(
 		(anchorNodeId: string) => {
 			if (!agent.proposedNodes.length && !agent.proposedEdges.length) return;
-			applyComposerReplacement(
-				anchorNodeId,
-				agent.proposedNodes,
-				agent.proposedEdges,
-			);
+			applyComposerReplacement(anchorNodeId, agent.proposedNodes, agent.proposedEdges);
 			agent.discardProposals();
 		},
 		[agent, applyComposerReplacement],

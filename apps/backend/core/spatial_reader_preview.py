@@ -1,4 +1,4 @@
-"""Aperçu carte/tableau pour lecteurs spatiaux (hors exécution pipeline)."""
+"""Aperçu spatial pour les lecteurs (API UI)."""
 
 from __future__ import annotations
 

@@ -1,10 +1,4 @@
-import {
-	type KeyboardEvent,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { graphForComposerAgent } from "../../hooks/useComposerAgent";
 import {
@@ -30,11 +24,7 @@ function parseMentionQuery(value: string, cursor: number): string | null {
 	return fragment;
 }
 
-export function ComposerAgentPanel({
-	composerNodeId,
-}: {
-	composerNodeId: string;
-}) {
+export function ComposerAgentPanel({ composerNodeId }: { composerNodeId: string }) {
 	const {
 		isThinking,
 		isLoading,
@@ -62,8 +52,7 @@ export function ComposerAgentPanel({
 	const closeInspector = useDagStore((s) => s.closeInspector);
 
 	const composerNode = nodes.find((node) => node.id === composerNodeId);
-	const replaceDownstream =
-		composerNode?.data.params?.replace_downstream !== false;
+	const replaceDownstream = composerNode?.data.params?.replace_downstream !== false;
 	const storedPrompt =
 		typeof composerNode?.data.params?.prompt === "string"
 			? composerNode.data.params.prompt
@@ -233,9 +222,7 @@ export function ComposerAgentPanel({
 		<div className="composer-agent-panel">
 			<p className="composer-agent-panel__hint">
 				Ce nœud sera remplacé par le graphe proposé à l&apos;acceptation
-				{replaceDownstream
-					? " (y compris la chaîne en aval)."
-					: " (seul ce nœud)."}
+				{replaceDownstream ? " (y compris la chaîne en aval)." : " (seul ce nœud)."}
 			</p>
 			<label className="composer-agent-panel__toggle">
 				<input
@@ -289,8 +276,7 @@ export function ComposerAgentPanel({
 					{(inspectResult as { ok?: boolean }).ok === false ? (
 						<p className="composer-agent-panel__muted">
 							{String(
-								(inspectResult as { error?: string }).error ||
-									"Inspection impossible.",
+								(inspectResult as { error?: string }).error || "Inspection impossible.",
 							)}
 						</p>
 					) : (
@@ -316,8 +302,8 @@ export function ComposerAgentPanel({
 								</ul>
 							) : (
 								<p className="composer-agent-panel__muted">
-									Aucune colonne dans l&apos;aperçu — exécutez Test step sur le
-									nœud amont.
+									Aucune colonne dans l&apos;aperçu — exécutez Test step sur le nœud
+									amont.
 								</p>
 							)}
 						</>
@@ -406,8 +392,8 @@ export function ComposerAgentPanel({
 			{hasProposals ? (
 				<div className="composer-agent-panel__review">
 					<p>
-						{proposedNodes.length} nœud(s) · {proposedEdges.length} liaison(s)
-						en prévisualisation (violet)
+						{proposedNodes.length} nœud(s) · {proposedEdges.length} liaison(s) en
+						prévisualisation (violet)
 					</p>
 					<div>
 						<button

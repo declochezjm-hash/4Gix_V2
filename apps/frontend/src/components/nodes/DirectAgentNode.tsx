@@ -110,9 +110,7 @@ export function DirectAgentNode({ id, data, selected }: NodeProps) {
 								: "Prêt"}
 				</span>
 				<div className="n8n-handle-out-wrap" style={{ top: "50%" }}>
-					<span className="n8n-handle__label n8n-handle__label--out">
-						Output
-					</span>
+					<span className="n8n-handle__label n8n-handle__label--out">Output</span>
 					<Handle
 						type="source"
 						position={Position.Right}

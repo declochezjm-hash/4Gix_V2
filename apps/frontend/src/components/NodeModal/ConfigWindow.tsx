@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { getNodeDoc } from "../../config/nodeDocs";
 import type { SchemaProperty } from "../../lib/api";
+import { pickExportDestination } from "../../lib/workspaceExport";
 import { useDagStore } from "../../store/dagStore";
-import { ComposerAgentInspector } from "../inspectors/ComposerAgentInspector";
 import { DirectAgentChatPanel } from "../agent/DirectAgentChatPanel";
-import { resolveInspector } from "./inspectorRegistry";
+import { ComposerAgentInspector } from "../inspectors/ComposerAgentInspector";
 import { AttributeManagerConfig } from "./AttributeManagerConfig";
 import { CodeEditorParam } from "./CodeEditorParam";
-import { pickExportDestination } from "../../lib/workspaceExport";
 import { defaultCodeForLanguage } from "./codeTemplates";
 import type { InspectorConfigTab } from "./configTabs";
+import { resolveInspector } from "./inspectorRegistry";
 import { NodeHelpPane } from "./NodeHelpPane";
 
 function isCodeNodeType(nodeType: string): boolean {
@@ -102,10 +102,7 @@ function Field({
 				<select
 					value={known ? current : "__custom__"}
 					onChange={(e) =>
-						onChange(
-							name,
-							e.target.value === "__custom__" ? current : e.target.value,
-						)
+						onChange(name, e.target.value === "__custom__" ? current : e.target.value)
 					}
 				>
 					{EPSG_OPTIONS.map((option) => (
@@ -168,8 +165,7 @@ function Field({
 	if (format === "mapping") {
 		const mapping = parseMapping(value);
 		const rows = Object.entries(mapping);
-		const emit = (next: Record<string, string>) =>
-			onChange(name, JSON.stringify(next));
+		const emit = (next: Record<string, string>) => onChange(name, JSON.stringify(next));
 		return (
 			<div className="mapping-field">
 				<span>{title}</span>
@@ -257,9 +253,7 @@ function Field({
 				<textarea
 					rows={8}
 					value={
-						typeof value === "string"
-							? value
-							: JSON.stringify(value ?? "", null, 2)
+						typeof value === "string" ? value : JSON.stringify(value ?? "", null, 2)
 					}
 					onChange={(e) => onChange(name, e.target.value)}
 				/>
@@ -303,19 +297,14 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 	const updateNodeData = useDagStore((s) => s.updateNodeData);
 	const node = nodes.find((n) => n.id === selectedNodeId);
 	const isDirectAgent = node?.data.nodeType === "direct_agent_processor";
-	const CustomInspector = node
-		? resolveInspector(node.data.nodeType)
-		: null;
-	const catalogEntry = catalog.find(
-		(item) => item.node_type === node?.data.nodeType,
-	);
+	const CustomInspector = node ? resolveInspector(node.data.nodeType) : null;
+	const catalogEntry = catalog.find((item) => item.node_type === node?.data.nodeType);
 	const nodeDoc = useMemo(
 		() => (node ? getNodeDoc(node.data.nodeType, catalogEntry) : null),
 		[node, catalogEntry],
 	);
 	const properties = useMemo(
-		() =>
-			node?.data.schema?.properties || catalogEntry?.schema.properties || {},
+		() => node?.data.schema?.properties || catalogEntry?.schema.properties || {},
 		[node, catalogEntry],
 	);
 
@@ -390,9 +379,7 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 						Node name
 						<input
 							value={node.data.label}
-							onChange={(e) =>
-								updateNodeData(node.id, { label: e.target.value })
-							}
+							onChange={(e) => updateNodeData(node.id, { label: e.target.value })}
 						/>
 					</label>
 					<label>
@@ -402,9 +389,7 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 							rows={6}
 							placeholder="Notes, expressions SQL / Python…"
 							value={node.data.notes || ""}
-							onChange={(e) =>
-								updateNodeData(node.id, { notes: e.target.value })
-							}
+							onChange={(e) => updateNodeData(node.id, { notes: e.target.value })}
 						/>
 					</label>
 					<label>
@@ -422,8 +407,7 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 				<div className="config-form">
 					<p className="direct-agent-chat__hint">
 						Saisissez une instruction sur le nœud canvas (étincelle) ou utilisez
-						l’onglet <strong>Tchat Direct</strong> pour enchaîner plusieurs
-						consignes.
+						l’onglet <strong>Tchat Direct</strong> pour enchaîner plusieurs consignes.
 					</p>
 				</div>
 			) : tab === "parameters" && isCodeNodeType(node.data.nodeType) ? (
@@ -435,12 +419,9 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 						mode={String(node.data.params.mode ?? "all_items")}
 						language={String(node.data.params.language ?? "python")}
 						code={
-							typeof node.data.params.code === "string" &&
-							node.data.params.code.trim()
+							typeof node.data.params.code === "string" && node.data.params.code.trim()
 								? node.data.params.code
-								: defaultCodeForLanguage(
-										String(node.data.params.language ?? "python"),
-									)
+								: defaultCodeForLanguage(String(node.data.params.language ?? "python"))
 						}
 						onChange={(patch) => updateNodeParams(node.id, patch)}
 					/>
@@ -449,16 +430,12 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 				<AttributeManagerConfig
 					nodeId={node.id}
 					operations={node.data.params.operations}
-					onOperationsChange={(json) =>
-						updateNodeParams(node.id, { operations: json })
-					}
+					onOperationsChange={(json) => updateNodeParams(node.id, { operations: json })}
 				/>
 			) : tab === "parameters" ? (
 				<form className="config-form" onSubmit={(e) => e.preventDefault()}>
 					{Object.keys(properties).length === 0 ? (
-						<div className="empty">
-							Aucun paramètre exposé par get_schema().
-						</div>
+						<div className="empty">Aucun paramètre exposé par get_schema().</div>
 					) : (
 						Object.entries(properties).map(([name, prop]) => (
 							<Field
@@ -468,9 +445,7 @@ export function ConfigWindow({ tab, onTabChange }: ConfigWindowProps) {
 								value={node.data.params[name]}
 								nodeId={node.id}
 								allParams={node.data.params}
-								onChange={(key, value) =>
-									updateNodeParams(node.id, { [key]: value })
-								}
+								onChange={(key, value) => updateNodeParams(node.id, { [key]: value })}
 							/>
 						))
 					)}

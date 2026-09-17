@@ -15,9 +15,9 @@ import {
 import {
 	appendMaterializedProposals,
 	applyArchitectSequentialLayout,
+	collectArchitectBranchNodeIds,
 	ghostEdgeFromArchitectPayload,
 	ghostNodeFromArchitectPayload,
-	collectArchitectBranchNodeIds,
 	graphForStepArchitectRequest,
 	materializeComposerEdge,
 	resolveArchitectLayoutAnchorId,
@@ -74,11 +74,9 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 	const architectGlobalPlan = useDagStore((s) => s.architectGlobalPlan);
 	const architectStepIndex = useDagStore((s) => s.architectStepIndex);
 	const architectTotalSteps = useDagStore((s) => s.architectTotalSteps);
-	const architectPreviousSteps = useDagStore((s) => s.architectPreviousSteps);
+	const _architectPreviousSteps = useDagStore((s) => s.architectPreviousSteps);
 	const architectSourceNodeId = useDagStore((s) => s.architectSourceNodeId);
-	const architectGlobalObjective = useDagStore(
-		(s) => s.architectGlobalObjective,
-	);
+	const architectGlobalObjective = useDagStore((s) => s.architectGlobalObjective);
 	const lastExecution = useDagStore((s) => s.lastExecution);
 	const edgePathStyle = useDagStore((s) => s.edgePathStyle);
 
@@ -90,9 +88,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 		typeof node?.data.params?.global_objective === "string"
 			? node.data.params.global_objective
 			: "";
-	const chatHistory = parseArchitectChat(
-		node?.data.params?.architect_chat_history,
-	);
+	const chatHistory = parseArchitectChat(node?.data.params?.architect_chat_history);
 
 	const [autoAdvance, setAutoAdvance] = useState<boolean>(
 		node?.data.params?.auto_advance !== false,
@@ -105,12 +101,8 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [inspectorError, setInspectorError] = useState<string | null>(null);
-	const [proactiveSuggestions, setProactiveSuggestions] = useState<string[]>(
-		[],
-	);
-	const [pendingHeal, setPendingHeal] = useState<ExecutionHealResult | null>(
-		null,
-	);
+	const [proactiveSuggestions, setProactiveSuggestions] = useState<string[]>([]);
+	const [pendingHeal, setPendingHeal] = useState<ExecutionHealResult | null>(null);
 	const lastHealExecutionIdRef = useRef<string | null>(null);
 	const inFlightRef = useRef(false);
 	const autoAdvanceRef = useRef(autoAdvance);
@@ -168,12 +160,8 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 
 	const appendChat = useCallback(
 		(...messages: ArchitectChatMessage[]) => {
-			const current = useDagStore
-				.getState()
-				.nodes.find((item) => item.id === nodeId);
-			const hist = parseArchitectChat(
-				current?.data.params?.architect_chat_history,
-			);
+			const current = useDagStore.getState().nodes.find((item) => item.id === nodeId);
+			const hist = parseArchitectChat(current?.data.params?.architect_chat_history);
 			updateNodeParams(nodeId, {
 				architect_chat_history: [...hist, ...messages],
 			});
@@ -193,11 +181,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 			const state = useDagStore.getState();
 			const filteredEdges = state.edges.filter(
 				(edge) =>
-					!(
-						failedId &&
-						edge.target === failedId &&
-						edge.source === parentSource
-					),
+					!(failedId && edge.target === failedId && edge.source === parentSource),
 			);
 			const proposalEdges = [healEdge];
 			if (failedId) {
@@ -224,8 +208,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 			useDagStore.setState({ nodes: merged.nodes, edges: merged.edges });
 			appendChat({
 				role: "assistant",
-				content:
-					"Correctif appliqué sur le canvas — relancez l'exécution du workflow.",
+				content: "Correctif appliqué sur le canvas — relancez l'exécution du workflow.",
 				at: new Date().toISOString(),
 			});
 			setPendingHeal(null);
@@ -239,22 +222,16 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 	}, [applyHealFromResult, pendingHeal]);
 
 	useEffect(() => {
-		if (
-			!lastExecution ||
-			String(lastExecution.status).toUpperCase() !== "FAILED"
-		) {
+		if (!lastExecution || String(lastExecution.status).toUpperCase() !== "FAILED") {
 			return;
 		}
 		if (lastHealExecutionIdRef.current === lastExecution.execution_id) return;
 		const failedSnap = (lastExecution.snapshots || []).find(
 			(snap) =>
-				String(snap.status).toUpperCase() === "FAILED" ||
-				snap.status === "error",
+				String(snap.status).toUpperCase() === "FAILED" || snap.status === "error",
 		);
 		const errText =
-			failedSnap?.error ||
-			lastExecution.error ||
-			"Échec d'exécution sans détail.";
+			failedSnap?.error || lastExecution.error || "Échec d'exécution sans détail.";
 		const failedNodeId = failedSnap?.node_id;
 		if (!failedNodeId || !dataSourceId) return;
 
@@ -399,10 +376,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 						? result.layout_anchor_node_id.trim()
 						: dataParentId;
 				const layoutAnchorId = attachToSource
-					? resolveArchitectLayoutAnchorId(
-							[...state.nodes, ...ghostNodesAcc],
-							nodeId,
-						)
+					? resolveArchitectLayoutAnchorId([...state.nodes, ...ghostNodesAcc], nodeId)
 					: chainLayoutAnchor;
 				const laid = applyArchitectSequentialLayout(
 					[...state.nodes, ...ghostNodesAcc],
@@ -430,8 +404,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 					if (
 						!ghostEdgesAcc.some(
 							(edge) =>
-								edge.source === apiEdge.source &&
-								edge.target === apiEdge.target,
+								edge.source === apiEdge.source && edge.target === apiEdge.target,
 						)
 					) {
 						ghostEdgesAcc.push(apiEdge);
@@ -544,8 +517,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 						nodes: dag.nodes.filter((item) => !staleNodeIds.has(item.id)),
 						edges: dag.edges.filter(
 							(edge) =>
-								!staleNodeIds.has(edge.source) &&
-								!staleNodeIds.has(edge.target),
+								!staleNodeIds.has(edge.source) && !staleNodeIds.has(edge.target),
 						),
 					});
 				}
@@ -586,14 +558,10 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 		},
 		[
 			architectGlobalObjective,
-			architectPreviousSteps,
 			architectSourceNodeId,
-			architectStepIndex,
-			appendStepProposals,
 			beginLoading,
 			discardStoreProposals,
 			endLoading,
-			globalPlan,
 			nodeId,
 			runArchitectPipeline,
 			promptText,
@@ -650,15 +618,11 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 				globalObjective: trimmed,
 			});
 
-			const { firstResult, stepIndex } = await runArchitectPipeline(
-				trimmed,
-				sourceId,
-				{
-					continueUntilComplete: true,
-					materialize: autoAdvanceEnabled,
-					layoutStartNodeId: nodeId,
-				},
-			);
+			const { firstResult, stepIndex } = await runArchitectPipeline(trimmed, sourceId, {
+				continueUntilComplete: true,
+				materialize: autoAdvanceEnabled,
+				layoutStartNodeId: nodeId,
+			});
 
 			const planText = (firstResult?.global_plan || []).join(" → ");
 			const suggestions = firstResult?.proactive_suggestions ?? [];
@@ -684,9 +648,7 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 				});
 			}
 			pushThinking(
-				planText
-					? `Plan : ${planText}`
-					: "Plan prêt — prévisualisation étape 1.",
+				planText ? `Plan : ${planText}` : "Plan prêt — prévisualisation étape 1.",
 			);
 
 			if (autoAdvanceEnabled && stepIndex > 0) {
@@ -802,9 +764,8 @@ export function AutoArchitectInspector({ nodeId }: { nodeId: string }) {
 				) : null}
 				{!dataSourceId ? (
 					<p className="auto-architect-inspector__warn">
-						Aucune source détectée : reliez la sortie d’un reader (CSV,
-						Shapefile…) à l’entrée de ce nœud, ou ajoutez au moins un reader sur
-						le canvas.
+						Aucune source détectée : reliez la sortie d’un reader (CSV, Shapefile…) à
+						l’entrée de ce nœud, ou ajoutez au moins un reader sur le canvas.
 					</p>
 				) : (
 					<p className="auto-architect-inspector__source-hint">

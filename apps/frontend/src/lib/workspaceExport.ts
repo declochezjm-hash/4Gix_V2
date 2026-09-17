@@ -39,11 +39,7 @@ export function driverFromWriterNode(
 export function isFileWriterNode(nodeType: string, requested?: string): boolean {
 	const key = (requested || nodeType || "").toLowerCase();
 	if (key === "file_writer") return true;
-	return (
-		key.endsWith("_writer") &&
-		!key.includes("postgis") &&
-		key !== "log_writer"
-	);
+	return key.endsWith("_writer") && !key.includes("postgis") && key !== "log_writer";
 }
 
 export function defaultExtensionForDriver(driver?: string): string {
@@ -81,9 +77,7 @@ async function fetchWorkspaceBlob(
 	const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="([^"]+)"/i);
 	const headerName = decodeURIComponent(match?.[1] || match?.[2] || "");
 	const filename =
-		meta.suggestedName ||
-		headerName ||
-		basenameFromWorkspacePath(meta.workspacePath);
+		meta.suggestedName || headerName || basenameFromWorkspacePath(meta.workspacePath);
 	return { blob, filename };
 }
 
@@ -145,14 +139,13 @@ export async function pickExportDestination(
 	const ext = defaultExtensionForDriver(driver);
 	const current = options.currentPath || "";
 	const currentBase = current.split("/").pop() || `output${ext}`;
-	const suggested =
-		currentBase.toLowerCase().endsWith(".shp")
-			? `${currentBase.slice(0, -4)}.zip`
-			: currentBase.toLowerCase().endsWith(ext)
+	const suggested = currentBase.toLowerCase().endsWith(".shp")
+		? `${currentBase.slice(0, -4)}.zip`
+		: currentBase.toLowerCase().endsWith(ext)
+			? currentBase
+			: currentBase.includes(".")
 				? currentBase
-				: currentBase.includes(".")
-					? currentBase
-					: `${currentBase}${ext}`;
+				: `${currentBase}${ext}`;
 
 	if (typeof window.showSaveFilePicker === "function") {
 		const handle = await window.showSaveFilePicker({
@@ -196,8 +189,7 @@ export async function downloadWorkspaceExport(
 	meta: WorkspaceExportMeta,
 ): Promise<void> {
 	const { blob, filename } = await fetchWorkspaceBlob(meta);
-	const handle =
-		getNodeExportHandle(nodeId) || takeNodeExportHandle(nodeId);
+	const handle = getNodeExportHandle(nodeId) || takeNodeExportHandle(nodeId);
 	await saveWithPicker(blob, filename, meta.driver, handle);
 }
 
@@ -234,20 +226,12 @@ export function buildWorkflowExports(
 		const snap = snapshots[node.id];
 		if (!snap) continue;
 		if (snap.status === "FAILED" || snap.status === "error") continue;
-		if (
-			!isFileWriterNode(
-				node.data.nodeType,
-				node.data.requestedNodeType,
-			)
-		) {
+		if (!isFileWriterNode(node.data.nodeType, node.data.requestedNodeType)) {
 			continue;
 		}
 		const driver =
 			node.data.params.driver ||
-			driverFromWriterNode(
-				node.data.params,
-				node.data.requestedNodeType,
-			);
+			driverFromWriterNode(node.data.params, node.data.requestedNodeType);
 		const meta = exportMetaFromSnapshot(snap.metadata, {
 			...node.data.params,
 			driver,
@@ -275,9 +259,7 @@ export function exportMetaFromSnapshot(
 	params?: Record<string, unknown>,
 ): WorkspaceExportMeta | null {
 	const workspacePath =
-		(metadata?.workspace_path as string) ||
-		(metadata?.path as string) ||
-		"";
+		(metadata?.workspace_path as string) || (metadata?.path as string) || "";
 	if (!workspacePath.startsWith("/workspace/")) {
 		const normalized = workspacePath.replace(/\\/g, "/");
 		const idx = normalized.toLowerCase().indexOf("/workspace/");

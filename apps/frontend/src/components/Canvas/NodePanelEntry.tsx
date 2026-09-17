@@ -1,10 +1,6 @@
 import { nodePresentation, paletteSubtitle } from "../../config/nodeRegistry";
 import type { CatalogNode } from "../../lib/api";
-import {
-	ChevronRight,
-	catalogEntryIcon,
-	N8nIconBadge,
-} from "../../lib/n8nIcons";
+import { ChevronRight, catalogEntryIcon, N8nIconBadge } from "../../lib/n8nIcons";
 
 type NodePanelEntryProps = {
 	entry: CatalogNode;

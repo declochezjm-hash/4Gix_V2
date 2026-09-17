@@ -1,32 +1,32 @@
 {
-  "name": "4gix-frontend",
-  "private": true,
-  "version": "0.2.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 5173",
-    "build": "vite build",
-    "typecheck": "tsc --noEmit",
-    "preview": "vite preview --host 127.0.0.1 --port 5173"
-  },
-  "dependencies": {
-    "@deck.gl/core": "^9.1.8",
-    "@deck.gl/layers": "^9.1.8",
-    "@deck.gl/mapbox": "^9.1.8",
-    "@monaco-editor/react": "^4.7.0",
-    "@xyflow/react": "^12.4.4",
-    "deck.gl": "^9.1.8",
-    "lucide-react": "^0.474.0",
-    "maplibre-gl": "^4.7.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "zustand": "^5.0.3"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.7"
-  }
+	"name": "4gix-frontend",
+	"private": true,
+	"version": "0.2.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite --host 127.0.0.1 --port 5173",
+		"build": "vite build",
+		"typecheck": "tsc --noEmit",
+		"preview": "vite preview --host 127.0.0.1 --port 5173"
+	},
+	"dependencies": {
+		"@deck.gl/core": "^9.1.8",
+		"@deck.gl/layers": "^9.1.8",
+		"@deck.gl/mapbox": "^9.1.8",
+		"@monaco-editor/react": "^4.7.0",
+		"@xyflow/react": "^12.4.4",
+		"deck.gl": "^9.1.8",
+		"lucide-react": "^0.474.0",
+		"maplibre-gl": "^4.7.1",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"zustand": "^5.0.3"
+	},
+	"devDependencies": {
+		"@types/react": "^18.3.18",
+		"@types/react-dom": "^18.3.5",
+		"@vitejs/plugin-react": "^4.3.4",
+		"typescript": "^5.7.2",
+		"vite": "^6.0.7"
+	}
 }

@@ -5,12 +5,12 @@ import { ShapefileHealBridge } from "./components/agent/ShapefileHealBridge";
 import { CanvasErrorBoundary } from "./components/Canvas/CanvasErrorBoundary";
 import { FlowCanvas } from "./components/Canvas/FlowCanvas";
 import { NodePanelRight } from "./components/Canvas/NodePanelRight";
+import { WorkflowExportModal } from "./components/export/WorkflowExportModal";
 import { TopBar } from "./components/Header/TopBar";
 import { NodeModal } from "./components/NodeModal/NodeModal";
 import { AppSidebar } from "./components/Shell/AppSidebar";
 import { ProjectOverview } from "./components/Shell/ProjectOverview";
 import { isFmwFilename } from "./lib/api";
-import { WorkflowExportModal } from "./components/export/WorkflowExportModal";
 import { useDagStore } from "./store/dagStore";
 
 export default function App() {
@@ -111,38 +111,39 @@ export default function App() {
 				) : (
 					<CanvasErrorBoundary className="workspace workspace--error-fallback">
 						<ComposerAgentProvider>
-						<div
-							className={`workspace__editor${fmwDragOver ? " workspace--fmw-drop" : ""}`}
-							onDragOver={(event) => {
-								if (!event.dataTransfer.types.includes("Files")) return;
-								event.preventDefault();
-								event.dataTransfer.dropEffect = "copy";
-								setFmwDragOver(true);
-							}}
-							onDragLeave={(event) => {
-								const next = event.relatedTarget as Element | null;
-								if (next && event.currentTarget.contains(next)) return;
-								setFmwDragOver(false);
-							}}
-							onDrop={(event) => {
-								event.preventDefault();
-								setFmwDragOver(false);
-								handleFmwDrop(event.dataTransfer.files?.[0]);
-							}}
-						>
-							<main className="workspace__main">
-								{fmwDragOver ? (
-									<div className="fmw-drop-overlay" aria-hidden>
-										Déposer un projet (.fmw / .json)
-									</div>
-								) : null}
-								<FlowCanvas />
-								<NodePanelRight />
-								<NodeModal />
-								<ShapefileHealBridge />
-								<ComposerDrawer />
-							</main>
-						</div>
+							<section
+								aria-label="Éditeur de workflow — glisser-déposer FME ou JSON"
+								className={`workspace__editor${fmwDragOver ? " workspace--fmw-drop" : ""}`}
+								onDragOver={(event) => {
+									if (!event.dataTransfer.types.includes("Files")) return;
+									event.preventDefault();
+									event.dataTransfer.dropEffect = "copy";
+									setFmwDragOver(true);
+								}}
+								onDragLeave={(event) => {
+									const next = event.relatedTarget as Element | null;
+									if (next && event.currentTarget.contains(next)) return;
+									setFmwDragOver(false);
+								}}
+								onDrop={(event) => {
+									event.preventDefault();
+									setFmwDragOver(false);
+									handleFmwDrop(event.dataTransfer.files?.[0]);
+								}}
+							>
+								<main className="workspace__main">
+									{fmwDragOver ? (
+										<div className="fmw-drop-overlay" aria-hidden>
+											Déposer un projet (.fmw / .json)
+										</div>
+									) : null}
+									<FlowCanvas />
+									<NodePanelRight />
+									<NodeModal />
+									<ShapefileHealBridge />
+									<ComposerDrawer />
+								</main>
+							</section>
 						</ComposerAgentProvider>
 					</CanvasErrorBoundary>
 				)}

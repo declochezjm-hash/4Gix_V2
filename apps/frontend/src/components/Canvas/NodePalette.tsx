@@ -79,10 +79,7 @@ function PaletteItem({
 				type="button"
 				draggable
 				onDragStart={(event) => {
-					event.dataTransfer.setData(
-						"application/4gix-node",
-						JSON.stringify(entry),
-					);
+					event.dataTransfer.setData("application/4gix-node", JSON.stringify(entry));
 					event.dataTransfer.effectAllowed = "move";
 				}}
 				onClick={() => onAdd(entry)}

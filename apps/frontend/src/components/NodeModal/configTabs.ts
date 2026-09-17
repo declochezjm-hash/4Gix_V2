@@ -1,5 +1,1 @@
-export type InspectorConfigTab =
-	| "parameters"
-	| "settings"
-	| "help"
-	| "directChat";
+export type InspectorConfigTab = "parameters" | "settings" | "help" | "directChat";

@@ -38,9 +38,7 @@ export function useCanvasViewportSize() {
 			host.style.width = `${width}px`;
 			host.style.height = `${height}px`;
 			setSize((prev) =>
-				prev.width === width && prev.height === height
-					? prev
-					: { width, height },
+				prev.width === width && prev.height === height ? prev : { width, height },
 			);
 		};
 

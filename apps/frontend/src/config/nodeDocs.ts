@@ -55,8 +55,7 @@ export const NODE_DOCS: Record<string, NodeDoc> = {
 		portsHelp: [
 			{
 				port: "output",
-				description:
-					"Émet la FeatureCollection contenant les attributs et géométries.",
+				description: "Émet la FeatureCollection contenant les attributs et géométries.",
 			},
 		],
 		example: {
@@ -67,16 +66,14 @@ export const NODE_DOCS: Record<string, NodeDoc> = {
 	},
 	excel_reader: {
 		title: "Excel Reader",
-		summary:
-			"Incorpore des données tabulaires depuis des fichiers .xlsx ou .xls.",
+		summary: "Incorpore des données tabulaires depuis des fichiers .xlsx ou .xls.",
 		description:
 			"Lit les lignes d'une feuille Excel. Si des colonnes de coordonnées (X/Y, lon/lat) sont détectées automatiquement, le nœud génère des points en EPSG:4326 pour la carte.",
 		parametersHelp: [
 			{
 				name: "Fichier Excel",
 				type: "Fichier / String",
-				description:
-					"Chemin dans /workspace (souvent rempli au drag-and-drop).",
+				description: "Chemin dans /workspace (souvent rempli au drag-and-drop).",
 				example: "/workspace/uploads/clients.xlsx",
 			},
 			{
@@ -220,9 +217,7 @@ export const NODE_DOCS: Record<string, NodeDoc> = {
 			"Lancez Test step.",
 			"Vérifiez la carte et les attributs KML dans la sortie.",
 		],
-		portsHelp: [
-			{ port: "output", description: "Entités vectorielles issues du KML." },
-		],
+		portsHelp: [{ port: "output", description: "Entités vectorielles issues du KML." }],
 		example: {
 			input: "tracé.kml de sentiers",
 			output: "Lignes géoréférencées",
@@ -258,9 +253,7 @@ export const NODE_DOCS: Record<string, NodeDoc> = {
 			"Importez le DXF et filtrez les calques optionnellement.",
 			"Exécutez et inspectez les géométries sur la carte.",
 		],
-		portsHelp: [
-			{ port: "output", description: "FeatureCollection par entité DXF." },
-		],
+		portsHelp: [{ port: "output", description: "FeatureCollection par entité DXF." }],
 		example: {
 			input: "plan_voirie.dxf, calque ROUTE",
 			output: "Polylignes routières en WGS84",
@@ -287,8 +280,7 @@ export const NODE_DOCS: Record<string, NodeDoc> = {
 			{
 				name: "Add/Set Fields",
 				type: "Expression",
-				description:
-					"Crée une nouvelle colonne avec une valeur fixe ou calculée.",
+				description: "Crée une nouvelle colonne avec une valeur fixe ou calculée.",
 				example: "statut = 'VALIDE'",
 			},
 		],
@@ -382,8 +374,7 @@ export const NODE_DOCS: Record<string, NodeDoc> = {
 		],
 		example: {
 			input: "Points de stations de métro",
-			output:
-				"Polygones représentant un rayon de 300 m autour de chaque station",
+			output: "Polygones représentant un rayon de 300 m autour de chaque station",
 		},
 	},
 };
@@ -408,9 +399,7 @@ function buildFallbackDoc(entry: CatalogNode): NodeDoc {
 		example: prop.default != null ? String(prop.default) : undefined,
 	}));
 
-	const outputs = entry.output_handles?.length
-		? entry.output_handles
-		: ["output"];
+	const outputs = entry.output_handles?.length ? entry.output_handles : ["output"];
 	const portsHelp = outputs.map((port) => ({
 		port,
 		description:

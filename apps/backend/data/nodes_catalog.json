@@ -1,3793 +1,3071 @@
 {
-  "count": 51,
-  "nodes": [
-    {
-      "node_type": "postgis_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "PostGIS Reader",
-      "description": "Lit une table ou une requête SQL spatiale depuis PostGIS.",
-      "schema": {
-        "title": "PostGIS Reader",
-        "description": "Source spatiale PostGIS (table ou SQL).",
-        "type": "object",
-        "properties": {
-          "table": {
-            "type": "string",
-            "title": "Table",
-            "description": "Schéma.table (ex. samples.poi)",
-            "default": "samples.poi"
-          },
-          "geom_column": {
-            "type": "string",
-            "title": "Colonne géométrie",
-            "default": "geom"
-          },
-          "sql": {
-            "type": "string",
-            "title": "Requête SQL (optionnelle)",
-            "format": "sql",
-            "description": "Si renseignée, remplace la lecture de table."
-          },
-          "limit": {
-            "type": "integer",
-            "title": "Limite",
-            "default": 500,
-            "minimum": 1,
-            "maximum": 10000
-          }
-        },
-        "required": []
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "file_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "File Reader",
-      "description": "Lit un fichier vectoriel (GeoJSON, GeoPackage, Shapefile, CSV).",
-      "schema": {
-        "title": "File Reader",
-        "description": "Source fichier vectoriel.",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Chemin du fichier",
-            "description": "Chemin dans le workspace (/workspace) ou chemin absolu.",
-            "default": "/workspace/sample.geojson"
-          },
-          "layer": {
-            "type": "string",
-            "title": "Couche (GeoPackage / GDB)"
-          },
-          "encoding": {
-            "type": "string",
-            "title": "Encodage",
-            "default": "utf-8"
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "csv_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "CSV Reader",
-      "description": "Parse tabular text files with custom delimiters",
-      "schema": {
-        "title": "CSV Reader",
-        "description": "Détecte séparateur et encodage ; carte si colonnes X/Y ou lon/lat.",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier CSV"
-          },
-          "encoding": {
-            "type": "string",
-            "title": "Encodage",
-            "description": "Vide = détection automatique (UTF-8, ISO-8859-1, …)."
-          },
-          "delimiter": {
-            "type": "string",
-            "title": "Séparateur",
-            "description": "Un caractère. Vide = détection (, ; tab)."
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "excel_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "Excel Reader",
-      "description": "Import sheet data from .xlsx / .xls",
-      "schema": {
-        "title": "Excel Reader",
-        "description": "Lit une feuille Excel et expose un tableau attributaire (carte si colonnes X/Y).",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier Excel",
-            "description": "Chemin dans /workspace (drag-and-drop)."
-          },
-          "sheet_name": {
-            "type": "string",
-            "title": "Feuille",
-            "description": "Nom de la feuille. Vide = première feuille."
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "gpkg_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "GeoPackage Reader",
-      "description": "Read vector/raster layers from OGC .gpkg",
-      "schema": {
-        "title": "GeoPackage Reader",
-        "description": "Couche vectorielle en EPSG:4326 pour la carte.",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier .gpkg"
-          },
-          "layer": {
-            "type": "string",
-            "title": "Couche",
-            "description": "Nom de couche. Vide = première couche spatiale."
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "kml_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "KML / KMZ Reader",
-      "description": "Read Google Earth vector data",
-      "schema": {
-        "title": "KML / KMZ Reader",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier .kml ou .kmz"
-          },
-          "layer": {
-            "type": "string",
-            "title": "Couche (optionnel)"
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "shapefile_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "Shapefile Reader",
-      "description": "Lit un Shapefile (.shp) ou une archive .zip contenant un Shapefile.",
-      "schema": {
-        "title": "Shapefile Reader",
-        "description": "Source ESRI Shapefile (fichier .shp ou archive .zip).",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Chemin .shp",
-            "description": "Chemin extrait dans /workspace ou URI zip://…",
-            "default": "/workspace/imports/sample/layer.shp"
-          },
-          "zip_path": {
-            "type": "string",
-            "title": "Archive .zip source (optionnel)",
-            "description": "Chemin de l'archive d'origine si import drag-and-drop."
-          },
-          "layer_name": {
-            "type": "string",
-            "title": "Nom de couche"
-          },
-          "encoding": {
-            "type": "string",
-            "title": "Encodage attributs (.cpg)",
-            "default": "utf-8"
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "geojson_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "GeoJSON Reader",
-      "description": "Parse un GeoJSON inline ou utilise le jeu d'exemple 4GIx.",
-      "schema": {
-        "title": "GeoJSON Reader",
-        "description": "Source GeoJSON inline.",
-        "type": "object",
-        "properties": {
-          "sample_set": {
-            "type": "string",
-            "title": "Jeu d'exemple",
-            "enum": [
-              "cities",
-              "regions",
-              "workspace_demo"
-            ],
-            "enumNames": [
-              "Villes (points)",
-              "Régions (polygones)",
-              "Démo qualité géométrique (polygones + invalides)"
-            ],
-            "default": "cities"
-          },
-          "path": {
-            "type": "string",
-            "title": "Fichier GeoJSON",
-            "description": "Chemin dans /workspace (import drag-and-drop)."
-          },
-          "geojson": {
-            "type": "string",
-            "title": "GeoJSON",
-            "format": "textarea",
-            "description": "FeatureCollection ou Feature. Vide = jeu d'exemple."
-          },
-          "use_sample": {
-            "type": "boolean",
-            "title": "Utiliser le jeu d'exemple",
-            "default": true
-          }
-        },
-        "required": []
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "ifc_bim_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "IFC BIM Reader",
-      "description": "Parse un fichier IFC (murs, dalles, réseaux) et expose empreintes / centroïdes GeoJSON.",
-      "schema": {
-        "title": "IFC BIM Reader",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier IFC",
-            "default": "/workspace/samples/sample.ifc",
-            "description": "Chemin local workspace."
-          },
-          "ifc_class": {
-            "type": "string",
-            "title": "Classe IFC",
-            "enum": [
-              "ALL",
-              "IfcBuildingElement",
-              "IfcWall",
-              "IfcSlab",
-              "IfcWindow",
-              "IfcDoor",
-              "IfcColumn",
-              "IfcBeam",
-              "IfcPipeSegment",
-              "IfcBuilding",
-              "IfcSpace"
-            ],
-            "enumNames": [
-              "Toutes les classes",
-              "IfcBuildingElement",
-              "IfcWall",
-              "IfcSlab",
-              "IfcWindow",
-              "IfcDoor",
-              "IfcColumn",
-              "IfcBeam",
-              "IfcPipeSegment",
-              "IfcBuilding",
-              "IfcSpace"
-            ],
-            "default": "IfcBuildingElement"
-          },
-          "representation": {
-            "type": "string",
-            "title": "Géométrie",
-            "enum": [
-              "footprint",
-              "centroid"
-            ],
-            "enumNames": [
-              "Empreinte 2D",
-              "Centroïde"
-            ],
-            "default": "footprint"
-          },
-          "limit": {
-            "type": "integer",
-            "title": "Limite d'entités",
-            "default": 400,
-            "minimum": 1,
-            "maximum": 5000
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "dxf_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "CAD / DXF Reader",
-      "description": "Import AutoCAD geometry features",
-      "schema": {
-        "title": "DXF CAD Reader",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier DXF",
-            "default": "/workspace/samples/sample.dxf",
-            "description": "DXF natif. Un DWG doit être converti en DXF au préalable."
-          },
-          "layers": {
-            "type": "string",
-            "title": "Calques (optionnel)",
-            "description": "Liste séparée par des virgules. Vide = tous les calques."
-          },
-          "source_crs": {
-            "type": "string",
-            "title": "CRS source",
-            "format": "epsg",
-            "default": "EPSG:4326"
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "geotiff_raster_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "GeoTIFF Raster Reader",
-      "description": "Lit un GeoTIFF (orthophoto, satellite, MNT) et produit une prévisualisation PNG.",
-      "schema": {
-        "title": "GeoTIFF Raster Reader",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier GeoTIFF",
-            "default": "/workspace/samples/sample_dem.tif"
-          },
-          "band": {
-            "type": "integer",
-            "title": "Bande",
-            "default": 1,
-            "minimum": 1
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "rest_wfs_reader",
-      "category": "Reader",
-      "is_spatial": true,
-      "label": "REST / WFS Reader",
-      "description": "Interroge un WFS OGC, une API GeoJSON ou Overpass, avec pagination et cache local.",
-      "schema": {
-        "title": "REST / WFS Reader",
-        "type": "object",
-        "properties": {
-          "source_type": {
-            "type": "string",
-            "title": "Type de source",
-            "enum": [
-              "wfs",
-              "rest_geojson",
-              "overpass"
-            ],
-            "enumNames": [
-              "WFS OGC",
-              "API REST GeoJSON",
-              "Overpass OSM"
-            ],
-            "default": "wfs"
-          },
-          "url": {
-            "type": "string",
-            "title": "URL",
-            "default": "https://data.geopf.fr/wfs/ows",
-            "description": "Endpoint WFS, API REST ou Overpass."
-          },
-          "type_name": {
-            "type": "string",
-            "title": "TypeName WFS",
-            "description": "Ex. CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle"
-          },
-          "bbox": {
-            "type": "string",
-            "title": "BBOX (minx,miny,maxx,maxy)",
-            "description": "Optionnel, CRS de la requête."
-          },
-          "max_features": {
-            "type": "integer",
-            "title": "Max entités",
-            "default": 200,
-            "minimum": 1,
-            "maximum": 5000
-          },
-          "page_size": {
-            "type": "integer",
-            "title": "Taille de page",
-            "default": 100,
-            "minimum": 1,
-            "maximum": 1000
-          },
-          "bearer_token": {
-            "type": "string",
-            "title": "Bearer Token",
-            "description": "Ajouté dans Authorization si renseigné."
-          },
-          "use_cache": {
-            "type": "boolean",
-            "title": "Utiliser le cache GeoJSON",
-            "default": true
-          }
-        },
-        "required": [
-          "url"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "reproject",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Transform Coordinate System",
-      "description": "Reproject spatial reference CRS",
-      "schema": {
-        "title": "Reprojection",
-        "type": "object",
-        "properties": {
-          "source_crs": {
-            "type": "string",
-            "title": "CRS source",
-            "format": "epsg",
-            "default": "EPSG:4326"
-          },
-          "target_crs": {
-            "type": "string",
-            "title": "CRS cible",
-            "format": "epsg",
-            "default": "EPSG:2154",
-            "description": "Ex. EPSG:2154 (Lambert-93), EPSG:3857 (Web Mercator)."
-          }
-        },
-        "required": [
-          "target_crs"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "buffer",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Create Buffer",
-      "description": "Generate spatial proximity zones",
-      "schema": {
-        "title": "Buffer",
-        "type": "object",
-        "properties": {
-          "distance": {
-            "type": "number",
-            "title": "Distance de buffer",
-            "format": "slider",
-            "default": 0.01,
-            "minimum": 0.001,
-            "maximum": 1,
-            "multipleOf": 0.001,
-            "description": "En degrés si CRS=4326, en mètres si CRS projeté."
-          },
-          "resolution": {
-            "type": "integer",
-            "title": "Résolution",
-            "default": 16
-          }
-        },
-        "required": [
-          "distance"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "attribute_filter",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Filter by Attribute",
-      "description": "Split stream by attribute values",
-      "schema": {
-        "title": "Filtre attributaire",
-        "type": "object",
-        "properties": {
-          "field": {
-            "type": "string",
-            "title": "Champ",
-            "default": "category"
-          },
-          "operator": {
-            "type": "string",
-            "title": "Opérateur",
-            "enum": [
-              "eq",
-              "neq",
-              "contains",
-              "gt",
-              "lt"
-            ],
-            "default": "eq"
-          },
-          "value": {
-            "type": "string",
-            "title": "Valeur"
-          }
-        },
-        "required": [
-          "field",
-          "value"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "attribute_mapper",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Map Values",
-      "description": "Replace attribute values with lookup",
-      "schema": {
-        "title": "Mapping attributaire",
-        "type": "object",
-        "properties": {
-          "mapping": {
-            "type": "string",
-            "title": "Mapping de colonnes",
-            "format": "mapping",
-            "description": "Ancien nom → nouveau nom",
-            "default": "{\"name\": \"nom\"}"
-          },
-          "keep_unmapped": {
-            "type": "boolean",
-            "title": "Conserver les champs non mappés",
-            "default": true
-          }
-        },
-        "required": [
-          "mapping"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "spatial_join",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Spatial Join / Intersect",
-      "description": "Match features by location",
-      "schema": {
-        "title": "Spatial Join",
-        "description": "Reliez Input A (gauche) et Input B (droite), puis choisissez le prédicat.",
-        "type": "object",
-        "properties": {
-          "predicate": {
-            "type": "string",
-            "title": "Opération spatiale",
-            "enum": [
-              "intersects",
-              "contains",
-              "within",
-              "touches",
-              "overlaps"
-            ],
-            "enumNames": [
-              "Intersects",
-              "Contains",
-              "Within",
-              "Touches",
-              "Overlaps"
-            ],
-            "default": "intersects",
-            "description": "Prédicat GeoPandas sjoin."
-          },
-          "how": {
-            "type": "string",
-            "title": "Type de jointure",
-            "enum": [
-              "inner",
-              "left"
-            ],
-            "enumNames": [
-              "Inner (intersection)",
-              "Left (conserve A)"
-            ],
-            "default": "inner"
-          },
-          "suffix_b": {
-            "type": "string",
-            "title": "Suffixe colonnes B",
-            "default": "_b",
-            "description": "Suffixe ajouté aux champs de la couche B en cas de collision."
-          }
-        },
-        "required": [
-          "predicate"
-        ]
-      },
-      "input_handles": [
-        "input_a",
-        "input_b"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "raster_clipper",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Raster Clipper",
-      "description": "Découpe un GeoTIFF (Input A) par une géométrie vectorielle (Input B).",
-      "schema": {
-        "title": "Raster Clipper",
-        "type": "object",
-        "properties": {
-          "all_touched": {
-            "type": "boolean",
-            "title": "Inclure les pixels touchés",
-            "default": true
-          },
-          "crop": {
-            "type": "boolean",
-            "title": "Recadrer l'étendue",
-            "default": true
-          }
-        },
-        "required": []
-      },
-      "input_handles": [
-        "input_a",
-        "input_b"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "zonal_statistics",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Zonal Statistics",
-      "description": "Calcule min / max / moyenne d'un MNT raster sur des polygones vectoriels.",
-      "schema": {
-        "title": "Zonal Statistics",
-        "type": "object",
-        "properties": {
-          "stats": {
-            "type": "string",
-            "title": "Statistiques",
-            "default": "min,max,mean,count",
-            "description": "Liste séparée par des virgules."
-          },
-          "raster_is_a": {
-            "type": "boolean",
-            "title": "Raster sur Input A (sinon Input B)",
-            "default": true
-          }
-        },
-        "required": []
-      },
-      "input_handles": [
-        "input_a",
-        "input_b"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "geometry_validator",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Validate Geometry",
-      "description": "Detect and repair invalid shapes",
-      "schema": {
-        "title": "GeometryValidator",
-        "type": "object",
-        "properties": {
-          "repair": {
-            "type": "boolean",
-            "title": "Réparer (make_valid)",
-            "default": true
-          },
-          "allow_empty": {
-            "type": "boolean",
-            "title": "Accepter les géométries vides",
-            "default": false
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output",
-        "rejected"
-      ],
-      "palette_group": "Geometry & Quality"
-    },
-    {
-      "node_type": "geometry_filter",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "GeometryFilter",
-      "description": "Sépare le flux par type de géométrie (Point, Line, Polygon, MultiPolygon, Null).",
-      "schema": {
-        "title": "GeometryFilter",
-        "type": "object",
-        "properties": {}
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "point",
-        "linestring",
-        "polygon",
-        "multipolygon",
-        "null"
-      ],
-      "palette_group": "Geometry & Quality"
-    },
-    {
-      "node_type": "snapper",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Snapper",
-      "description": "Calage des sommets sur une grille de tolérance (mètres).",
-      "schema": {
-        "title": "Snapper",
-        "type": "object",
-        "properties": {
-          "tolerance": {
-            "type": "number",
-            "title": "Tolérance (m)",
-            "format": "slider",
-            "default": 1.0,
-            "minimum": 0.01,
-            "maximum": 50
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Geometry & Quality"
-    },
-    {
-      "node_type": "orientor",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Orientor",
-      "description": "Uniformise l'orientation des anneaux (horaire / anti-horaire).",
-      "schema": {
-        "title": "Orientor",
-        "type": "object",
-        "properties": {
-          "direction": {
-            "type": "string",
-            "title": "Orientation",
-            "enum": [
-              "ccw",
-              "cw"
-            ],
-            "enumNames": [
-              "Anti-horaire (CCW)",
-              "Horaire (CW)"
-            ],
-            "default": "ccw"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Geometry & Quality"
-    },
-    {
-      "node_type": "bufferer",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Create Buffer",
-      "description": "Generate spatial proximity zones",
-      "schema": {
-        "title": "Bufferer",
-        "type": "object",
-        "properties": {
-          "distance": {
-            "type": "number",
-            "title": "Distance (m)",
-            "format": "slider",
-            "default": 200,
-            "minimum": 1,
-            "maximum": 5000
-          },
-          "cap_style": {
-            "type": "string",
-            "title": "Extrémités",
-            "enum": [
-              "round",
-              "flat",
-              "square"
-            ],
-            "enumNames": [
-              "Arrondi",
-              "Plat",
-              "Carré"
-            ],
-            "default": "round"
-          },
-          "resolution": {
-            "type": "integer",
-            "title": "Résolution",
-            "default": 16
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "clipper",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Clipper",
-      "description": "Découpe Inside / Outside par un masque polygonal.",
-      "schema": {
-        "title": "Clipper",
-        "type": "object",
-        "properties": {
-          "keep_empty": {
-            "type": "boolean",
-            "title": "Conserver les géométries vides",
-            "default": false
-          }
-        }
-      },
-      "input_handles": [
-        "input",
-        "clipper"
-      ],
-      "output_handles": [
-        "inside",
-        "outside"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "dissolver",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Merge Geometries",
-      "description": "Dissolve boundaries based on attributes",
-      "schema": {
-        "title": "Dissolver",
-        "type": "object",
-        "properties": {
-          "group_by": {
-            "type": "string",
-            "title": "Attribut de groupement",
-            "default": "group",
-            "description": "Vide = union totale."
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "area_on_area_overlayer",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Overlay Polygons",
-      "description": "Intersect and combine overlapping areas",
-      "schema": {
-        "title": "AreaOnAreaOverlayer",
-        "type": "object",
-        "properties": {
-          "id_attr": {
-            "type": "string",
-            "title": "Attribut identifiant",
-            "default": "name"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "line_on_line_overlayer",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "LineOnLineOverlayer",
-      "description": "Découpe un réseau de lignes à chaque intersection.",
-      "schema": {
-        "title": "LineOnLineOverlayer",
-        "type": "object",
-        "properties": {}
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "centroid_extractor",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "CentroidExtractor",
-      "description": "Remplace chaque géométrie par son centroïde (CenterPointReplacer).",
-      "schema": {
-        "title": "CentroidExtractor",
-        "type": "object",
-        "properties": {
-          "mode": {
-            "type": "string",
-            "title": "Mode",
-            "enum": [
-              "centroid",
-              "representative"
-            ],
-            "enumNames": [
-              "Centroïde",
-              "Point intérieur"
-            ],
-            "default": "centroid"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "bounding_box_replacer",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Extract Bounding Box",
-      "description": "Replace geometry with envelope bounds",
-      "schema": {
-        "title": "BoundingBoxReplacer",
-        "type": "object",
-        "properties": {}
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "densifier",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Densifier",
-      "description": "Ajoute des sommets intermédiaires selon une distance maximale (mètres).",
-      "schema": {
-        "title": "Densifier",
-        "type": "object",
-        "properties": {
-          "max_distance": {
-            "type": "number",
-            "title": "Distance max (m)",
-            "format": "slider",
-            "default": 50,
-            "minimum": 1,
-            "maximum": 2000
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "generalizer",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Generalizer",
-      "description": "Simplification Douglas-Peucker / réduction de sommets.",
-      "schema": {
-        "title": "Generalizer",
-        "type": "object",
-        "properties": {
-          "tolerance": {
-            "type": "number",
-            "title": "Tolérance (m)",
-            "format": "slider",
-            "default": 10,
-            "minimum": 0.1,
-            "maximum": 500
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Spatial Analysis"
-    },
-    {
-      "node_type": "feature_merger",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "FeatureMerger",
-      "description": "Jointure attributaire 1:N (Merged / Unmerged_Request / Unmerged_Supplier).",
-      "schema": {
-        "title": "FeatureMerger",
-        "type": "object",
-        "properties": {
-          "request_key": {
-            "type": "string",
-            "title": "Clé Request",
-            "default": "id"
-          },
-          "supplier_key": {
-            "type": "string",
-            "title": "Clé Supplier",
-            "default": "id"
-          },
-          "prefix_supplier": {
-            "type": "string",
-            "title": "Préfixe attributs Supplier",
-            "default": "sup_"
-          }
-        }
-      },
-      "input_handles": [
-        "request",
-        "supplier"
-      ],
-      "output_handles": [
-        "merged",
-        "unmerged_request",
-        "unmerged_supplier"
-      ],
-      "palette_group": "Combiners & Joins"
-    },
-    {
-      "node_type": "spatial_relator",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Spatial Join / Intersect",
-      "description": "Match features by location",
-      "schema": {
-        "title": "SpatialRelator",
-        "type": "object",
-        "properties": {
-          "predicate": {
-            "type": "string",
-            "title": "Relation DE-9IM",
-            "enum": [
-              "intersects",
-              "contains",
-              "touches",
-              "within",
-              "disjoint",
-              "crosses",
-              "overlaps"
-            ],
-            "enumNames": [
-              "INTERSECTS",
-              "CONTAINS",
-              "TOUCHES",
-              "WITHIN",
-              "DISJOINT",
-              "CROSSES",
-              "OVERLAPS"
-            ],
-            "default": "intersects"
-          }
-        }
-      },
-      "input_handles": [
-        "request",
-        "supplier"
-      ],
-      "output_handles": [
-        "related",
-        "unrelated"
-      ],
-      "palette_group": "Combiners & Joins"
-    },
-    {
-      "node_type": "neighbor_finder",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "NeighborFinder",
-      "description": "Associe les K plus proches voisins entre deux couches spatiales.",
-      "schema": {
-        "title": "NeighborFinder",
-        "type": "object",
-        "properties": {
-          "k": {
-            "type": "integer",
-            "title": "Nombre de voisins (K)",
-            "default": 1,
-            "minimum": 1,
-            "maximum": 10
-          },
-          "max_distance": {
-            "type": "number",
-            "title": "Distance max (m)",
-            "default": 50000,
-            "minimum": 1,
-            "maximum": 500000
-          }
-        }
-      },
-      "input_handles": [
-        "base",
-        "candidates"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Combiners & Joins"
-    },
-    {
-      "node_type": "attribute_manager",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Edit Fields",
-      "description": "Add, rename, remove or modify attributes",
-      "schema": {
-        "title": "AttributeManager",
-        "type": "object",
-        "properties": {
-          "operations": {
-            "type": "string",
-            "title": "Opérations JSON",
-            "format": "textarea",
-            "default": "[{\"op\":\"rename\",\"from\":\"name\",\"to\":\"nom\"},{\"op\":\"create\",\"name\":\"source\",\"expr\":\"'4gix'\"}]",
-            "description": "Liste {op: rename|create|delete|type, ...}."
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Attribute Operations"
-    },
-    {
-      "node_type": "tester",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "If / Filter Condition",
-      "description": "Validate conditions on feature fields",
-      "schema": {
-        "title": "Tester",
-        "type": "object",
-        "properties": {
-          "logic": {
-            "type": "string",
-            "title": "Logique",
-            "enum": [
-              "AND",
-              "OR"
-            ],
-            "default": "AND"
-          },
-          "clauses": {
-            "type": "string",
-            "title": "Clauses JSON",
-            "format": "textarea",
-            "default": "[{\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"}]"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "passed",
-        "failed"
-      ],
-      "palette_group": "Attribute Operations"
-    },
-    {
-      "node_type": "test_filter",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Switch / Multi-Condition",
-      "description": "Route features based on rules",
-      "schema": {
-        "title": "TestFilter",
-        "type": "object",
-        "properties": {
-          "conditions": {
-            "type": "string",
-            "title": "Conditions JSON",
-            "format": "textarea",
-            "default": "[{\"port\":\"output1\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"},{\"port\":\"output2\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"rural\"}]"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output1",
-        "output2",
-        "output3",
-        "else"
-      ],
-      "palette_group": "Attribute Operations"
-    },
-    {
-      "node_type": "list_exploder",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Split List Array",
-      "description": "Flatten list attributes into features",
-      "schema": {
-        "title": "ListExploder",
-        "type": "object",
-        "properties": {
-          "list_attr": {
-            "type": "string",
-            "title": "Attribut liste",
-            "default": "items"
-          },
-          "item_attr": {
-            "type": "string",
-            "title": "Nom de l'élément explosé",
-            "default": "item"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Attribute Operations"
-    },
-    {
-      "node_type": "counter",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Increment Counter",
-      "description": "Add sequence number or ID",
-      "schema": {
-        "title": "Counter",
-        "type": "object",
-        "properties": {
-          "attr": {
-            "type": "string",
-            "title": "Nom de l'attribut",
-            "default": "_count"
-          },
-          "start": {
-            "type": "integer",
-            "title": "Valeur de départ",
-            "default": 1
-          },
-          "increment": {
-            "type": "integer",
-            "title": "Incrément",
-            "default": 1
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Attribute Operations"
-    },
-    {
-      "node_type": "duplicate_filter",
-      "category": "Transformer",
-      "is_spatial": false,
-      "label": "Remove Duplicates",
-      "description": "Filter out identical records",
-      "schema": {
-        "title": "DuplicateFilter",
-        "type": "object",
-        "properties": {
-          "keys": {
-            "type": "string",
-            "title": "Clés (virgules)",
-            "default": "name"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "unique",
-        "duplicate"
-      ],
-      "palette_group": "Attribute Operations"
-    },
-    {
-      "node_type": "reprojector",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Transform Coordinate System",
-      "description": "Reproject spatial reference CRS",
-      "schema": {
-        "title": "Reprojector",
-        "type": "object",
-        "properties": {
-          "source_crs": {
-            "type": "string",
-            "title": "CRS source",
-            "format": "epsg",
-            "default": "EPSG:4326"
-          },
-          "target_crs": {
-            "type": "string",
-            "title": "CRS cible",
-            "format": "epsg",
-            "default": "EPSG:2154",
-            "description": "Lambert-93, UTM, Web Mercator…"
-          }
-        },
-        "required": [
-          "target_crs"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Coordinate Systems"
-    },
-    {
-      "node_type": "python_caller",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Python / Code Transformer",
-      "description": "Éditeur de code Python (GeoPandas) ou SQL — style n8n Code node.",
-      "schema": {
-        "title": "Python / Code Transformer",
-        "description": "Code Python (GeoPandas) ou SQL (SELECT sur `items` / `gdf`).",
-        "type": "object",
-        "properties": {
-          "mode": {
-            "type": "string",
-            "title": "Mode d'exécution",
-            "enum": [
-              "all_items",
-              "per_item"
-            ],
-            "enumNames": [
-              "Run Once for All Items",
-              "Run for Each Item"
-            ],
-            "default": "all_items"
-          },
-          "language": {
-            "type": "string",
-            "title": "Langage",
-            "enum": [
-              "python",
-              "sql"
-            ],
-            "enumNames": [
-              "Python",
-              "SQL"
-            ],
-            "default": "python"
-          },
-          "code": {
-            "type": "string",
-            "title": "Code",
-            "format": "code",
-            "default": "# Transformer les données entrantes avec GeoPandas\n# 'gdf' contient le GeoDataFrame courant (géométries + attributs)\n\ngdf['surface_m2'] = gdf.geometry.area\noutput_gdf = gdf[gdf['surface_m2'] > 100]\n\nreturn output_gdf\n"
-          }
-        },
-        "required": [
-          "code"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output",
-        "rejected"
-      ],
-      "palette_group": "Core"
-    },
-    {
-      "node_type": "vertex_creator",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Vertex Creator",
-      "description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
-      "schema": {
-        "title": "Vertex Creator",
-        "description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
-        "type": "object",
-        "properties": {
-          "x_field": {
-            "type": "string",
-            "title": "Colonne X / Longitude"
-          },
-          "y_field": {
-            "type": "string",
-            "title": "Colonne Y / Latitude"
-          },
-          "target_crs": {
-            "type": "string",
-            "title": "CRS cible",
-            "default": "EPSG:4326"
-          }
-        },
-        "required": [
-          "x_field",
-          "y_field"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Geometry"
-    },
-    {
-      "node_type": "coordinate_setter",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Coordinate Property Setter",
-      "description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
-      "schema": {
-        "title": "Vertex Creator",
-        "description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
-        "type": "object",
-        "properties": {
-          "x_field": {
-            "type": "string",
-            "title": "Colonne X / Longitude"
-          },
-          "y_field": {
-            "type": "string",
-            "title": "Colonne Y / Latitude"
-          },
-          "target_crs": {
-            "type": "string",
-            "title": "CRS cible",
-            "default": "EPSG:4326"
-          }
-        },
-        "required": [
-          "x_field",
-          "y_field"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Geometry"
-    },
-    {
-      "node_type": "composer_agent",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Composer Agent",
-      "description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
-      "schema": {
-        "title": "Composer Agent",
-        "description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
-        "type": "object",
-        "properties": {
-          "prompt": {
-            "type": "string",
-            "title": "Instruction",
-            "default": ""
-          },
-          "replace_downstream": {
-            "type": "boolean",
-            "title": "Remplacer aussi les nœuds en aval",
-            "description": "Si activé, le nœud Composer et toute la chaîne sortante sont remplacés par le graphe proposé.",
-            "default": true
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Agents"
-    },
-    {
-      "node_type": "direct_agent_processor",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "AI Direct Processor",
-      "description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
-      "schema": {
-        "title": "AI Direct Processor",
-        "description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
-        "type": "object",
-        "properties": {
-          "prompt": {
-            "type": "string",
-            "title": "Dernière instruction",
-            "default": ""
-          },
-          "chat_history": {
-            "type": "array",
-            "title": "Historique tchat",
-            "default": []
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Intelligence Artificielle"
-    },
-    {
-      "node_type": "auto_architect_agent",
-      "category": "Transformer",
-      "is_spatial": true,
-      "label": "Auto-Architect Agent",
-      "description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
-      "schema": {
-        "title": "Auto-Architect Agent",
-        "description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
-        "type": "object",
-        "properties": {
-          "global_objective": {
-            "type": "string",
-            "title": "Objectif global",
-            "default": ""
-          },
-          "auto_advance": {
-            "type": "boolean",
-            "title": "Avancement automatique",
-            "description": "Si activé, enchaîne les étapes sans attendre chaque validation (expérimental).",
-            "default": true
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Agents"
-    },
-    {
-      "node_type": "postgis_writer",
-      "category": "Writer",
-      "is_spatial": true,
-      "label": "PostGIS Writer",
-      "description": "Écrit une FeatureCollection dans une table PostGIS.",
-      "schema": {
-        "title": "PostGIS Writer",
-        "type": "object",
-        "properties": {
-          "schema_name": {
-            "type": "string",
-            "title": "Schéma",
-            "default": "gix_output"
-          },
-          "table": {
-            "type": "string",
-            "title": "Table",
-            "default": "output_layer"
-          },
-          "geom_column": {
-            "type": "string",
-            "title": "Colonne géométrie",
-            "default": "geom"
-          },
-          "if_exists": {
-            "type": "string",
-            "title": "Si la table existe",
-            "enum": [
-              "replace",
-              "append"
-            ],
-            "default": "replace"
-          }
-        },
-        "required": [
-          "table"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "file_writer",
-      "category": "Writer",
-      "is_spatial": true,
-      "label": "File Writer",
-      "description": "Écrit le résultat sur le serveur puis propose le téléchargement (emplacement et nom choisis dans le navigateur).",
-      "schema": {
-        "title": "File Writer",
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Fichier de sortie",
-            "format": "output_path",
-            "description": "Nom du fichier produit. Utilisez « Parcourir… » pour choisir l'emplacement et le nom avant l'exécution.",
-            "default": "/workspace/exports/output.geojson"
-          },
-          "driver": {
-            "type": "string",
-            "title": "Format",
-            "enum": [
-              "GeoJSON",
-              "GPKG",
-              "CSV",
-              "ESRI Shapefile"
-            ],
-            "enumNames": [
-              "GeoJSON",
-              "GeoPackage",
-              "CSV",
-              "Shapefile (.shp)"
-            ],
-            "default": "GeoJSON"
-          }
-        },
-        "required": [
-          "path"
-        ]
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": ""
-    },
-    {
-      "node_type": "log_writer",
-      "category": "Writer",
-      "is_spatial": false,
-      "label": "Log Writer",
-      "description": "Écrit le flux (ex. REJECTED) dans un journal JSON sous /workspace/logs.",
-      "schema": {
-        "title": "Log Writer",
-        "type": "object",
-        "properties": {
-          "filename": {
-            "type": "string",
-            "title": "Fichier journal",
-            "default": "rejected.json"
-          },
-          "label": {
-            "type": "string",
-            "title": "Libellé",
-            "default": "REJECTED"
-          }
-        }
-      },
-      "input_handles": [
-        "input"
-      ],
-      "output_handles": [
-        "output"
-      ],
-      "palette_group": "Writers"
-    }
-  ],
-  "by_category": {
-    "Reader": [
-      {
-        "node_type": "postgis_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "PostGIS Reader",
-        "description": "Lit une table ou une requête SQL spatiale depuis PostGIS.",
-        "schema": {
-          "title": "PostGIS Reader",
-          "description": "Source spatiale PostGIS (table ou SQL).",
-          "type": "object",
-          "properties": {
-            "table": {
-              "type": "string",
-              "title": "Table",
-              "description": "Schéma.table (ex. samples.poi)",
-              "default": "samples.poi"
-            },
-            "geom_column": {
-              "type": "string",
-              "title": "Colonne géométrie",
-              "default": "geom"
-            },
-            "sql": {
-              "type": "string",
-              "title": "Requête SQL (optionnelle)",
-              "format": "sql",
-              "description": "Si renseignée, remplace la lecture de table."
-            },
-            "limit": {
-              "type": "integer",
-              "title": "Limite",
-              "default": 500,
-              "minimum": 1,
-              "maximum": 10000
-            }
-          },
-          "required": []
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "file_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "File Reader",
-        "description": "Lit un fichier vectoriel (GeoJSON, GeoPackage, Shapefile, CSV).",
-        "schema": {
-          "title": "File Reader",
-          "description": "Source fichier vectoriel.",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Chemin du fichier",
-              "description": "Chemin dans le workspace (/workspace) ou chemin absolu.",
-              "default": "/workspace/sample.geojson"
-            },
-            "layer": {
-              "type": "string",
-              "title": "Couche (GeoPackage / GDB)"
-            },
-            "encoding": {
-              "type": "string",
-              "title": "Encodage",
-              "default": "utf-8"
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "csv_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "CSV Reader",
-        "description": "Parse tabular text files with custom delimiters",
-        "schema": {
-          "title": "CSV Reader",
-          "description": "Détecte séparateur et encodage ; carte si colonnes X/Y ou lon/lat.",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier CSV"
-            },
-            "encoding": {
-              "type": "string",
-              "title": "Encodage",
-              "description": "Vide = détection automatique (UTF-8, ISO-8859-1, …)."
-            },
-            "delimiter": {
-              "type": "string",
-              "title": "Séparateur",
-              "description": "Un caractère. Vide = détection (, ; tab)."
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "excel_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "Excel Reader",
-        "description": "Import sheet data from .xlsx / .xls",
-        "schema": {
-          "title": "Excel Reader",
-          "description": "Lit une feuille Excel et expose un tableau attributaire (carte si colonnes X/Y).",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier Excel",
-              "description": "Chemin dans /workspace (drag-and-drop)."
-            },
-            "sheet_name": {
-              "type": "string",
-              "title": "Feuille",
-              "description": "Nom de la feuille. Vide = première feuille."
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "gpkg_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "GeoPackage Reader",
-        "description": "Read vector/raster layers from OGC .gpkg",
-        "schema": {
-          "title": "GeoPackage Reader",
-          "description": "Couche vectorielle en EPSG:4326 pour la carte.",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier .gpkg"
-            },
-            "layer": {
-              "type": "string",
-              "title": "Couche",
-              "description": "Nom de couche. Vide = première couche spatiale."
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "kml_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "KML / KMZ Reader",
-        "description": "Read Google Earth vector data",
-        "schema": {
-          "title": "KML / KMZ Reader",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier .kml ou .kmz"
-            },
-            "layer": {
-              "type": "string",
-              "title": "Couche (optionnel)"
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "shapefile_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "Shapefile Reader",
-        "description": "Lit un Shapefile (.shp) ou une archive .zip contenant un Shapefile.",
-        "schema": {
-          "title": "Shapefile Reader",
-          "description": "Source ESRI Shapefile (fichier .shp ou archive .zip).",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Chemin .shp",
-              "description": "Chemin extrait dans /workspace ou URI zip://…",
-              "default": "/workspace/imports/sample/layer.shp"
-            },
-            "zip_path": {
-              "type": "string",
-              "title": "Archive .zip source (optionnel)",
-              "description": "Chemin de l'archive d'origine si import drag-and-drop."
-            },
-            "layer_name": {
-              "type": "string",
-              "title": "Nom de couche"
-            },
-            "encoding": {
-              "type": "string",
-              "title": "Encodage attributs (.cpg)",
-              "default": "utf-8"
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "geojson_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "GeoJSON Reader",
-        "description": "Parse un GeoJSON inline ou utilise le jeu d'exemple 4GIx.",
-        "schema": {
-          "title": "GeoJSON Reader",
-          "description": "Source GeoJSON inline.",
-          "type": "object",
-          "properties": {
-            "sample_set": {
-              "type": "string",
-              "title": "Jeu d'exemple",
-              "enum": [
-                "cities",
-                "regions",
-                "workspace_demo"
-              ],
-              "enumNames": [
-                "Villes (points)",
-                "Régions (polygones)",
-                "Démo qualité géométrique (polygones + invalides)"
-              ],
-              "default": "cities"
-            },
-            "path": {
-              "type": "string",
-              "title": "Fichier GeoJSON",
-              "description": "Chemin dans /workspace (import drag-and-drop)."
-            },
-            "geojson": {
-              "type": "string",
-              "title": "GeoJSON",
-              "format": "textarea",
-              "description": "FeatureCollection ou Feature. Vide = jeu d'exemple."
-            },
-            "use_sample": {
-              "type": "boolean",
-              "title": "Utiliser le jeu d'exemple",
-              "default": true
-            }
-          },
-          "required": []
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "ifc_bim_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "IFC BIM Reader",
-        "description": "Parse un fichier IFC (murs, dalles, réseaux) et expose empreintes / centroïdes GeoJSON.",
-        "schema": {
-          "title": "IFC BIM Reader",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier IFC",
-              "default": "/workspace/samples/sample.ifc",
-              "description": "Chemin local workspace."
-            },
-            "ifc_class": {
-              "type": "string",
-              "title": "Classe IFC",
-              "enum": [
-                "ALL",
-                "IfcBuildingElement",
-                "IfcWall",
-                "IfcSlab",
-                "IfcWindow",
-                "IfcDoor",
-                "IfcColumn",
-                "IfcBeam",
-                "IfcPipeSegment",
-                "IfcBuilding",
-                "IfcSpace"
-              ],
-              "enumNames": [
-                "Toutes les classes",
-                "IfcBuildingElement",
-                "IfcWall",
-                "IfcSlab",
-                "IfcWindow",
-                "IfcDoor",
-                "IfcColumn",
-                "IfcBeam",
-                "IfcPipeSegment",
-                "IfcBuilding",
-                "IfcSpace"
-              ],
-              "default": "IfcBuildingElement"
-            },
-            "representation": {
-              "type": "string",
-              "title": "Géométrie",
-              "enum": [
-                "footprint",
-                "centroid"
-              ],
-              "enumNames": [
-                "Empreinte 2D",
-                "Centroïde"
-              ],
-              "default": "footprint"
-            },
-            "limit": {
-              "type": "integer",
-              "title": "Limite d'entités",
-              "default": 400,
-              "minimum": 1,
-              "maximum": 5000
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "dxf_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "CAD / DXF Reader",
-        "description": "Import AutoCAD geometry features",
-        "schema": {
-          "title": "DXF CAD Reader",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier DXF",
-              "default": "/workspace/samples/sample.dxf",
-              "description": "DXF natif. Un DWG doit être converti en DXF au préalable."
-            },
-            "layers": {
-              "type": "string",
-              "title": "Calques (optionnel)",
-              "description": "Liste séparée par des virgules. Vide = tous les calques."
-            },
-            "source_crs": {
-              "type": "string",
-              "title": "CRS source",
-              "format": "epsg",
-              "default": "EPSG:4326"
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "geotiff_raster_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "GeoTIFF Raster Reader",
-        "description": "Lit un GeoTIFF (orthophoto, satellite, MNT) et produit une prévisualisation PNG.",
-        "schema": {
-          "title": "GeoTIFF Raster Reader",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier GeoTIFF",
-              "default": "/workspace/samples/sample_dem.tif"
-            },
-            "band": {
-              "type": "integer",
-              "title": "Bande",
-              "default": 1,
-              "minimum": 1
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "rest_wfs_reader",
-        "category": "Reader",
-        "is_spatial": true,
-        "label": "REST / WFS Reader",
-        "description": "Interroge un WFS OGC, une API GeoJSON ou Overpass, avec pagination et cache local.",
-        "schema": {
-          "title": "REST / WFS Reader",
-          "type": "object",
-          "properties": {
-            "source_type": {
-              "type": "string",
-              "title": "Type de source",
-              "enum": [
-                "wfs",
-                "rest_geojson",
-                "overpass"
-              ],
-              "enumNames": [
-                "WFS OGC",
-                "API REST GeoJSON",
-                "Overpass OSM"
-              ],
-              "default": "wfs"
-            },
-            "url": {
-              "type": "string",
-              "title": "URL",
-              "default": "https://data.geopf.fr/wfs/ows",
-              "description": "Endpoint WFS, API REST ou Overpass."
-            },
-            "type_name": {
-              "type": "string",
-              "title": "TypeName WFS",
-              "description": "Ex. CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle"
-            },
-            "bbox": {
-              "type": "string",
-              "title": "BBOX (minx,miny,maxx,maxy)",
-              "description": "Optionnel, CRS de la requête."
-            },
-            "max_features": {
-              "type": "integer",
-              "title": "Max entités",
-              "default": 200,
-              "minimum": 1,
-              "maximum": 5000
-            },
-            "page_size": {
-              "type": "integer",
-              "title": "Taille de page",
-              "default": 100,
-              "minimum": 1,
-              "maximum": 1000
-            },
-            "bearer_token": {
-              "type": "string",
-              "title": "Bearer Token",
-              "description": "Ajouté dans Authorization si renseigné."
-            },
-            "use_cache": {
-              "type": "boolean",
-              "title": "Utiliser le cache GeoJSON",
-              "default": true
-            }
-          },
-          "required": [
-            "url"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      }
-    ],
-    "Transformer": [
-      {
-        "node_type": "reproject",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Transform Coordinate System",
-        "description": "Reproject spatial reference CRS",
-        "schema": {
-          "title": "Reprojection",
-          "type": "object",
-          "properties": {
-            "source_crs": {
-              "type": "string",
-              "title": "CRS source",
-              "format": "epsg",
-              "default": "EPSG:4326"
-            },
-            "target_crs": {
-              "type": "string",
-              "title": "CRS cible",
-              "format": "epsg",
-              "default": "EPSG:2154",
-              "description": "Ex. EPSG:2154 (Lambert-93), EPSG:3857 (Web Mercator)."
-            }
-          },
-          "required": [
-            "target_crs"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "buffer",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Create Buffer",
-        "description": "Generate spatial proximity zones",
-        "schema": {
-          "title": "Buffer",
-          "type": "object",
-          "properties": {
-            "distance": {
-              "type": "number",
-              "title": "Distance de buffer",
-              "format": "slider",
-              "default": 0.01,
-              "minimum": 0.001,
-              "maximum": 1,
-              "multipleOf": 0.001,
-              "description": "En degrés si CRS=4326, en mètres si CRS projeté."
-            },
-            "resolution": {
-              "type": "integer",
-              "title": "Résolution",
-              "default": 16
-            }
-          },
-          "required": [
-            "distance"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "attribute_filter",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Filter by Attribute",
-        "description": "Split stream by attribute values",
-        "schema": {
-          "title": "Filtre attributaire",
-          "type": "object",
-          "properties": {
-            "field": {
-              "type": "string",
-              "title": "Champ",
-              "default": "category"
-            },
-            "operator": {
-              "type": "string",
-              "title": "Opérateur",
-              "enum": [
-                "eq",
-                "neq",
-                "contains",
-                "gt",
-                "lt"
-              ],
-              "default": "eq"
-            },
-            "value": {
-              "type": "string",
-              "title": "Valeur"
-            }
-          },
-          "required": [
-            "field",
-            "value"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "attribute_mapper",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Map Values",
-        "description": "Replace attribute values with lookup",
-        "schema": {
-          "title": "Mapping attributaire",
-          "type": "object",
-          "properties": {
-            "mapping": {
-              "type": "string",
-              "title": "Mapping de colonnes",
-              "format": "mapping",
-              "description": "Ancien nom → nouveau nom",
-              "default": "{\"name\": \"nom\"}"
-            },
-            "keep_unmapped": {
-              "type": "boolean",
-              "title": "Conserver les champs non mappés",
-              "default": true
-            }
-          },
-          "required": [
-            "mapping"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "spatial_join",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Spatial Join / Intersect",
-        "description": "Match features by location",
-        "schema": {
-          "title": "Spatial Join",
-          "description": "Reliez Input A (gauche) et Input B (droite), puis choisissez le prédicat.",
-          "type": "object",
-          "properties": {
-            "predicate": {
-              "type": "string",
-              "title": "Opération spatiale",
-              "enum": [
-                "intersects",
-                "contains",
-                "within",
-                "touches",
-                "overlaps"
-              ],
-              "enumNames": [
-                "Intersects",
-                "Contains",
-                "Within",
-                "Touches",
-                "Overlaps"
-              ],
-              "default": "intersects",
-              "description": "Prédicat GeoPandas sjoin."
-            },
-            "how": {
-              "type": "string",
-              "title": "Type de jointure",
-              "enum": [
-                "inner",
-                "left"
-              ],
-              "enumNames": [
-                "Inner (intersection)",
-                "Left (conserve A)"
-              ],
-              "default": "inner"
-            },
-            "suffix_b": {
-              "type": "string",
-              "title": "Suffixe colonnes B",
-              "default": "_b",
-              "description": "Suffixe ajouté aux champs de la couche B en cas de collision."
-            }
-          },
-          "required": [
-            "predicate"
-          ]
-        },
-        "input_handles": [
-          "input_a",
-          "input_b"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "raster_clipper",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Raster Clipper",
-        "description": "Découpe un GeoTIFF (Input A) par une géométrie vectorielle (Input B).",
-        "schema": {
-          "title": "Raster Clipper",
-          "type": "object",
-          "properties": {
-            "all_touched": {
-              "type": "boolean",
-              "title": "Inclure les pixels touchés",
-              "default": true
-            },
-            "crop": {
-              "type": "boolean",
-              "title": "Recadrer l'étendue",
-              "default": true
-            }
-          },
-          "required": []
-        },
-        "input_handles": [
-          "input_a",
-          "input_b"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "zonal_statistics",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Zonal Statistics",
-        "description": "Calcule min / max / moyenne d'un MNT raster sur des polygones vectoriels.",
-        "schema": {
-          "title": "Zonal Statistics",
-          "type": "object",
-          "properties": {
-            "stats": {
-              "type": "string",
-              "title": "Statistiques",
-              "default": "min,max,mean,count",
-              "description": "Liste séparée par des virgules."
-            },
-            "raster_is_a": {
-              "type": "boolean",
-              "title": "Raster sur Input A (sinon Input B)",
-              "default": true
-            }
-          },
-          "required": []
-        },
-        "input_handles": [
-          "input_a",
-          "input_b"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "geometry_validator",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Validate Geometry",
-        "description": "Detect and repair invalid shapes",
-        "schema": {
-          "title": "GeometryValidator",
-          "type": "object",
-          "properties": {
-            "repair": {
-              "type": "boolean",
-              "title": "Réparer (make_valid)",
-              "default": true
-            },
-            "allow_empty": {
-              "type": "boolean",
-              "title": "Accepter les géométries vides",
-              "default": false
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output",
-          "rejected"
-        ],
-        "palette_group": "Geometry & Quality"
-      },
-      {
-        "node_type": "geometry_filter",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "GeometryFilter",
-        "description": "Sépare le flux par type de géométrie (Point, Line, Polygon, MultiPolygon, Null).",
-        "schema": {
-          "title": "GeometryFilter",
-          "type": "object",
-          "properties": {}
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "point",
-          "linestring",
-          "polygon",
-          "multipolygon",
-          "null"
-        ],
-        "palette_group": "Geometry & Quality"
-      },
-      {
-        "node_type": "snapper",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Snapper",
-        "description": "Calage des sommets sur une grille de tolérance (mètres).",
-        "schema": {
-          "title": "Snapper",
-          "type": "object",
-          "properties": {
-            "tolerance": {
-              "type": "number",
-              "title": "Tolérance (m)",
-              "format": "slider",
-              "default": 1.0,
-              "minimum": 0.01,
-              "maximum": 50
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Geometry & Quality"
-      },
-      {
-        "node_type": "orientor",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Orientor",
-        "description": "Uniformise l'orientation des anneaux (horaire / anti-horaire).",
-        "schema": {
-          "title": "Orientor",
-          "type": "object",
-          "properties": {
-            "direction": {
-              "type": "string",
-              "title": "Orientation",
-              "enum": [
-                "ccw",
-                "cw"
-              ],
-              "enumNames": [
-                "Anti-horaire (CCW)",
-                "Horaire (CW)"
-              ],
-              "default": "ccw"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Geometry & Quality"
-      },
-      {
-        "node_type": "bufferer",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Create Buffer",
-        "description": "Generate spatial proximity zones",
-        "schema": {
-          "title": "Bufferer",
-          "type": "object",
-          "properties": {
-            "distance": {
-              "type": "number",
-              "title": "Distance (m)",
-              "format": "slider",
-              "default": 200,
-              "minimum": 1,
-              "maximum": 5000
-            },
-            "cap_style": {
-              "type": "string",
-              "title": "Extrémités",
-              "enum": [
-                "round",
-                "flat",
-                "square"
-              ],
-              "enumNames": [
-                "Arrondi",
-                "Plat",
-                "Carré"
-              ],
-              "default": "round"
-            },
-            "resolution": {
-              "type": "integer",
-              "title": "Résolution",
-              "default": 16
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "clipper",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Clipper",
-        "description": "Découpe Inside / Outside par un masque polygonal.",
-        "schema": {
-          "title": "Clipper",
-          "type": "object",
-          "properties": {
-            "keep_empty": {
-              "type": "boolean",
-              "title": "Conserver les géométries vides",
-              "default": false
-            }
-          }
-        },
-        "input_handles": [
-          "input",
-          "clipper"
-        ],
-        "output_handles": [
-          "inside",
-          "outside"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "dissolver",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Merge Geometries",
-        "description": "Dissolve boundaries based on attributes",
-        "schema": {
-          "title": "Dissolver",
-          "type": "object",
-          "properties": {
-            "group_by": {
-              "type": "string",
-              "title": "Attribut de groupement",
-              "default": "group",
-              "description": "Vide = union totale."
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "area_on_area_overlayer",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Overlay Polygons",
-        "description": "Intersect and combine overlapping areas",
-        "schema": {
-          "title": "AreaOnAreaOverlayer",
-          "type": "object",
-          "properties": {
-            "id_attr": {
-              "type": "string",
-              "title": "Attribut identifiant",
-              "default": "name"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "line_on_line_overlayer",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "LineOnLineOverlayer",
-        "description": "Découpe un réseau de lignes à chaque intersection.",
-        "schema": {
-          "title": "LineOnLineOverlayer",
-          "type": "object",
-          "properties": {}
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "centroid_extractor",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "CentroidExtractor",
-        "description": "Remplace chaque géométrie par son centroïde (CenterPointReplacer).",
-        "schema": {
-          "title": "CentroidExtractor",
-          "type": "object",
-          "properties": {
-            "mode": {
-              "type": "string",
-              "title": "Mode",
-              "enum": [
-                "centroid",
-                "representative"
-              ],
-              "enumNames": [
-                "Centroïde",
-                "Point intérieur"
-              ],
-              "default": "centroid"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "bounding_box_replacer",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Extract Bounding Box",
-        "description": "Replace geometry with envelope bounds",
-        "schema": {
-          "title": "BoundingBoxReplacer",
-          "type": "object",
-          "properties": {}
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "densifier",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Densifier",
-        "description": "Ajoute des sommets intermédiaires selon une distance maximale (mètres).",
-        "schema": {
-          "title": "Densifier",
-          "type": "object",
-          "properties": {
-            "max_distance": {
-              "type": "number",
-              "title": "Distance max (m)",
-              "format": "slider",
-              "default": 50,
-              "minimum": 1,
-              "maximum": 2000
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "generalizer",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Generalizer",
-        "description": "Simplification Douglas-Peucker / réduction de sommets.",
-        "schema": {
-          "title": "Generalizer",
-          "type": "object",
-          "properties": {
-            "tolerance": {
-              "type": "number",
-              "title": "Tolérance (m)",
-              "format": "slider",
-              "default": 10,
-              "minimum": 0.1,
-              "maximum": 500
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Spatial Analysis"
-      },
-      {
-        "node_type": "feature_merger",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "FeatureMerger",
-        "description": "Jointure attributaire 1:N (Merged / Unmerged_Request / Unmerged_Supplier).",
-        "schema": {
-          "title": "FeatureMerger",
-          "type": "object",
-          "properties": {
-            "request_key": {
-              "type": "string",
-              "title": "Clé Request",
-              "default": "id"
-            },
-            "supplier_key": {
-              "type": "string",
-              "title": "Clé Supplier",
-              "default": "id"
-            },
-            "prefix_supplier": {
-              "type": "string",
-              "title": "Préfixe attributs Supplier",
-              "default": "sup_"
-            }
-          }
-        },
-        "input_handles": [
-          "request",
-          "supplier"
-        ],
-        "output_handles": [
-          "merged",
-          "unmerged_request",
-          "unmerged_supplier"
-        ],
-        "palette_group": "Combiners & Joins"
-      },
-      {
-        "node_type": "spatial_relator",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Spatial Join / Intersect",
-        "description": "Match features by location",
-        "schema": {
-          "title": "SpatialRelator",
-          "type": "object",
-          "properties": {
-            "predicate": {
-              "type": "string",
-              "title": "Relation DE-9IM",
-              "enum": [
-                "intersects",
-                "contains",
-                "touches",
-                "within",
-                "disjoint",
-                "crosses",
-                "overlaps"
-              ],
-              "enumNames": [
-                "INTERSECTS",
-                "CONTAINS",
-                "TOUCHES",
-                "WITHIN",
-                "DISJOINT",
-                "CROSSES",
-                "OVERLAPS"
-              ],
-              "default": "intersects"
-            }
-          }
-        },
-        "input_handles": [
-          "request",
-          "supplier"
-        ],
-        "output_handles": [
-          "related",
-          "unrelated"
-        ],
-        "palette_group": "Combiners & Joins"
-      },
-      {
-        "node_type": "neighbor_finder",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "NeighborFinder",
-        "description": "Associe les K plus proches voisins entre deux couches spatiales.",
-        "schema": {
-          "title": "NeighborFinder",
-          "type": "object",
-          "properties": {
-            "k": {
-              "type": "integer",
-              "title": "Nombre de voisins (K)",
-              "default": 1,
-              "minimum": 1,
-              "maximum": 10
-            },
-            "max_distance": {
-              "type": "number",
-              "title": "Distance max (m)",
-              "default": 50000,
-              "minimum": 1,
-              "maximum": 500000
-            }
-          }
-        },
-        "input_handles": [
-          "base",
-          "candidates"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Combiners & Joins"
-      },
-      {
-        "node_type": "attribute_manager",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Edit Fields",
-        "description": "Add, rename, remove or modify attributes",
-        "schema": {
-          "title": "AttributeManager",
-          "type": "object",
-          "properties": {
-            "operations": {
-              "type": "string",
-              "title": "Opérations JSON",
-              "format": "textarea",
-              "default": "[{\"op\":\"rename\",\"from\":\"name\",\"to\":\"nom\"},{\"op\":\"create\",\"name\":\"source\",\"expr\":\"'4gix'\"}]",
-              "description": "Liste {op: rename|create|delete|type, ...}."
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Attribute Operations"
-      },
-      {
-        "node_type": "tester",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "If / Filter Condition",
-        "description": "Validate conditions on feature fields",
-        "schema": {
-          "title": "Tester",
-          "type": "object",
-          "properties": {
-            "logic": {
-              "type": "string",
-              "title": "Logique",
-              "enum": [
-                "AND",
-                "OR"
-              ],
-              "default": "AND"
-            },
-            "clauses": {
-              "type": "string",
-              "title": "Clauses JSON",
-              "format": "textarea",
-              "default": "[{\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"}]"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "passed",
-          "failed"
-        ],
-        "palette_group": "Attribute Operations"
-      },
-      {
-        "node_type": "test_filter",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Switch / Multi-Condition",
-        "description": "Route features based on rules",
-        "schema": {
-          "title": "TestFilter",
-          "type": "object",
-          "properties": {
-            "conditions": {
-              "type": "string",
-              "title": "Conditions JSON",
-              "format": "textarea",
-              "default": "[{\"port\":\"output1\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"},{\"port\":\"output2\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"rural\"}]"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output1",
-          "output2",
-          "output3",
-          "else"
-        ],
-        "palette_group": "Attribute Operations"
-      },
-      {
-        "node_type": "list_exploder",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Split List Array",
-        "description": "Flatten list attributes into features",
-        "schema": {
-          "title": "ListExploder",
-          "type": "object",
-          "properties": {
-            "list_attr": {
-              "type": "string",
-              "title": "Attribut liste",
-              "default": "items"
-            },
-            "item_attr": {
-              "type": "string",
-              "title": "Nom de l'élément explosé",
-              "default": "item"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Attribute Operations"
-      },
-      {
-        "node_type": "counter",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Increment Counter",
-        "description": "Add sequence number or ID",
-        "schema": {
-          "title": "Counter",
-          "type": "object",
-          "properties": {
-            "attr": {
-              "type": "string",
-              "title": "Nom de l'attribut",
-              "default": "_count"
-            },
-            "start": {
-              "type": "integer",
-              "title": "Valeur de départ",
-              "default": 1
-            },
-            "increment": {
-              "type": "integer",
-              "title": "Incrément",
-              "default": 1
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Attribute Operations"
-      },
-      {
-        "node_type": "duplicate_filter",
-        "category": "Transformer",
-        "is_spatial": false,
-        "label": "Remove Duplicates",
-        "description": "Filter out identical records",
-        "schema": {
-          "title": "DuplicateFilter",
-          "type": "object",
-          "properties": {
-            "keys": {
-              "type": "string",
-              "title": "Clés (virgules)",
-              "default": "name"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "unique",
-          "duplicate"
-        ],
-        "palette_group": "Attribute Operations"
-      },
-      {
-        "node_type": "reprojector",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Transform Coordinate System",
-        "description": "Reproject spatial reference CRS",
-        "schema": {
-          "title": "Reprojector",
-          "type": "object",
-          "properties": {
-            "source_crs": {
-              "type": "string",
-              "title": "CRS source",
-              "format": "epsg",
-              "default": "EPSG:4326"
-            },
-            "target_crs": {
-              "type": "string",
-              "title": "CRS cible",
-              "format": "epsg",
-              "default": "EPSG:2154",
-              "description": "Lambert-93, UTM, Web Mercator…"
-            }
-          },
-          "required": [
-            "target_crs"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Coordinate Systems"
-      },
-      {
-        "node_type": "python_caller",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Python / Code Transformer",
-        "description": "Éditeur de code Python (GeoPandas) ou SQL — style n8n Code node.",
-        "schema": {
-          "title": "Python / Code Transformer",
-          "description": "Code Python (GeoPandas) ou SQL (SELECT sur `items` / `gdf`).",
-          "type": "object",
-          "properties": {
-            "mode": {
-              "type": "string",
-              "title": "Mode d'exécution",
-              "enum": [
-                "all_items",
-                "per_item"
-              ],
-              "enumNames": [
-                "Run Once for All Items",
-                "Run for Each Item"
-              ],
-              "default": "all_items"
-            },
-            "language": {
-              "type": "string",
-              "title": "Langage",
-              "enum": [
-                "python",
-                "sql"
-              ],
-              "enumNames": [
-                "Python",
-                "SQL"
-              ],
-              "default": "python"
-            },
-            "code": {
-              "type": "string",
-              "title": "Code",
-              "format": "code",
-              "default": "# Transformer les données entrantes avec GeoPandas\n# 'gdf' contient le GeoDataFrame courant (géométries + attributs)\n\ngdf['surface_m2'] = gdf.geometry.area\noutput_gdf = gdf[gdf['surface_m2'] > 100]\n\nreturn output_gdf\n"
-            }
-          },
-          "required": [
-            "code"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output",
-          "rejected"
-        ],
-        "palette_group": "Core"
-      },
-      {
-        "node_type": "vertex_creator",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Vertex Creator",
-        "description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
-        "schema": {
-          "title": "Vertex Creator",
-          "description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
-          "type": "object",
-          "properties": {
-            "x_field": {
-              "type": "string",
-              "title": "Colonne X / Longitude"
-            },
-            "y_field": {
-              "type": "string",
-              "title": "Colonne Y / Latitude"
-            },
-            "target_crs": {
-              "type": "string",
-              "title": "CRS cible",
-              "default": "EPSG:4326"
-            }
-          },
-          "required": [
-            "x_field",
-            "y_field"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Geometry"
-      },
-      {
-        "node_type": "coordinate_setter",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Coordinate Property Setter",
-        "description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
-        "schema": {
-          "title": "Vertex Creator",
-          "description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
-          "type": "object",
-          "properties": {
-            "x_field": {
-              "type": "string",
-              "title": "Colonne X / Longitude"
-            },
-            "y_field": {
-              "type": "string",
-              "title": "Colonne Y / Latitude"
-            },
-            "target_crs": {
-              "type": "string",
-              "title": "CRS cible",
-              "default": "EPSG:4326"
-            }
-          },
-          "required": [
-            "x_field",
-            "y_field"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Geometry"
-      },
-      {
-        "node_type": "composer_agent",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Composer Agent",
-        "description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
-        "schema": {
-          "title": "Composer Agent",
-          "description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
-          "type": "object",
-          "properties": {
-            "prompt": {
-              "type": "string",
-              "title": "Instruction",
-              "default": ""
-            },
-            "replace_downstream": {
-              "type": "boolean",
-              "title": "Remplacer aussi les nœuds en aval",
-              "description": "Si activé, le nœud Composer et toute la chaîne sortante sont remplacés par le graphe proposé.",
-              "default": true
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Agents"
-      },
-      {
-        "node_type": "direct_agent_processor",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "AI Direct Processor",
-        "description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
-        "schema": {
-          "title": "AI Direct Processor",
-          "description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
-          "type": "object",
-          "properties": {
-            "prompt": {
-              "type": "string",
-              "title": "Dernière instruction",
-              "default": ""
-            },
-            "chat_history": {
-              "type": "array",
-              "title": "Historique tchat",
-              "default": []
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Intelligence Artificielle"
-      },
-      {
-        "node_type": "auto_architect_agent",
-        "category": "Transformer",
-        "is_spatial": true,
-        "label": "Auto-Architect Agent",
-        "description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
-        "schema": {
-          "title": "Auto-Architect Agent",
-          "description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
-          "type": "object",
-          "properties": {
-            "global_objective": {
-              "type": "string",
-              "title": "Objectif global",
-              "default": ""
-            },
-            "auto_advance": {
-              "type": "boolean",
-              "title": "Avancement automatique",
-              "description": "Si activé, enchaîne les étapes sans attendre chaque validation (expérimental).",
-              "default": true
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Agents"
-      }
-    ],
-    "Writer": [
-      {
-        "node_type": "postgis_writer",
-        "category": "Writer",
-        "is_spatial": true,
-        "label": "PostGIS Writer",
-        "description": "Écrit une FeatureCollection dans une table PostGIS.",
-        "schema": {
-          "title": "PostGIS Writer",
-          "type": "object",
-          "properties": {
-            "schema_name": {
-              "type": "string",
-              "title": "Schéma",
-              "default": "gix_output"
-            },
-            "table": {
-              "type": "string",
-              "title": "Table",
-              "default": "output_layer"
-            },
-            "geom_column": {
-              "type": "string",
-              "title": "Colonne géométrie",
-              "default": "geom"
-            },
-            "if_exists": {
-              "type": "string",
-              "title": "Si la table existe",
-              "enum": [
-                "replace",
-                "append"
-              ],
-              "default": "replace"
-            }
-          },
-          "required": [
-            "table"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "file_writer",
-        "category": "Writer",
-        "is_spatial": true,
-        "label": "File Writer",
-        "description": "Écrit le résultat sur le serveur puis propose le téléchargement (emplacement et nom choisis dans le navigateur).",
-        "schema": {
-          "title": "File Writer",
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "title": "Fichier de sortie",
-              "format": "output_path",
-              "description": "Nom du fichier produit. Utilisez « Parcourir… » pour choisir l'emplacement et le nom avant l'exécution.",
-              "default": "/workspace/exports/output.geojson"
-            },
-            "driver": {
-              "type": "string",
-              "title": "Format",
-              "enum": [
-                "GeoJSON",
-                "GPKG",
-                "CSV",
-                "ESRI Shapefile"
-              ],
-              "enumNames": [
-                "GeoJSON",
-                "GeoPackage",
-                "CSV",
-                "Shapefile (.shp)"
-              ],
-              "default": "GeoJSON"
-            }
-          },
-          "required": [
-            "path"
-          ]
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": ""
-      },
-      {
-        "node_type": "log_writer",
-        "category": "Writer",
-        "is_spatial": false,
-        "label": "Log Writer",
-        "description": "Écrit le flux (ex. REJECTED) dans un journal JSON sous /workspace/logs.",
-        "schema": {
-          "title": "Log Writer",
-          "type": "object",
-          "properties": {
-            "filename": {
-              "type": "string",
-              "title": "Fichier journal",
-              "default": "rejected.json"
-            },
-            "label": {
-              "type": "string",
-              "title": "Libellé",
-              "default": "REJECTED"
-            }
-          }
-        },
-        "input_handles": [
-          "input"
-        ],
-        "output_handles": [
-          "output"
-        ],
-        "palette_group": "Writers"
-      }
-    ]
-  }
+	"count": 51,
+	"nodes": [
+		{
+			"node_type": "postgis_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "PostGIS Reader",
+			"description": "Lit une table ou une requête SQL spatiale depuis PostGIS.",
+			"schema": {
+				"title": "PostGIS Reader",
+				"description": "Source spatiale PostGIS (table ou SQL).",
+				"type": "object",
+				"properties": {
+					"table": {
+						"type": "string",
+						"title": "Table",
+						"description": "Schéma.table (ex. samples.poi)",
+						"default": "samples.poi"
+					},
+					"geom_column": {
+						"type": "string",
+						"title": "Colonne géométrie",
+						"default": "geom"
+					},
+					"sql": {
+						"type": "string",
+						"title": "Requête SQL (optionnelle)",
+						"format": "sql",
+						"description": "Si renseignée, remplace la lecture de table."
+					},
+					"limit": {
+						"type": "integer",
+						"title": "Limite",
+						"default": 500,
+						"minimum": 1,
+						"maximum": 10000
+					}
+				},
+				"required": []
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "file_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "File Reader",
+			"description": "Lit un fichier vectoriel (GeoJSON, GeoPackage, Shapefile, CSV).",
+			"schema": {
+				"title": "File Reader",
+				"description": "Source fichier vectoriel.",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Chemin du fichier",
+						"description": "Chemin dans le workspace (/workspace) ou chemin absolu.",
+						"default": "/workspace/sample.geojson"
+					},
+					"layer": {
+						"type": "string",
+						"title": "Couche (GeoPackage / GDB)"
+					},
+					"encoding": {
+						"type": "string",
+						"title": "Encodage",
+						"default": "utf-8"
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "csv_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "CSV Reader",
+			"description": "Parse tabular text files with custom delimiters",
+			"schema": {
+				"title": "CSV Reader",
+				"description": "Détecte séparateur et encodage ; carte si colonnes X/Y ou lon/lat.",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier CSV"
+					},
+					"encoding": {
+						"type": "string",
+						"title": "Encodage",
+						"description": "Vide = détection automatique (UTF-8, ISO-8859-1, …)."
+					},
+					"delimiter": {
+						"type": "string",
+						"title": "Séparateur",
+						"description": "Un caractère. Vide = détection (, ; tab)."
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "excel_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "Excel Reader",
+			"description": "Import sheet data from .xlsx / .xls",
+			"schema": {
+				"title": "Excel Reader",
+				"description": "Lit une feuille Excel et expose un tableau attributaire (carte si colonnes X/Y).",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier Excel",
+						"description": "Chemin dans /workspace (drag-and-drop)."
+					},
+					"sheet_name": {
+						"type": "string",
+						"title": "Feuille",
+						"description": "Nom de la feuille. Vide = première feuille."
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "gpkg_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "GeoPackage Reader",
+			"description": "Read vector/raster layers from OGC .gpkg",
+			"schema": {
+				"title": "GeoPackage Reader",
+				"description": "Couche vectorielle en EPSG:4326 pour la carte.",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier .gpkg"
+					},
+					"layer": {
+						"type": "string",
+						"title": "Couche",
+						"description": "Nom de couche. Vide = première couche spatiale."
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "kml_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "KML / KMZ Reader",
+			"description": "Read Google Earth vector data",
+			"schema": {
+				"title": "KML / KMZ Reader",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier .kml ou .kmz"
+					},
+					"layer": {
+						"type": "string",
+						"title": "Couche (optionnel)"
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "shapefile_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "Shapefile Reader",
+			"description": "Lit un Shapefile (.shp) ou une archive .zip contenant un Shapefile.",
+			"schema": {
+				"title": "Shapefile Reader",
+				"description": "Source ESRI Shapefile (fichier .shp ou archive .zip).",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Chemin .shp",
+						"description": "Chemin extrait dans /workspace ou URI zip://…",
+						"default": "/workspace/imports/sample/layer.shp"
+					},
+					"zip_path": {
+						"type": "string",
+						"title": "Archive .zip source (optionnel)",
+						"description": "Chemin de l'archive d'origine si import drag-and-drop."
+					},
+					"layer_name": {
+						"type": "string",
+						"title": "Nom de couche"
+					},
+					"encoding": {
+						"type": "string",
+						"title": "Encodage attributs (.cpg)",
+						"default": "utf-8"
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "geojson_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "GeoJSON Reader",
+			"description": "Parse un GeoJSON inline ou utilise le jeu d'exemple 4GIx.",
+			"schema": {
+				"title": "GeoJSON Reader",
+				"description": "Source GeoJSON inline.",
+				"type": "object",
+				"properties": {
+					"sample_set": {
+						"type": "string",
+						"title": "Jeu d'exemple",
+						"enum": ["cities", "regions", "workspace_demo"],
+						"enumNames": [
+							"Villes (points)",
+							"Régions (polygones)",
+							"Démo qualité géométrique (polygones + invalides)"
+						],
+						"default": "cities"
+					},
+					"path": {
+						"type": "string",
+						"title": "Fichier GeoJSON",
+						"description": "Chemin dans /workspace (import drag-and-drop)."
+					},
+					"geojson": {
+						"type": "string",
+						"title": "GeoJSON",
+						"format": "textarea",
+						"description": "FeatureCollection ou Feature. Vide = jeu d'exemple."
+					},
+					"use_sample": {
+						"type": "boolean",
+						"title": "Utiliser le jeu d'exemple",
+						"default": true
+					}
+				},
+				"required": []
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "ifc_bim_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "IFC BIM Reader",
+			"description": "Parse un fichier IFC (murs, dalles, réseaux) et expose empreintes / centroïdes GeoJSON.",
+			"schema": {
+				"title": "IFC BIM Reader",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier IFC",
+						"default": "/workspace/samples/sample.ifc",
+						"description": "Chemin local workspace."
+					},
+					"ifc_class": {
+						"type": "string",
+						"title": "Classe IFC",
+						"enum": [
+							"ALL",
+							"IfcBuildingElement",
+							"IfcWall",
+							"IfcSlab",
+							"IfcWindow",
+							"IfcDoor",
+							"IfcColumn",
+							"IfcBeam",
+							"IfcPipeSegment",
+							"IfcBuilding",
+							"IfcSpace"
+						],
+						"enumNames": [
+							"Toutes les classes",
+							"IfcBuildingElement",
+							"IfcWall",
+							"IfcSlab",
+							"IfcWindow",
+							"IfcDoor",
+							"IfcColumn",
+							"IfcBeam",
+							"IfcPipeSegment",
+							"IfcBuilding",
+							"IfcSpace"
+						],
+						"default": "IfcBuildingElement"
+					},
+					"representation": {
+						"type": "string",
+						"title": "Géométrie",
+						"enum": ["footprint", "centroid"],
+						"enumNames": ["Empreinte 2D", "Centroïde"],
+						"default": "footprint"
+					},
+					"limit": {
+						"type": "integer",
+						"title": "Limite d'entités",
+						"default": 400,
+						"minimum": 1,
+						"maximum": 5000
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "dxf_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "CAD / DXF Reader",
+			"description": "Import AutoCAD geometry features",
+			"schema": {
+				"title": "DXF CAD Reader",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier DXF",
+						"default": "/workspace/samples/sample.dxf",
+						"description": "DXF natif. Un DWG doit être converti en DXF au préalable."
+					},
+					"layers": {
+						"type": "string",
+						"title": "Calques (optionnel)",
+						"description": "Liste séparée par des virgules. Vide = tous les calques."
+					},
+					"source_crs": {
+						"type": "string",
+						"title": "CRS source",
+						"format": "epsg",
+						"default": "EPSG:4326"
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "geotiff_raster_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "GeoTIFF Raster Reader",
+			"description": "Lit un GeoTIFF (orthophoto, satellite, MNT) et produit une prévisualisation PNG.",
+			"schema": {
+				"title": "GeoTIFF Raster Reader",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier GeoTIFF",
+						"default": "/workspace/samples/sample_dem.tif"
+					},
+					"band": {
+						"type": "integer",
+						"title": "Bande",
+						"default": 1,
+						"minimum": 1
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "rest_wfs_reader",
+			"category": "Reader",
+			"is_spatial": true,
+			"label": "REST / WFS Reader",
+			"description": "Interroge un WFS OGC, une API GeoJSON ou Overpass, avec pagination et cache local.",
+			"schema": {
+				"title": "REST / WFS Reader",
+				"type": "object",
+				"properties": {
+					"source_type": {
+						"type": "string",
+						"title": "Type de source",
+						"enum": ["wfs", "rest_geojson", "overpass"],
+						"enumNames": ["WFS OGC", "API REST GeoJSON", "Overpass OSM"],
+						"default": "wfs"
+					},
+					"url": {
+						"type": "string",
+						"title": "URL",
+						"default": "https://data.geopf.fr/wfs/ows",
+						"description": "Endpoint WFS, API REST ou Overpass."
+					},
+					"type_name": {
+						"type": "string",
+						"title": "TypeName WFS",
+						"description": "Ex. CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle"
+					},
+					"bbox": {
+						"type": "string",
+						"title": "BBOX (minx,miny,maxx,maxy)",
+						"description": "Optionnel, CRS de la requête."
+					},
+					"max_features": {
+						"type": "integer",
+						"title": "Max entités",
+						"default": 200,
+						"minimum": 1,
+						"maximum": 5000
+					},
+					"page_size": {
+						"type": "integer",
+						"title": "Taille de page",
+						"default": 100,
+						"minimum": 1,
+						"maximum": 1000
+					},
+					"bearer_token": {
+						"type": "string",
+						"title": "Bearer Token",
+						"description": "Ajouté dans Authorization si renseigné."
+					},
+					"use_cache": {
+						"type": "boolean",
+						"title": "Utiliser le cache GeoJSON",
+						"default": true
+					}
+				},
+				"required": ["url"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "reproject",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Transform Coordinate System",
+			"description": "Reproject spatial reference CRS",
+			"schema": {
+				"title": "Reprojection",
+				"type": "object",
+				"properties": {
+					"source_crs": {
+						"type": "string",
+						"title": "CRS source",
+						"format": "epsg",
+						"default": "EPSG:4326"
+					},
+					"target_crs": {
+						"type": "string",
+						"title": "CRS cible",
+						"format": "epsg",
+						"default": "EPSG:2154",
+						"description": "Ex. EPSG:2154 (Lambert-93), EPSG:3857 (Web Mercator)."
+					}
+				},
+				"required": ["target_crs"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "buffer",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Create Buffer",
+			"description": "Generate spatial proximity zones",
+			"schema": {
+				"title": "Buffer",
+				"type": "object",
+				"properties": {
+					"distance": {
+						"type": "number",
+						"title": "Distance de buffer",
+						"format": "slider",
+						"default": 0.01,
+						"minimum": 0.001,
+						"maximum": 1,
+						"multipleOf": 0.001,
+						"description": "En degrés si CRS=4326, en mètres si CRS projeté."
+					},
+					"resolution": {
+						"type": "integer",
+						"title": "Résolution",
+						"default": 16
+					}
+				},
+				"required": ["distance"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "attribute_filter",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Filter by Attribute",
+			"description": "Split stream by attribute values",
+			"schema": {
+				"title": "Filtre attributaire",
+				"type": "object",
+				"properties": {
+					"field": {
+						"type": "string",
+						"title": "Champ",
+						"default": "category"
+					},
+					"operator": {
+						"type": "string",
+						"title": "Opérateur",
+						"enum": ["eq", "neq", "contains", "gt", "lt"],
+						"default": "eq"
+					},
+					"value": {
+						"type": "string",
+						"title": "Valeur"
+					}
+				},
+				"required": ["field", "value"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "attribute_mapper",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Map Values",
+			"description": "Replace attribute values with lookup",
+			"schema": {
+				"title": "Mapping attributaire",
+				"type": "object",
+				"properties": {
+					"mapping": {
+						"type": "string",
+						"title": "Mapping de colonnes",
+						"format": "mapping",
+						"description": "Ancien nom → nouveau nom",
+						"default": "{\"name\": \"nom\"}"
+					},
+					"keep_unmapped": {
+						"type": "boolean",
+						"title": "Conserver les champs non mappés",
+						"default": true
+					}
+				},
+				"required": ["mapping"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "spatial_join",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Spatial Join / Intersect",
+			"description": "Match features by location",
+			"schema": {
+				"title": "Spatial Join",
+				"description": "Reliez Input A (gauche) et Input B (droite), puis choisissez le prédicat.",
+				"type": "object",
+				"properties": {
+					"predicate": {
+						"type": "string",
+						"title": "Opération spatiale",
+						"enum": ["intersects", "contains", "within", "touches", "overlaps"],
+						"enumNames": ["Intersects", "Contains", "Within", "Touches", "Overlaps"],
+						"default": "intersects",
+						"description": "Prédicat GeoPandas sjoin."
+					},
+					"how": {
+						"type": "string",
+						"title": "Type de jointure",
+						"enum": ["inner", "left"],
+						"enumNames": ["Inner (intersection)", "Left (conserve A)"],
+						"default": "inner"
+					},
+					"suffix_b": {
+						"type": "string",
+						"title": "Suffixe colonnes B",
+						"default": "_b",
+						"description": "Suffixe ajouté aux champs de la couche B en cas de collision."
+					}
+				},
+				"required": ["predicate"]
+			},
+			"input_handles": ["input_a", "input_b"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "raster_clipper",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Raster Clipper",
+			"description": "Découpe un GeoTIFF (Input A) par une géométrie vectorielle (Input B).",
+			"schema": {
+				"title": "Raster Clipper",
+				"type": "object",
+				"properties": {
+					"all_touched": {
+						"type": "boolean",
+						"title": "Inclure les pixels touchés",
+						"default": true
+					},
+					"crop": {
+						"type": "boolean",
+						"title": "Recadrer l'étendue",
+						"default": true
+					}
+				},
+				"required": []
+			},
+			"input_handles": ["input_a", "input_b"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "zonal_statistics",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Zonal Statistics",
+			"description": "Calcule min / max / moyenne d'un MNT raster sur des polygones vectoriels.",
+			"schema": {
+				"title": "Zonal Statistics",
+				"type": "object",
+				"properties": {
+					"stats": {
+						"type": "string",
+						"title": "Statistiques",
+						"default": "min,max,mean,count",
+						"description": "Liste séparée par des virgules."
+					},
+					"raster_is_a": {
+						"type": "boolean",
+						"title": "Raster sur Input A (sinon Input B)",
+						"default": true
+					}
+				},
+				"required": []
+			},
+			"input_handles": ["input_a", "input_b"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "geometry_validator",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Validate Geometry",
+			"description": "Detect and repair invalid shapes",
+			"schema": {
+				"title": "GeometryValidator",
+				"type": "object",
+				"properties": {
+					"repair": {
+						"type": "boolean",
+						"title": "Réparer (make_valid)",
+						"default": true
+					},
+					"allow_empty": {
+						"type": "boolean",
+						"title": "Accepter les géométries vides",
+						"default": false
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output", "rejected"],
+			"palette_group": "Geometry & Quality"
+		},
+		{
+			"node_type": "geometry_filter",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "GeometryFilter",
+			"description": "Sépare le flux par type de géométrie (Point, Line, Polygon, MultiPolygon, Null).",
+			"schema": {
+				"title": "GeometryFilter",
+				"type": "object",
+				"properties": {}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["point", "linestring", "polygon", "multipolygon", "null"],
+			"palette_group": "Geometry & Quality"
+		},
+		{
+			"node_type": "snapper",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Snapper",
+			"description": "Calage des sommets sur une grille de tolérance (mètres).",
+			"schema": {
+				"title": "Snapper",
+				"type": "object",
+				"properties": {
+					"tolerance": {
+						"type": "number",
+						"title": "Tolérance (m)",
+						"format": "slider",
+						"default": 1.0,
+						"minimum": 0.01,
+						"maximum": 50
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Geometry & Quality"
+		},
+		{
+			"node_type": "orientor",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Orientor",
+			"description": "Uniformise l'orientation des anneaux (horaire / anti-horaire).",
+			"schema": {
+				"title": "Orientor",
+				"type": "object",
+				"properties": {
+					"direction": {
+						"type": "string",
+						"title": "Orientation",
+						"enum": ["ccw", "cw"],
+						"enumNames": ["Anti-horaire (CCW)", "Horaire (CW)"],
+						"default": "ccw"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Geometry & Quality"
+		},
+		{
+			"node_type": "bufferer",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Create Buffer",
+			"description": "Generate spatial proximity zones",
+			"schema": {
+				"title": "Bufferer",
+				"type": "object",
+				"properties": {
+					"distance": {
+						"type": "number",
+						"title": "Distance (m)",
+						"format": "slider",
+						"default": 200,
+						"minimum": 1,
+						"maximum": 5000
+					},
+					"cap_style": {
+						"type": "string",
+						"title": "Extrémités",
+						"enum": ["round", "flat", "square"],
+						"enumNames": ["Arrondi", "Plat", "Carré"],
+						"default": "round"
+					},
+					"resolution": {
+						"type": "integer",
+						"title": "Résolution",
+						"default": 16
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "clipper",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Clipper",
+			"description": "Découpe Inside / Outside par un masque polygonal.",
+			"schema": {
+				"title": "Clipper",
+				"type": "object",
+				"properties": {
+					"keep_empty": {
+						"type": "boolean",
+						"title": "Conserver les géométries vides",
+						"default": false
+					}
+				}
+			},
+			"input_handles": ["input", "clipper"],
+			"output_handles": ["inside", "outside"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "dissolver",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Merge Geometries",
+			"description": "Dissolve boundaries based on attributes",
+			"schema": {
+				"title": "Dissolver",
+				"type": "object",
+				"properties": {
+					"group_by": {
+						"type": "string",
+						"title": "Attribut de groupement",
+						"default": "group",
+						"description": "Vide = union totale."
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "area_on_area_overlayer",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Overlay Polygons",
+			"description": "Intersect and combine overlapping areas",
+			"schema": {
+				"title": "AreaOnAreaOverlayer",
+				"type": "object",
+				"properties": {
+					"id_attr": {
+						"type": "string",
+						"title": "Attribut identifiant",
+						"default": "name"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "line_on_line_overlayer",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "LineOnLineOverlayer",
+			"description": "Découpe un réseau de lignes à chaque intersection.",
+			"schema": {
+				"title": "LineOnLineOverlayer",
+				"type": "object",
+				"properties": {}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "centroid_extractor",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "CentroidExtractor",
+			"description": "Remplace chaque géométrie par son centroïde (CenterPointReplacer).",
+			"schema": {
+				"title": "CentroidExtractor",
+				"type": "object",
+				"properties": {
+					"mode": {
+						"type": "string",
+						"title": "Mode",
+						"enum": ["centroid", "representative"],
+						"enumNames": ["Centroïde", "Point intérieur"],
+						"default": "centroid"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "bounding_box_replacer",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Extract Bounding Box",
+			"description": "Replace geometry with envelope bounds",
+			"schema": {
+				"title": "BoundingBoxReplacer",
+				"type": "object",
+				"properties": {}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "densifier",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Densifier",
+			"description": "Ajoute des sommets intermédiaires selon une distance maximale (mètres).",
+			"schema": {
+				"title": "Densifier",
+				"type": "object",
+				"properties": {
+					"max_distance": {
+						"type": "number",
+						"title": "Distance max (m)",
+						"format": "slider",
+						"default": 50,
+						"minimum": 1,
+						"maximum": 2000
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "generalizer",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Generalizer",
+			"description": "Simplification Douglas-Peucker / réduction de sommets.",
+			"schema": {
+				"title": "Generalizer",
+				"type": "object",
+				"properties": {
+					"tolerance": {
+						"type": "number",
+						"title": "Tolérance (m)",
+						"format": "slider",
+						"default": 10,
+						"minimum": 0.1,
+						"maximum": 500
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Spatial Analysis"
+		},
+		{
+			"node_type": "feature_merger",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "FeatureMerger",
+			"description": "Jointure attributaire 1:N (Merged / Unmerged_Request / Unmerged_Supplier).",
+			"schema": {
+				"title": "FeatureMerger",
+				"type": "object",
+				"properties": {
+					"request_key": {
+						"type": "string",
+						"title": "Clé Request",
+						"default": "id"
+					},
+					"supplier_key": {
+						"type": "string",
+						"title": "Clé Supplier",
+						"default": "id"
+					},
+					"prefix_supplier": {
+						"type": "string",
+						"title": "Préfixe attributs Supplier",
+						"default": "sup_"
+					}
+				}
+			},
+			"input_handles": ["request", "supplier"],
+			"output_handles": ["merged", "unmerged_request", "unmerged_supplier"],
+			"palette_group": "Combiners & Joins"
+		},
+		{
+			"node_type": "spatial_relator",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Spatial Join / Intersect",
+			"description": "Match features by location",
+			"schema": {
+				"title": "SpatialRelator",
+				"type": "object",
+				"properties": {
+					"predicate": {
+						"type": "string",
+						"title": "Relation DE-9IM",
+						"enum": [
+							"intersects",
+							"contains",
+							"touches",
+							"within",
+							"disjoint",
+							"crosses",
+							"overlaps"
+						],
+						"enumNames": [
+							"INTERSECTS",
+							"CONTAINS",
+							"TOUCHES",
+							"WITHIN",
+							"DISJOINT",
+							"CROSSES",
+							"OVERLAPS"
+						],
+						"default": "intersects"
+					}
+				}
+			},
+			"input_handles": ["request", "supplier"],
+			"output_handles": ["related", "unrelated"],
+			"palette_group": "Combiners & Joins"
+		},
+		{
+			"node_type": "neighbor_finder",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "NeighborFinder",
+			"description": "Associe les K plus proches voisins entre deux couches spatiales.",
+			"schema": {
+				"title": "NeighborFinder",
+				"type": "object",
+				"properties": {
+					"k": {
+						"type": "integer",
+						"title": "Nombre de voisins (K)",
+						"default": 1,
+						"minimum": 1,
+						"maximum": 10
+					},
+					"max_distance": {
+						"type": "number",
+						"title": "Distance max (m)",
+						"default": 50000,
+						"minimum": 1,
+						"maximum": 500000
+					}
+				}
+			},
+			"input_handles": ["base", "candidates"],
+			"output_handles": ["output"],
+			"palette_group": "Combiners & Joins"
+		},
+		{
+			"node_type": "attribute_manager",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Edit Fields",
+			"description": "Add, rename, remove or modify attributes",
+			"schema": {
+				"title": "AttributeManager",
+				"type": "object",
+				"properties": {
+					"operations": {
+						"type": "string",
+						"title": "Opérations JSON",
+						"format": "textarea",
+						"default": "[{\"op\":\"rename\",\"from\":\"name\",\"to\":\"nom\"},{\"op\":\"create\",\"name\":\"source\",\"expr\":\"'4gix'\"}]",
+						"description": "Liste {op: rename|create|delete|type, ...}."
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Attribute Operations"
+		},
+		{
+			"node_type": "tester",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "If / Filter Condition",
+			"description": "Validate conditions on feature fields",
+			"schema": {
+				"title": "Tester",
+				"type": "object",
+				"properties": {
+					"logic": {
+						"type": "string",
+						"title": "Logique",
+						"enum": ["AND", "OR"],
+						"default": "AND"
+					},
+					"clauses": {
+						"type": "string",
+						"title": "Clauses JSON",
+						"format": "textarea",
+						"default": "[{\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"}]"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["passed", "failed"],
+			"palette_group": "Attribute Operations"
+		},
+		{
+			"node_type": "test_filter",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Switch / Multi-Condition",
+			"description": "Route features based on rules",
+			"schema": {
+				"title": "TestFilter",
+				"type": "object",
+				"properties": {
+					"conditions": {
+						"type": "string",
+						"title": "Conditions JSON",
+						"format": "textarea",
+						"default": "[{\"port\":\"output1\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"},{\"port\":\"output2\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"rural\"}]"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output1", "output2", "output3", "else"],
+			"palette_group": "Attribute Operations"
+		},
+		{
+			"node_type": "list_exploder",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Split List Array",
+			"description": "Flatten list attributes into features",
+			"schema": {
+				"title": "ListExploder",
+				"type": "object",
+				"properties": {
+					"list_attr": {
+						"type": "string",
+						"title": "Attribut liste",
+						"default": "items"
+					},
+					"item_attr": {
+						"type": "string",
+						"title": "Nom de l'élément explosé",
+						"default": "item"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Attribute Operations"
+		},
+		{
+			"node_type": "counter",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Increment Counter",
+			"description": "Add sequence number or ID",
+			"schema": {
+				"title": "Counter",
+				"type": "object",
+				"properties": {
+					"attr": {
+						"type": "string",
+						"title": "Nom de l'attribut",
+						"default": "_count"
+					},
+					"start": {
+						"type": "integer",
+						"title": "Valeur de départ",
+						"default": 1
+					},
+					"increment": {
+						"type": "integer",
+						"title": "Incrément",
+						"default": 1
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Attribute Operations"
+		},
+		{
+			"node_type": "duplicate_filter",
+			"category": "Transformer",
+			"is_spatial": false,
+			"label": "Remove Duplicates",
+			"description": "Filter out identical records",
+			"schema": {
+				"title": "DuplicateFilter",
+				"type": "object",
+				"properties": {
+					"keys": {
+						"type": "string",
+						"title": "Clés (virgules)",
+						"default": "name"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["unique", "duplicate"],
+			"palette_group": "Attribute Operations"
+		},
+		{
+			"node_type": "reprojector",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Transform Coordinate System",
+			"description": "Reproject spatial reference CRS",
+			"schema": {
+				"title": "Reprojector",
+				"type": "object",
+				"properties": {
+					"source_crs": {
+						"type": "string",
+						"title": "CRS source",
+						"format": "epsg",
+						"default": "EPSG:4326"
+					},
+					"target_crs": {
+						"type": "string",
+						"title": "CRS cible",
+						"format": "epsg",
+						"default": "EPSG:2154",
+						"description": "Lambert-93, UTM, Web Mercator…"
+					}
+				},
+				"required": ["target_crs"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Coordinate Systems"
+		},
+		{
+			"node_type": "python_caller",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Python / Code Transformer",
+			"description": "Éditeur de code Python (GeoPandas) ou SQL — style n8n Code node.",
+			"schema": {
+				"title": "Python / Code Transformer",
+				"description": "Code Python (GeoPandas) ou SQL (SELECT sur `items` / `gdf`).",
+				"type": "object",
+				"properties": {
+					"mode": {
+						"type": "string",
+						"title": "Mode d'exécution",
+						"enum": ["all_items", "per_item"],
+						"enumNames": ["Run Once for All Items", "Run for Each Item"],
+						"default": "all_items"
+					},
+					"language": {
+						"type": "string",
+						"title": "Langage",
+						"enum": ["python", "sql"],
+						"enumNames": ["Python", "SQL"],
+						"default": "python"
+					},
+					"code": {
+						"type": "string",
+						"title": "Code",
+						"format": "code",
+						"default": "# Transformer les données entrantes avec GeoPandas\n# 'gdf' contient le GeoDataFrame courant (géométries + attributs)\n\ngdf['surface_m2'] = gdf.geometry.area\noutput_gdf = gdf[gdf['surface_m2'] > 100]\n\nreturn output_gdf\n"
+					}
+				},
+				"required": ["code"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output", "rejected"],
+			"palette_group": "Core"
+		},
+		{
+			"node_type": "vertex_creator",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Vertex Creator",
+			"description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
+			"schema": {
+				"title": "Vertex Creator",
+				"description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
+				"type": "object",
+				"properties": {
+					"x_field": {
+						"type": "string",
+						"title": "Colonne X / Longitude"
+					},
+					"y_field": {
+						"type": "string",
+						"title": "Colonne Y / Latitude"
+					},
+					"target_crs": {
+						"type": "string",
+						"title": "CRS cible",
+						"default": "EPSG:4326"
+					}
+				},
+				"required": ["x_field", "y_field"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Geometry"
+		},
+		{
+			"node_type": "coordinate_setter",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Coordinate Property Setter",
+			"description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
+			"schema": {
+				"title": "Vertex Creator",
+				"description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
+				"type": "object",
+				"properties": {
+					"x_field": {
+						"type": "string",
+						"title": "Colonne X / Longitude"
+					},
+					"y_field": {
+						"type": "string",
+						"title": "Colonne Y / Latitude"
+					},
+					"target_crs": {
+						"type": "string",
+						"title": "CRS cible",
+						"default": "EPSG:4326"
+					}
+				},
+				"required": ["x_field", "y_field"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Geometry"
+		},
+		{
+			"node_type": "composer_agent",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Composer Agent",
+			"description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
+			"schema": {
+				"title": "Composer Agent",
+				"description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
+				"type": "object",
+				"properties": {
+					"prompt": {
+						"type": "string",
+						"title": "Instruction",
+						"default": ""
+					},
+					"replace_downstream": {
+						"type": "boolean",
+						"title": "Remplacer aussi les nœuds en aval",
+						"description": "Si activé, le nœud Composer et toute la chaîne sortante sont remplacés par le graphe proposé.",
+						"default": true
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Agents"
+		},
+		{
+			"node_type": "direct_agent_processor",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "AI Direct Processor",
+			"description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
+			"schema": {
+				"title": "AI Direct Processor",
+				"description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
+				"type": "object",
+				"properties": {
+					"prompt": {
+						"type": "string",
+						"title": "Dernière instruction",
+						"default": ""
+					},
+					"chat_history": {
+						"type": "array",
+						"title": "Historique tchat",
+						"default": []
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Intelligence Artificielle"
+		},
+		{
+			"node_type": "auto_architect_agent",
+			"category": "Transformer",
+			"is_spatial": true,
+			"label": "Auto-Architect Agent",
+			"description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
+			"schema": {
+				"title": "Auto-Architect Agent",
+				"description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
+				"type": "object",
+				"properties": {
+					"global_objective": {
+						"type": "string",
+						"title": "Objectif global",
+						"default": ""
+					},
+					"auto_advance": {
+						"type": "boolean",
+						"title": "Avancement automatique",
+						"description": "Si activé, enchaîne les étapes sans attendre chaque validation (expérimental).",
+						"default": true
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Agents"
+		},
+		{
+			"node_type": "postgis_writer",
+			"category": "Writer",
+			"is_spatial": true,
+			"label": "PostGIS Writer",
+			"description": "Écrit une FeatureCollection dans une table PostGIS.",
+			"schema": {
+				"title": "PostGIS Writer",
+				"type": "object",
+				"properties": {
+					"schema_name": {
+						"type": "string",
+						"title": "Schéma",
+						"default": "gix_output"
+					},
+					"table": {
+						"type": "string",
+						"title": "Table",
+						"default": "output_layer"
+					},
+					"geom_column": {
+						"type": "string",
+						"title": "Colonne géométrie",
+						"default": "geom"
+					},
+					"if_exists": {
+						"type": "string",
+						"title": "Si la table existe",
+						"enum": ["replace", "append"],
+						"default": "replace"
+					}
+				},
+				"required": ["table"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "file_writer",
+			"category": "Writer",
+			"is_spatial": true,
+			"label": "File Writer",
+			"description": "Écrit le résultat sur le serveur puis propose le téléchargement (emplacement et nom choisis dans le navigateur).",
+			"schema": {
+				"title": "File Writer",
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"title": "Fichier de sortie",
+						"format": "output_path",
+						"description": "Nom du fichier produit. Utilisez « Parcourir… » pour choisir l'emplacement et le nom avant l'exécution.",
+						"default": "/workspace/exports/output.geojson"
+					},
+					"driver": {
+						"type": "string",
+						"title": "Format",
+						"enum": ["GeoJSON", "GPKG", "CSV", "ESRI Shapefile"],
+						"enumNames": ["GeoJSON", "GeoPackage", "CSV", "Shapefile (.shp)"],
+						"default": "GeoJSON"
+					}
+				},
+				"required": ["path"]
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": ""
+		},
+		{
+			"node_type": "log_writer",
+			"category": "Writer",
+			"is_spatial": false,
+			"label": "Log Writer",
+			"description": "Écrit le flux (ex. REJECTED) dans un journal JSON sous /workspace/logs.",
+			"schema": {
+				"title": "Log Writer",
+				"type": "object",
+				"properties": {
+					"filename": {
+						"type": "string",
+						"title": "Fichier journal",
+						"default": "rejected.json"
+					},
+					"label": {
+						"type": "string",
+						"title": "Libellé",
+						"default": "REJECTED"
+					}
+				}
+			},
+			"input_handles": ["input"],
+			"output_handles": ["output"],
+			"palette_group": "Writers"
+		}
+	],
+	"by_category": {
+		"Reader": [
+			{
+				"node_type": "postgis_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "PostGIS Reader",
+				"description": "Lit une table ou une requête SQL spatiale depuis PostGIS.",
+				"schema": {
+					"title": "PostGIS Reader",
+					"description": "Source spatiale PostGIS (table ou SQL).",
+					"type": "object",
+					"properties": {
+						"table": {
+							"type": "string",
+							"title": "Table",
+							"description": "Schéma.table (ex. samples.poi)",
+							"default": "samples.poi"
+						},
+						"geom_column": {
+							"type": "string",
+							"title": "Colonne géométrie",
+							"default": "geom"
+						},
+						"sql": {
+							"type": "string",
+							"title": "Requête SQL (optionnelle)",
+							"format": "sql",
+							"description": "Si renseignée, remplace la lecture de table."
+						},
+						"limit": {
+							"type": "integer",
+							"title": "Limite",
+							"default": 500,
+							"minimum": 1,
+							"maximum": 10000
+						}
+					},
+					"required": []
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "file_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "File Reader",
+				"description": "Lit un fichier vectoriel (GeoJSON, GeoPackage, Shapefile, CSV).",
+				"schema": {
+					"title": "File Reader",
+					"description": "Source fichier vectoriel.",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Chemin du fichier",
+							"description": "Chemin dans le workspace (/workspace) ou chemin absolu.",
+							"default": "/workspace/sample.geojson"
+						},
+						"layer": {
+							"type": "string",
+							"title": "Couche (GeoPackage / GDB)"
+						},
+						"encoding": {
+							"type": "string",
+							"title": "Encodage",
+							"default": "utf-8"
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "csv_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "CSV Reader",
+				"description": "Parse tabular text files with custom delimiters",
+				"schema": {
+					"title": "CSV Reader",
+					"description": "Détecte séparateur et encodage ; carte si colonnes X/Y ou lon/lat.",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier CSV"
+						},
+						"encoding": {
+							"type": "string",
+							"title": "Encodage",
+							"description": "Vide = détection automatique (UTF-8, ISO-8859-1, …)."
+						},
+						"delimiter": {
+							"type": "string",
+							"title": "Séparateur",
+							"description": "Un caractère. Vide = détection (, ; tab)."
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "excel_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "Excel Reader",
+				"description": "Import sheet data from .xlsx / .xls",
+				"schema": {
+					"title": "Excel Reader",
+					"description": "Lit une feuille Excel et expose un tableau attributaire (carte si colonnes X/Y).",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier Excel",
+							"description": "Chemin dans /workspace (drag-and-drop)."
+						},
+						"sheet_name": {
+							"type": "string",
+							"title": "Feuille",
+							"description": "Nom de la feuille. Vide = première feuille."
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "gpkg_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "GeoPackage Reader",
+				"description": "Read vector/raster layers from OGC .gpkg",
+				"schema": {
+					"title": "GeoPackage Reader",
+					"description": "Couche vectorielle en EPSG:4326 pour la carte.",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier .gpkg"
+						},
+						"layer": {
+							"type": "string",
+							"title": "Couche",
+							"description": "Nom de couche. Vide = première couche spatiale."
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "kml_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "KML / KMZ Reader",
+				"description": "Read Google Earth vector data",
+				"schema": {
+					"title": "KML / KMZ Reader",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier .kml ou .kmz"
+						},
+						"layer": {
+							"type": "string",
+							"title": "Couche (optionnel)"
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "shapefile_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "Shapefile Reader",
+				"description": "Lit un Shapefile (.shp) ou une archive .zip contenant un Shapefile.",
+				"schema": {
+					"title": "Shapefile Reader",
+					"description": "Source ESRI Shapefile (fichier .shp ou archive .zip).",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Chemin .shp",
+							"description": "Chemin extrait dans /workspace ou URI zip://…",
+							"default": "/workspace/imports/sample/layer.shp"
+						},
+						"zip_path": {
+							"type": "string",
+							"title": "Archive .zip source (optionnel)",
+							"description": "Chemin de l'archive d'origine si import drag-and-drop."
+						},
+						"layer_name": {
+							"type": "string",
+							"title": "Nom de couche"
+						},
+						"encoding": {
+							"type": "string",
+							"title": "Encodage attributs (.cpg)",
+							"default": "utf-8"
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "geojson_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "GeoJSON Reader",
+				"description": "Parse un GeoJSON inline ou utilise le jeu d'exemple 4GIx.",
+				"schema": {
+					"title": "GeoJSON Reader",
+					"description": "Source GeoJSON inline.",
+					"type": "object",
+					"properties": {
+						"sample_set": {
+							"type": "string",
+							"title": "Jeu d'exemple",
+							"enum": ["cities", "regions", "workspace_demo"],
+							"enumNames": [
+								"Villes (points)",
+								"Régions (polygones)",
+								"Démo qualité géométrique (polygones + invalides)"
+							],
+							"default": "cities"
+						},
+						"path": {
+							"type": "string",
+							"title": "Fichier GeoJSON",
+							"description": "Chemin dans /workspace (import drag-and-drop)."
+						},
+						"geojson": {
+							"type": "string",
+							"title": "GeoJSON",
+							"format": "textarea",
+							"description": "FeatureCollection ou Feature. Vide = jeu d'exemple."
+						},
+						"use_sample": {
+							"type": "boolean",
+							"title": "Utiliser le jeu d'exemple",
+							"default": true
+						}
+					},
+					"required": []
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "ifc_bim_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "IFC BIM Reader",
+				"description": "Parse un fichier IFC (murs, dalles, réseaux) et expose empreintes / centroïdes GeoJSON.",
+				"schema": {
+					"title": "IFC BIM Reader",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier IFC",
+							"default": "/workspace/samples/sample.ifc",
+							"description": "Chemin local workspace."
+						},
+						"ifc_class": {
+							"type": "string",
+							"title": "Classe IFC",
+							"enum": [
+								"ALL",
+								"IfcBuildingElement",
+								"IfcWall",
+								"IfcSlab",
+								"IfcWindow",
+								"IfcDoor",
+								"IfcColumn",
+								"IfcBeam",
+								"IfcPipeSegment",
+								"IfcBuilding",
+								"IfcSpace"
+							],
+							"enumNames": [
+								"Toutes les classes",
+								"IfcBuildingElement",
+								"IfcWall",
+								"IfcSlab",
+								"IfcWindow",
+								"IfcDoor",
+								"IfcColumn",
+								"IfcBeam",
+								"IfcPipeSegment",
+								"IfcBuilding",
+								"IfcSpace"
+							],
+							"default": "IfcBuildingElement"
+						},
+						"representation": {
+							"type": "string",
+							"title": "Géométrie",
+							"enum": ["footprint", "centroid"],
+							"enumNames": ["Empreinte 2D", "Centroïde"],
+							"default": "footprint"
+						},
+						"limit": {
+							"type": "integer",
+							"title": "Limite d'entités",
+							"default": 400,
+							"minimum": 1,
+							"maximum": 5000
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "dxf_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "CAD / DXF Reader",
+				"description": "Import AutoCAD geometry features",
+				"schema": {
+					"title": "DXF CAD Reader",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier DXF",
+							"default": "/workspace/samples/sample.dxf",
+							"description": "DXF natif. Un DWG doit être converti en DXF au préalable."
+						},
+						"layers": {
+							"type": "string",
+							"title": "Calques (optionnel)",
+							"description": "Liste séparée par des virgules. Vide = tous les calques."
+						},
+						"source_crs": {
+							"type": "string",
+							"title": "CRS source",
+							"format": "epsg",
+							"default": "EPSG:4326"
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "geotiff_raster_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "GeoTIFF Raster Reader",
+				"description": "Lit un GeoTIFF (orthophoto, satellite, MNT) et produit une prévisualisation PNG.",
+				"schema": {
+					"title": "GeoTIFF Raster Reader",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier GeoTIFF",
+							"default": "/workspace/samples/sample_dem.tif"
+						},
+						"band": {
+							"type": "integer",
+							"title": "Bande",
+							"default": 1,
+							"minimum": 1
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "rest_wfs_reader",
+				"category": "Reader",
+				"is_spatial": true,
+				"label": "REST / WFS Reader",
+				"description": "Interroge un WFS OGC, une API GeoJSON ou Overpass, avec pagination et cache local.",
+				"schema": {
+					"title": "REST / WFS Reader",
+					"type": "object",
+					"properties": {
+						"source_type": {
+							"type": "string",
+							"title": "Type de source",
+							"enum": ["wfs", "rest_geojson", "overpass"],
+							"enumNames": ["WFS OGC", "API REST GeoJSON", "Overpass OSM"],
+							"default": "wfs"
+						},
+						"url": {
+							"type": "string",
+							"title": "URL",
+							"default": "https://data.geopf.fr/wfs/ows",
+							"description": "Endpoint WFS, API REST ou Overpass."
+						},
+						"type_name": {
+							"type": "string",
+							"title": "TypeName WFS",
+							"description": "Ex. CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle"
+						},
+						"bbox": {
+							"type": "string",
+							"title": "BBOX (minx,miny,maxx,maxy)",
+							"description": "Optionnel, CRS de la requête."
+						},
+						"max_features": {
+							"type": "integer",
+							"title": "Max entités",
+							"default": 200,
+							"minimum": 1,
+							"maximum": 5000
+						},
+						"page_size": {
+							"type": "integer",
+							"title": "Taille de page",
+							"default": 100,
+							"minimum": 1,
+							"maximum": 1000
+						},
+						"bearer_token": {
+							"type": "string",
+							"title": "Bearer Token",
+							"description": "Ajouté dans Authorization si renseigné."
+						},
+						"use_cache": {
+							"type": "boolean",
+							"title": "Utiliser le cache GeoJSON",
+							"default": true
+						}
+					},
+					"required": ["url"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			}
+		],
+		"Transformer": [
+			{
+				"node_type": "reproject",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Transform Coordinate System",
+				"description": "Reproject spatial reference CRS",
+				"schema": {
+					"title": "Reprojection",
+					"type": "object",
+					"properties": {
+						"source_crs": {
+							"type": "string",
+							"title": "CRS source",
+							"format": "epsg",
+							"default": "EPSG:4326"
+						},
+						"target_crs": {
+							"type": "string",
+							"title": "CRS cible",
+							"format": "epsg",
+							"default": "EPSG:2154",
+							"description": "Ex. EPSG:2154 (Lambert-93), EPSG:3857 (Web Mercator)."
+						}
+					},
+					"required": ["target_crs"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "buffer",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Create Buffer",
+				"description": "Generate spatial proximity zones",
+				"schema": {
+					"title": "Buffer",
+					"type": "object",
+					"properties": {
+						"distance": {
+							"type": "number",
+							"title": "Distance de buffer",
+							"format": "slider",
+							"default": 0.01,
+							"minimum": 0.001,
+							"maximum": 1,
+							"multipleOf": 0.001,
+							"description": "En degrés si CRS=4326, en mètres si CRS projeté."
+						},
+						"resolution": {
+							"type": "integer",
+							"title": "Résolution",
+							"default": 16
+						}
+					},
+					"required": ["distance"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "attribute_filter",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Filter by Attribute",
+				"description": "Split stream by attribute values",
+				"schema": {
+					"title": "Filtre attributaire",
+					"type": "object",
+					"properties": {
+						"field": {
+							"type": "string",
+							"title": "Champ",
+							"default": "category"
+						},
+						"operator": {
+							"type": "string",
+							"title": "Opérateur",
+							"enum": ["eq", "neq", "contains", "gt", "lt"],
+							"default": "eq"
+						},
+						"value": {
+							"type": "string",
+							"title": "Valeur"
+						}
+					},
+					"required": ["field", "value"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "attribute_mapper",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Map Values",
+				"description": "Replace attribute values with lookup",
+				"schema": {
+					"title": "Mapping attributaire",
+					"type": "object",
+					"properties": {
+						"mapping": {
+							"type": "string",
+							"title": "Mapping de colonnes",
+							"format": "mapping",
+							"description": "Ancien nom → nouveau nom",
+							"default": "{\"name\": \"nom\"}"
+						},
+						"keep_unmapped": {
+							"type": "boolean",
+							"title": "Conserver les champs non mappés",
+							"default": true
+						}
+					},
+					"required": ["mapping"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "spatial_join",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Spatial Join / Intersect",
+				"description": "Match features by location",
+				"schema": {
+					"title": "Spatial Join",
+					"description": "Reliez Input A (gauche) et Input B (droite), puis choisissez le prédicat.",
+					"type": "object",
+					"properties": {
+						"predicate": {
+							"type": "string",
+							"title": "Opération spatiale",
+							"enum": ["intersects", "contains", "within", "touches", "overlaps"],
+							"enumNames": ["Intersects", "Contains", "Within", "Touches", "Overlaps"],
+							"default": "intersects",
+							"description": "Prédicat GeoPandas sjoin."
+						},
+						"how": {
+							"type": "string",
+							"title": "Type de jointure",
+							"enum": ["inner", "left"],
+							"enumNames": ["Inner (intersection)", "Left (conserve A)"],
+							"default": "inner"
+						},
+						"suffix_b": {
+							"type": "string",
+							"title": "Suffixe colonnes B",
+							"default": "_b",
+							"description": "Suffixe ajouté aux champs de la couche B en cas de collision."
+						}
+					},
+					"required": ["predicate"]
+				},
+				"input_handles": ["input_a", "input_b"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "raster_clipper",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Raster Clipper",
+				"description": "Découpe un GeoTIFF (Input A) par une géométrie vectorielle (Input B).",
+				"schema": {
+					"title": "Raster Clipper",
+					"type": "object",
+					"properties": {
+						"all_touched": {
+							"type": "boolean",
+							"title": "Inclure les pixels touchés",
+							"default": true
+						},
+						"crop": {
+							"type": "boolean",
+							"title": "Recadrer l'étendue",
+							"default": true
+						}
+					},
+					"required": []
+				},
+				"input_handles": ["input_a", "input_b"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "zonal_statistics",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Zonal Statistics",
+				"description": "Calcule min / max / moyenne d'un MNT raster sur des polygones vectoriels.",
+				"schema": {
+					"title": "Zonal Statistics",
+					"type": "object",
+					"properties": {
+						"stats": {
+							"type": "string",
+							"title": "Statistiques",
+							"default": "min,max,mean,count",
+							"description": "Liste séparée par des virgules."
+						},
+						"raster_is_a": {
+							"type": "boolean",
+							"title": "Raster sur Input A (sinon Input B)",
+							"default": true
+						}
+					},
+					"required": []
+				},
+				"input_handles": ["input_a", "input_b"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "geometry_validator",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Validate Geometry",
+				"description": "Detect and repair invalid shapes",
+				"schema": {
+					"title": "GeometryValidator",
+					"type": "object",
+					"properties": {
+						"repair": {
+							"type": "boolean",
+							"title": "Réparer (make_valid)",
+							"default": true
+						},
+						"allow_empty": {
+							"type": "boolean",
+							"title": "Accepter les géométries vides",
+							"default": false
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output", "rejected"],
+				"palette_group": "Geometry & Quality"
+			},
+			{
+				"node_type": "geometry_filter",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "GeometryFilter",
+				"description": "Sépare le flux par type de géométrie (Point, Line, Polygon, MultiPolygon, Null).",
+				"schema": {
+					"title": "GeometryFilter",
+					"type": "object",
+					"properties": {}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["point", "linestring", "polygon", "multipolygon", "null"],
+				"palette_group": "Geometry & Quality"
+			},
+			{
+				"node_type": "snapper",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Snapper",
+				"description": "Calage des sommets sur une grille de tolérance (mètres).",
+				"schema": {
+					"title": "Snapper",
+					"type": "object",
+					"properties": {
+						"tolerance": {
+							"type": "number",
+							"title": "Tolérance (m)",
+							"format": "slider",
+							"default": 1.0,
+							"minimum": 0.01,
+							"maximum": 50
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Geometry & Quality"
+			},
+			{
+				"node_type": "orientor",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Orientor",
+				"description": "Uniformise l'orientation des anneaux (horaire / anti-horaire).",
+				"schema": {
+					"title": "Orientor",
+					"type": "object",
+					"properties": {
+						"direction": {
+							"type": "string",
+							"title": "Orientation",
+							"enum": ["ccw", "cw"],
+							"enumNames": ["Anti-horaire (CCW)", "Horaire (CW)"],
+							"default": "ccw"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Geometry & Quality"
+			},
+			{
+				"node_type": "bufferer",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Create Buffer",
+				"description": "Generate spatial proximity zones",
+				"schema": {
+					"title": "Bufferer",
+					"type": "object",
+					"properties": {
+						"distance": {
+							"type": "number",
+							"title": "Distance (m)",
+							"format": "slider",
+							"default": 200,
+							"minimum": 1,
+							"maximum": 5000
+						},
+						"cap_style": {
+							"type": "string",
+							"title": "Extrémités",
+							"enum": ["round", "flat", "square"],
+							"enumNames": ["Arrondi", "Plat", "Carré"],
+							"default": "round"
+						},
+						"resolution": {
+							"type": "integer",
+							"title": "Résolution",
+							"default": 16
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "clipper",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Clipper",
+				"description": "Découpe Inside / Outside par un masque polygonal.",
+				"schema": {
+					"title": "Clipper",
+					"type": "object",
+					"properties": {
+						"keep_empty": {
+							"type": "boolean",
+							"title": "Conserver les géométries vides",
+							"default": false
+						}
+					}
+				},
+				"input_handles": ["input", "clipper"],
+				"output_handles": ["inside", "outside"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "dissolver",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Merge Geometries",
+				"description": "Dissolve boundaries based on attributes",
+				"schema": {
+					"title": "Dissolver",
+					"type": "object",
+					"properties": {
+						"group_by": {
+							"type": "string",
+							"title": "Attribut de groupement",
+							"default": "group",
+							"description": "Vide = union totale."
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "area_on_area_overlayer",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Overlay Polygons",
+				"description": "Intersect and combine overlapping areas",
+				"schema": {
+					"title": "AreaOnAreaOverlayer",
+					"type": "object",
+					"properties": {
+						"id_attr": {
+							"type": "string",
+							"title": "Attribut identifiant",
+							"default": "name"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "line_on_line_overlayer",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "LineOnLineOverlayer",
+				"description": "Découpe un réseau de lignes à chaque intersection.",
+				"schema": {
+					"title": "LineOnLineOverlayer",
+					"type": "object",
+					"properties": {}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "centroid_extractor",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "CentroidExtractor",
+				"description": "Remplace chaque géométrie par son centroïde (CenterPointReplacer).",
+				"schema": {
+					"title": "CentroidExtractor",
+					"type": "object",
+					"properties": {
+						"mode": {
+							"type": "string",
+							"title": "Mode",
+							"enum": ["centroid", "representative"],
+							"enumNames": ["Centroïde", "Point intérieur"],
+							"default": "centroid"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "bounding_box_replacer",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Extract Bounding Box",
+				"description": "Replace geometry with envelope bounds",
+				"schema": {
+					"title": "BoundingBoxReplacer",
+					"type": "object",
+					"properties": {}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "densifier",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Densifier",
+				"description": "Ajoute des sommets intermédiaires selon une distance maximale (mètres).",
+				"schema": {
+					"title": "Densifier",
+					"type": "object",
+					"properties": {
+						"max_distance": {
+							"type": "number",
+							"title": "Distance max (m)",
+							"format": "slider",
+							"default": 50,
+							"minimum": 1,
+							"maximum": 2000
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "generalizer",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Generalizer",
+				"description": "Simplification Douglas-Peucker / réduction de sommets.",
+				"schema": {
+					"title": "Generalizer",
+					"type": "object",
+					"properties": {
+						"tolerance": {
+							"type": "number",
+							"title": "Tolérance (m)",
+							"format": "slider",
+							"default": 10,
+							"minimum": 0.1,
+							"maximum": 500
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Spatial Analysis"
+			},
+			{
+				"node_type": "feature_merger",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "FeatureMerger",
+				"description": "Jointure attributaire 1:N (Merged / Unmerged_Request / Unmerged_Supplier).",
+				"schema": {
+					"title": "FeatureMerger",
+					"type": "object",
+					"properties": {
+						"request_key": {
+							"type": "string",
+							"title": "Clé Request",
+							"default": "id"
+						},
+						"supplier_key": {
+							"type": "string",
+							"title": "Clé Supplier",
+							"default": "id"
+						},
+						"prefix_supplier": {
+							"type": "string",
+							"title": "Préfixe attributs Supplier",
+							"default": "sup_"
+						}
+					}
+				},
+				"input_handles": ["request", "supplier"],
+				"output_handles": ["merged", "unmerged_request", "unmerged_supplier"],
+				"palette_group": "Combiners & Joins"
+			},
+			{
+				"node_type": "spatial_relator",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Spatial Join / Intersect",
+				"description": "Match features by location",
+				"schema": {
+					"title": "SpatialRelator",
+					"type": "object",
+					"properties": {
+						"predicate": {
+							"type": "string",
+							"title": "Relation DE-9IM",
+							"enum": [
+								"intersects",
+								"contains",
+								"touches",
+								"within",
+								"disjoint",
+								"crosses",
+								"overlaps"
+							],
+							"enumNames": [
+								"INTERSECTS",
+								"CONTAINS",
+								"TOUCHES",
+								"WITHIN",
+								"DISJOINT",
+								"CROSSES",
+								"OVERLAPS"
+							],
+							"default": "intersects"
+						}
+					}
+				},
+				"input_handles": ["request", "supplier"],
+				"output_handles": ["related", "unrelated"],
+				"palette_group": "Combiners & Joins"
+			},
+			{
+				"node_type": "neighbor_finder",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "NeighborFinder",
+				"description": "Associe les K plus proches voisins entre deux couches spatiales.",
+				"schema": {
+					"title": "NeighborFinder",
+					"type": "object",
+					"properties": {
+						"k": {
+							"type": "integer",
+							"title": "Nombre de voisins (K)",
+							"default": 1,
+							"minimum": 1,
+							"maximum": 10
+						},
+						"max_distance": {
+							"type": "number",
+							"title": "Distance max (m)",
+							"default": 50000,
+							"minimum": 1,
+							"maximum": 500000
+						}
+					}
+				},
+				"input_handles": ["base", "candidates"],
+				"output_handles": ["output"],
+				"palette_group": "Combiners & Joins"
+			},
+			{
+				"node_type": "attribute_manager",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Edit Fields",
+				"description": "Add, rename, remove or modify attributes",
+				"schema": {
+					"title": "AttributeManager",
+					"type": "object",
+					"properties": {
+						"operations": {
+							"type": "string",
+							"title": "Opérations JSON",
+							"format": "textarea",
+							"default": "[{\"op\":\"rename\",\"from\":\"name\",\"to\":\"nom\"},{\"op\":\"create\",\"name\":\"source\",\"expr\":\"'4gix'\"}]",
+							"description": "Liste {op: rename|create|delete|type, ...}."
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Attribute Operations"
+			},
+			{
+				"node_type": "tester",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "If / Filter Condition",
+				"description": "Validate conditions on feature fields",
+				"schema": {
+					"title": "Tester",
+					"type": "object",
+					"properties": {
+						"logic": {
+							"type": "string",
+							"title": "Logique",
+							"enum": ["AND", "OR"],
+							"default": "AND"
+						},
+						"clauses": {
+							"type": "string",
+							"title": "Clauses JSON",
+							"format": "textarea",
+							"default": "[{\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"}]"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["passed", "failed"],
+				"palette_group": "Attribute Operations"
+			},
+			{
+				"node_type": "test_filter",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Switch / Multi-Condition",
+				"description": "Route features based on rules",
+				"schema": {
+					"title": "TestFilter",
+					"type": "object",
+					"properties": {
+						"conditions": {
+							"type": "string",
+							"title": "Conditions JSON",
+							"format": "textarea",
+							"default": "[{\"port\":\"output1\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"urban\"},{\"port\":\"output2\",\"attr\":\"category\",\"op\":\"eq\",\"value\":\"rural\"}]"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output1", "output2", "output3", "else"],
+				"palette_group": "Attribute Operations"
+			},
+			{
+				"node_type": "list_exploder",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Split List Array",
+				"description": "Flatten list attributes into features",
+				"schema": {
+					"title": "ListExploder",
+					"type": "object",
+					"properties": {
+						"list_attr": {
+							"type": "string",
+							"title": "Attribut liste",
+							"default": "items"
+						},
+						"item_attr": {
+							"type": "string",
+							"title": "Nom de l'élément explosé",
+							"default": "item"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Attribute Operations"
+			},
+			{
+				"node_type": "counter",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Increment Counter",
+				"description": "Add sequence number or ID",
+				"schema": {
+					"title": "Counter",
+					"type": "object",
+					"properties": {
+						"attr": {
+							"type": "string",
+							"title": "Nom de l'attribut",
+							"default": "_count"
+						},
+						"start": {
+							"type": "integer",
+							"title": "Valeur de départ",
+							"default": 1
+						},
+						"increment": {
+							"type": "integer",
+							"title": "Incrément",
+							"default": 1
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Attribute Operations"
+			},
+			{
+				"node_type": "duplicate_filter",
+				"category": "Transformer",
+				"is_spatial": false,
+				"label": "Remove Duplicates",
+				"description": "Filter out identical records",
+				"schema": {
+					"title": "DuplicateFilter",
+					"type": "object",
+					"properties": {
+						"keys": {
+							"type": "string",
+							"title": "Clés (virgules)",
+							"default": "name"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["unique", "duplicate"],
+				"palette_group": "Attribute Operations"
+			},
+			{
+				"node_type": "reprojector",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Transform Coordinate System",
+				"description": "Reproject spatial reference CRS",
+				"schema": {
+					"title": "Reprojector",
+					"type": "object",
+					"properties": {
+						"source_crs": {
+							"type": "string",
+							"title": "CRS source",
+							"format": "epsg",
+							"default": "EPSG:4326"
+						},
+						"target_crs": {
+							"type": "string",
+							"title": "CRS cible",
+							"format": "epsg",
+							"default": "EPSG:2154",
+							"description": "Lambert-93, UTM, Web Mercator…"
+						}
+					},
+					"required": ["target_crs"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Coordinate Systems"
+			},
+			{
+				"node_type": "python_caller",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Python / Code Transformer",
+				"description": "Éditeur de code Python (GeoPandas) ou SQL — style n8n Code node.",
+				"schema": {
+					"title": "Python / Code Transformer",
+					"description": "Code Python (GeoPandas) ou SQL (SELECT sur `items` / `gdf`).",
+					"type": "object",
+					"properties": {
+						"mode": {
+							"type": "string",
+							"title": "Mode d'exécution",
+							"enum": ["all_items", "per_item"],
+							"enumNames": ["Run Once for All Items", "Run for Each Item"],
+							"default": "all_items"
+						},
+						"language": {
+							"type": "string",
+							"title": "Langage",
+							"enum": ["python", "sql"],
+							"enumNames": ["Python", "SQL"],
+							"default": "python"
+						},
+						"code": {
+							"type": "string",
+							"title": "Code",
+							"format": "code",
+							"default": "# Transformer les données entrantes avec GeoPandas\n# 'gdf' contient le GeoDataFrame courant (géométries + attributs)\n\ngdf['surface_m2'] = gdf.geometry.area\noutput_gdf = gdf[gdf['surface_m2'] > 100]\n\nreturn output_gdf\n"
+						}
+					},
+					"required": ["code"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output", "rejected"],
+				"palette_group": "Core"
+			},
+			{
+				"node_type": "vertex_creator",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Vertex Creator",
+				"description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
+				"schema": {
+					"title": "Vertex Creator",
+					"description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
+					"type": "object",
+					"properties": {
+						"x_field": {
+							"type": "string",
+							"title": "Colonne X / Longitude"
+						},
+						"y_field": {
+							"type": "string",
+							"title": "Colonne Y / Latitude"
+						},
+						"target_crs": {
+							"type": "string",
+							"title": "CRS cible",
+							"default": "EPSG:4326"
+						}
+					},
+					"required": ["x_field", "y_field"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Geometry"
+			},
+			{
+				"node_type": "coordinate_setter",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Coordinate Property Setter",
+				"description": "Crée des points à partir de colonnes X/Y ou longitude/latitude.",
+				"schema": {
+					"title": "Vertex Creator",
+					"description": "Matérialise une colonne geometry (Point) depuis des coordonnées attributaires.",
+					"type": "object",
+					"properties": {
+						"x_field": {
+							"type": "string",
+							"title": "Colonne X / Longitude"
+						},
+						"y_field": {
+							"type": "string",
+							"title": "Colonne Y / Latitude"
+						},
+						"target_crs": {
+							"type": "string",
+							"title": "CRS cible",
+							"default": "EPSG:4326"
+						}
+					},
+					"required": ["x_field", "y_field"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Geometry"
+			},
+			{
+				"node_type": "composer_agent",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Composer Agent",
+				"description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
+				"schema": {
+					"title": "Composer Agent",
+					"description": "Décrivez une transformation en langage naturel ; l'agent propose des nœuds qui remplacent ce bloc à l'acceptation.",
+					"type": "object",
+					"properties": {
+						"prompt": {
+							"type": "string",
+							"title": "Instruction",
+							"default": ""
+						},
+						"replace_downstream": {
+							"type": "boolean",
+							"title": "Remplacer aussi les nœuds en aval",
+							"description": "Si activé, le nœud Composer et toute la chaîne sortante sont remplacés par le graphe proposé.",
+							"default": true
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Agents"
+			},
+			{
+				"node_type": "direct_agent_processor",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "AI Direct Processor",
+				"description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
+				"schema": {
+					"title": "AI Direct Processor",
+					"description": "Exécute du code GeoPandas généré à la volée à partir d'instructions en langage naturel.",
+					"type": "object",
+					"properties": {
+						"prompt": {
+							"type": "string",
+							"title": "Dernière instruction",
+							"default": ""
+						},
+						"chat_history": {
+							"type": "array",
+							"title": "Historique tchat",
+							"default": []
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Intelligence Artificielle"
+			},
+			{
+				"node_type": "auto_architect_agent",
+				"category": "Transformer",
+				"is_spatial": true,
+				"label": "Auto-Architect Agent",
+				"description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
+				"schema": {
+					"title": "Auto-Architect Agent",
+					"description": "Agent autonome multi-étapes : planifie et génère l'intégralité du pipeline nœud par nœud (Ctrl+I · mode Auto-Architecte).",
+					"type": "object",
+					"properties": {
+						"global_objective": {
+							"type": "string",
+							"title": "Objectif global",
+							"default": ""
+						},
+						"auto_advance": {
+							"type": "boolean",
+							"title": "Avancement automatique",
+							"description": "Si activé, enchaîne les étapes sans attendre chaque validation (expérimental).",
+							"default": true
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Agents"
+			}
+		],
+		"Writer": [
+			{
+				"node_type": "postgis_writer",
+				"category": "Writer",
+				"is_spatial": true,
+				"label": "PostGIS Writer",
+				"description": "Écrit une FeatureCollection dans une table PostGIS.",
+				"schema": {
+					"title": "PostGIS Writer",
+					"type": "object",
+					"properties": {
+						"schema_name": {
+							"type": "string",
+							"title": "Schéma",
+							"default": "gix_output"
+						},
+						"table": {
+							"type": "string",
+							"title": "Table",
+							"default": "output_layer"
+						},
+						"geom_column": {
+							"type": "string",
+							"title": "Colonne géométrie",
+							"default": "geom"
+						},
+						"if_exists": {
+							"type": "string",
+							"title": "Si la table existe",
+							"enum": ["replace", "append"],
+							"default": "replace"
+						}
+					},
+					"required": ["table"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "file_writer",
+				"category": "Writer",
+				"is_spatial": true,
+				"label": "File Writer",
+				"description": "Écrit le résultat sur le serveur puis propose le téléchargement (emplacement et nom choisis dans le navigateur).",
+				"schema": {
+					"title": "File Writer",
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"title": "Fichier de sortie",
+							"format": "output_path",
+							"description": "Nom du fichier produit. Utilisez « Parcourir… » pour choisir l'emplacement et le nom avant l'exécution.",
+							"default": "/workspace/exports/output.geojson"
+						},
+						"driver": {
+							"type": "string",
+							"title": "Format",
+							"enum": ["GeoJSON", "GPKG", "CSV", "ESRI Shapefile"],
+							"enumNames": ["GeoJSON", "GeoPackage", "CSV", "Shapefile (.shp)"],
+							"default": "GeoJSON"
+						}
+					},
+					"required": ["path"]
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": ""
+			},
+			{
+				"node_type": "log_writer",
+				"category": "Writer",
+				"is_spatial": false,
+				"label": "Log Writer",
+				"description": "Écrit le flux (ex. REJECTED) dans un journal JSON sous /workspace/logs.",
+				"schema": {
+					"title": "Log Writer",
+					"type": "object",
+					"properties": {
+						"filename": {
+							"type": "string",
+							"title": "Fichier journal",
+							"default": "rejected.json"
+						},
+						"label": {
+							"type": "string",
+							"title": "Libellé",
+							"default": "REJECTED"
+						}
+					}
+				},
+				"input_handles": ["input"],
+				"output_handles": ["output"],
+				"palette_group": "Writers"
+			}
+		]
+	}
 }

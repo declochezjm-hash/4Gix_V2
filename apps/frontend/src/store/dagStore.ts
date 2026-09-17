@@ -53,10 +53,7 @@ import {
 	parseChatHistory,
 } from "../lib/directProcess";
 import { SHAPEFILE_INCOMPLETE_CHAT_MESSAGE } from "../lib/shapefileGuidance";
-import {
-	fetchSpatialPreview,
-	shouldEnrichSpatialPreview,
-} from "../lib/spatialPreview";
+import { fetchSpatialPreview, shouldEnrichSpatialPreview } from "../lib/spatialPreview";
 import {
 	coerceCanvasNode,
 	normalizeImportedWorkflowDefinition,
@@ -128,10 +125,7 @@ type DagState = {
 	onReconnect: (oldEdge: Edge, connection: Connection) => void;
 	removeEdge: (edgeId: string) => void;
 	setEdgePathStyle: (style: EdgePathStyle) => void;
-	addCatalogNode: (
-		entry: CatalogNode,
-		position?: { x: number; y: number },
-	) => string;
+	addCatalogNode: (entry: CatalogNode, position?: { x: number; y: number }) => string;
 	insertNodeFromPanel: (entry: CatalogNode) => void;
 	selectNode: (id: string | null) => void;
 	openInspector: (id?: string | null) => void;
@@ -287,7 +281,7 @@ function bumpViewportFit(get: () => DagState) {
 	return get().viewportFitRequest + 1;
 }
 
-function topologicalLayers(
+function _topologicalLayers(
 	nodes: Node<FlowNodeData>[],
 	edges: Edge[],
 ): Map<string, number> {
@@ -327,9 +321,7 @@ function applyStatus(
 	extra: Partial<FlowNodeData> = {},
 ) {
 	return nodes.map((node) =>
-		node.id === nodeId
-			? { ...node, data: { ...node.data, status, ...extra } }
-			: node,
+		node.id === nodeId ? { ...node, data: { ...node.data, status, ...extra } } : node,
 	);
 }
 
@@ -352,9 +344,7 @@ function ancestorsOf(nodeId: string, edges: Edge[]): Set<string> {
 }
 
 function reactFlowTypeForNode(nodeType: string): string {
-	return nodeType === "direct_agent_processor"
-		? "direct_agent_processor"
-		: "etl";
+	return nodeType === "direct_agent_processor" ? "direct_agent_processor" : "etl";
 }
 
 function buildNode(entry: CatalogNode, position: { x: number; y: number }) {
@@ -426,11 +416,9 @@ export const useDagStore = create<DagState>((set, get) => ({
 	architectSourceNodeId: null,
 	architectGlobalObjective: "",
 
-	onNodesChange: (changes) =>
-		set({ nodes: applyNodeChanges(changes, get().nodes) }),
+	onNodesChange: (changes) => set({ nodes: applyNodeChanges(changes, get().nodes) }),
 
-	onEdgesChange: (changes) =>
-		set({ edges: applyEdgeChanges(changes, get().edges) }),
+	onEdgesChange: (changes) => set({ edges: applyEdgeChanges(changes, get().edges) }),
 
 	onConnect: (connection) => {
 		const pathStyle = get().edgePathStyle;
@@ -444,11 +432,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 		const pathStyle = get().edgePathStyle;
 		const edgeType = buildCanvasEdge(connection, pathStyle).type;
 		set({
-			edges: reconnectEdge(
-				{ ...oldEdge, type: edgeType },
-				connection,
-				get().edges,
-			),
+			edges: reconnectEdge({ ...oldEdge, type: edgeType }, connection, get().edges),
 		});
 	},
 
@@ -480,8 +464,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 	},
 
 	insertNodeFromPanel: (entry) => {
-		const { pendingConnect, pendingEdgeInsert, selectedNodeId, nodes, edges } =
-			get();
+		const { pendingConnect, pendingEdgeInsert, selectedNodeId, nodes, edges } = get();
 		const pathStyle = get().edgePathStyle;
 
 		if (pendingEdgeInsert) {
@@ -748,9 +731,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 				catalog: [],
 				catalogLoaded: true,
 				error:
-					err instanceof Error
-						? err.message
-						: "Erreur catalogue (API injoignable ?)",
+					err instanceof Error ? err.message : "Erreur catalogue (API injoignable ?)",
 			});
 		}
 	},
@@ -782,9 +763,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 		} catch (err) {
 			set({
 				error:
-					err instanceof Error
-						? err.message
-						: "Impossible de dupliquer le workflow.",
+					err instanceof Error ? err.message : "Impossible de dupliquer le workflow.",
 			});
 			return null;
 		}
@@ -813,9 +792,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 		} catch (err) {
 			set({
 				error:
-					err instanceof Error
-						? err.message
-						: "Impossible de renommer le workflow.",
+					err instanceof Error ? err.message : "Impossible de renommer le workflow.",
 			});
 			return false;
 		}
@@ -838,9 +815,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 		} catch (err) {
 			set({
 				error:
-					err instanceof Error
-						? err.message
-						: "Impossible de supprimer le workflow.",
+					err instanceof Error ? err.message : "Impossible de supprimer le workflow.",
 			});
 		}
 	},
@@ -934,16 +909,13 @@ export const useDagStore = create<DagState>((set, get) => ({
 		);
 	},
 
-	openContextMenu: (menu) =>
-		set({ contextMenu: menu, selectedNodeId: menu.nodeId }),
+	openContextMenu: (menu) => set({ contextMenu: menu, selectedNodeId: menu.nodeId }),
 	closeContextMenu: () => set({ contextMenu: null }),
 
 	deleteNode: (id) => {
 		set({
 			nodes: get().nodes.filter((node) => node.id !== id),
-			edges: get().edges.filter(
-				(edge) => edge.source !== id && edge.target !== id,
-			),
+			edges: get().edges.filter((edge) => edge.source !== id && edge.target !== id),
 			selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
 			contextMenu: null,
 		});
@@ -1021,9 +993,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 		if (!next?.trim()) return;
 		set({
 			nodes: get().nodes.map((item) =>
-				item.id === id
-					? { ...item, data: { ...item.data, label: next.trim() } }
-					: item,
+				item.id === id ? { ...item, data: { ...item.data, label: next.trim() } } : item,
 			),
 			contextMenu: null,
 		});
@@ -1052,14 +1022,10 @@ export const useDagStore = create<DagState>((set, get) => ({
 			return;
 		}
 		const pages = splitWorkflowIntoPages(nodes, edges);
-		const multiPage =
-			nodes.length >= PAGINATION_NODE_THRESHOLD && pages.length > 1;
+		const multiPage = nodes.length >= PAGINATION_NODE_THRESHOLD && pages.length > 1;
 		set({
 			canvasPages: pages,
-			canvasPageIndex: Math.min(
-				get().canvasPageIndex,
-				Math.max(0, pages.length - 1),
-			),
+			canvasPageIndex: Math.min(get().canvasPageIndex, Math.max(0, pages.length - 1)),
 			canvasPaginationEnabled: multiPage,
 			viewportFitRequest: bumpViewportFit(get),
 		});
@@ -1101,8 +1067,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 		set({
 			appView: "editor",
 			selectedNodeId: nodeId,
-			canvasPaginationEnabled:
-				pageIndex >= 0 ? true : get().canvasPaginationEnabled,
+			canvasPaginationEnabled: pageIndex >= 0 ? true : get().canvasPaginationEnabled,
 			canvasPageIndex: pageIndex >= 0 ? pageIndex : get().canvasPageIndex,
 			viewportFitRequest: bumpViewportFit(get),
 			nodePanelOpen: false,
@@ -1152,10 +1117,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 				index,
 			),
 		);
-		const importWarnings = [
-			...(payload.warnings || []),
-			...normalized.warnings,
-		];
+		const importWarnings = [...(payload.warnings || []), ...normalized.warnings];
 		set({
 			nodes,
 			edges: normalizeCanvasEdges(normalized.edges, get().edgePathStyle),
@@ -1187,8 +1149,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 			const overlap = positionsOverlapRatio(state.nodes);
 			const weakPositions = state.nodes.some(
 				(node) =>
-					typeof node.position?.x !== "number" ||
-					typeof node.position?.y !== "number",
+					typeof node.position?.x !== "number" || typeof node.position?.y !== "number",
 			);
 			if (
 				state.nodes.length >= PAGINATION_NODE_THRESHOLD ||
@@ -1294,9 +1255,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 			return;
 		}
 		try {
-			const doc = parseWorkflowJsonDocument(
-				JSON.parse(await file.text()) as unknown,
-			);
+			const doc = parseWorkflowJsonDocument(JSON.parse(await file.text()) as unknown);
 			const payload: FmwImportResult = {
 				name: doc.name || file.name.replace(/\.[^.]+$/, ""),
 				format: "4gix_dag",
@@ -1338,8 +1297,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 			const looksLike = await zipLooksLikeShapefile(file);
 			if (!looksLike) {
 				set({
-					error:
-						"Ce .zip ne semble pas contenir de Shapefile (.shp, .shx, .dbf).",
+					error: "Ce .zip ne semble pas contenir de Shapefile (.shp, .shx, .dbf).",
 				});
 				return;
 			}
@@ -1348,9 +1306,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 			const payload: DataUploadResult = await uploadDataFile(file);
 			const suggested = payload.suggested_node;
 			if (!suggested?.node_type) {
-				throw new Error(
-					"Réponse serveur incomplète (suggested_node manquant).",
-				);
+				throw new Error("Réponse serveur incomplète (suggested_node manquant).");
 			}
 			const entry = get().catalog.find(
 				(item) => item.node_type === suggested.node_type,
@@ -1390,15 +1346,12 @@ export const useDagStore = create<DagState>((set, get) => ({
 				nodePanelOpen: false,
 				error: null,
 				importNotice: `${kind} · ${file.name}${shpSoloHint}`,
-				shapefileProactivePrompt: isSoloShp
-					? SHAPEFILE_INCOMPLETE_CHAT_MESSAGE
-					: null,
+				shapefileProactivePrompt: isSoloShp ? SHAPEFILE_INCOMPLETE_CHAT_MESSAGE : null,
 				composerDrawerOpen: isSoloShp ? true : get().composerDrawerOpen,
 			});
 		} catch (err) {
 			set({
-				error:
-					err instanceof Error ? err.message : "Import de données impossible.",
+				error: err instanceof Error ? err.message : "Import de données impossible.",
 				importNotice: null,
 			});
 		}
@@ -1421,10 +1374,7 @@ export const useDagStore = create<DagState>((set, get) => ({
 			return;
 		}
 		try {
-			const base = (get().workflowName || "workflow").replace(
-				/[<>:"/\\|?*]+/g,
-				"_",
-			);
+			const base = (get().workflowName || "workflow").replace(/[<>:"/\\|?*]+/g, "_");
 			await downloadExportFmw(workflowId, base);
 			set({ error: null });
 		} catch (err) {
@@ -1473,14 +1423,12 @@ export const useDagStore = create<DagState>((set, get) => ({
 			architectGlobalPlan: patch.globalPlan ?? state.architectGlobalPlan,
 			architectStepIndex: patch.stepIndex ?? state.architectStepIndex,
 			architectTotalSteps: patch.totalSteps ?? state.architectTotalSteps,
-			architectPreviousSteps:
-				patch.previousSteps ?? state.architectPreviousSteps,
+			architectPreviousSteps: patch.previousSteps ?? state.architectPreviousSteps,
 			architectSourceNodeId:
 				patch.sourceNodeId !== undefined
 					? patch.sourceNodeId
 					: state.architectSourceNodeId,
-			architectGlobalObjective:
-				patch.globalObjective ?? state.architectGlobalObjective,
+			architectGlobalObjective: patch.globalObjective ?? state.architectGlobalObjective,
 		})),
 
 	applyComposerProposals: () => {
@@ -1540,10 +1488,7 @@ async function enrichSnapshotIfNeeded(
 	snapshot: NodeSnapshot,
 ): Promise<NodeSnapshot> {
 	const node = nodes.find((item) => item.id === snapshot.node_id);
-	if (
-		!node ||
-		!shouldEnrichSpatialPreview(node.data.nodeType, snapshot.preview)
-	) {
+	if (!node || !shouldEnrichSpatialPreview(node.data.nodeType, snapshot.preview)) {
 		return snapshot;
 	}
 	try {
@@ -1559,9 +1504,7 @@ async function enrichSnapshotIfNeeded(
 
 async function executeViaSocket(
 	get: () => DagState,
-	set: (
-		partial: Partial<DagState> | ((state: DagState) => Partial<DagState>),
-	) => void,
+	set: (partial: Partial<DagState> | ((state: DagState) => Partial<DagState>)) => void,
 	subsetNodes?: Node<FlowNodeData>[],
 	subsetEdges?: Edge[],
 ) {
@@ -1619,8 +1562,7 @@ async function executeViaSocket(
 				}
 				if (message.type === "snapshot") {
 					const snapshot = message.payload as unknown as NodeSnapshot;
-					const failed =
-						snapshot.status === "FAILED" || snapshot.status === "error";
+					const failed = snapshot.status === "FAILED" || snapshot.status === "error";
 					const applySnapshot = (resolved: NodeSnapshot) => {
 						set({
 							snapshots: {
@@ -1639,13 +1581,11 @@ async function executeViaSocket(
 						});
 					};
 					applySnapshot(snapshot);
-					void enrichSnapshotIfNeeded(get().nodes, snapshot).then(
-						(enriched) => {
-							if (enriched.preview !== snapshot.preview) {
-								applySnapshot(enriched);
-							}
-						},
-					);
+					void enrichSnapshotIfNeeded(get().nodes, snapshot).then((enriched) => {
+						if (enriched.preview !== snapshot.preview) {
+							applySnapshot(enriched);
+						}
+					});
 				}
 				if (message.type === "completed" || message.type === "failed") {
 					const result = message.payload as unknown as ExecutionResult;
@@ -1656,20 +1596,17 @@ async function executeViaSocket(
 						snapshots[snapshot.node_id] = snapshot;
 					}
 					for (const snapshot of result.snapshots || []) {
-						void enrichSnapshotIfNeeded(get().nodes, snapshot).then(
-							(enriched) => {
-								if (enriched.preview === snapshot.preview) return;
-								set({
-									snapshots: {
-										...get().snapshots,
-										[enriched.node_id]: enriched,
-									},
-								});
-							},
-						);
+						void enrichSnapshotIfNeeded(get().nodes, snapshot).then((enriched) => {
+							if (enriched.preview === snapshot.preview) return;
+							set({
+								snapshots: {
+									...get().snapshots,
+									[enriched.node_id]: enriched,
+								},
+							});
+						});
 					}
-					const failedRun =
-						result.status === "FAILED" || result.status === "error";
+					const failedRun = result.status === "FAILED" || result.status === "error";
 					const exportQueue = failedRun
 						? []
 						: buildWorkflowExports(get().nodes, snapshots);
@@ -1683,8 +1620,7 @@ async function executeViaSocket(
 						nodes: get().nodes.map((node) => {
 							const snap = snapshots[node.id];
 							if (!snap) return node;
-							const failed =
-								snap.status === "FAILED" || snap.status === "error";
+							const failed = snap.status === "FAILED" || snap.status === "error";
 							return {
 								...node,
 								data: {

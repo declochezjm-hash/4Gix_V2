@@ -13,15 +13,11 @@ export function setNodeExportHandle(
 	handles.set(nodeId, handle);
 }
 
-export function getNodeExportHandle(
-	nodeId: string,
-): FileSystemFileHandle | undefined {
+export function getNodeExportHandle(nodeId: string): FileSystemFileHandle | undefined {
 	return handles.get(nodeId);
 }
 
-export function takeNodeExportHandle(
-	nodeId: string,
-): FileSystemFileHandle | undefined {
+export function takeNodeExportHandle(nodeId: string): FileSystemFileHandle | undefined {
 	const handle = handles.get(nodeId);
 	handles.delete(nodeId);
 	return handle;

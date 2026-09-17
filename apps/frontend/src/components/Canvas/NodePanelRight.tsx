@@ -16,9 +16,7 @@ export function NodePanelRight() {
 	const pendingConnect = useDagStore((s) => s.pendingConnect);
 	const pendingEdgeInsert = useDagStore((s) => s.pendingEdgeInsert);
 	const [query, setQuery] = useState("");
-	const [expandedGroups, setExpandedGroups] = useState<Set<N8nGroupId>>(
-		new Set(),
-	);
+	const [expandedGroups, setExpandedGroups] = useState<Set<N8nGroupId>>(new Set());
 	const searchRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
@@ -53,9 +51,7 @@ export function NodePanelRight() {
 		if (!searching) return;
 		setExpandedGroups(
 			new Set(
-				grouped
-					.filter(({ nodes }) => nodes.length > 0)
-					.map(({ group }) => group.id),
+				grouped.filter(({ nodes }) => nodes.length > 0).map(({ group }) => group.id),
 			),
 		);
 	}, [searching, grouped]);
@@ -152,9 +148,7 @@ export function NodePanelRight() {
 							/>
 						))}
 				{searching && !grouped.some(({ nodes }) => nodes.length > 0) ? (
-					<p className="n8n-panel__empty">
-						Aucun nœud ne correspond à la recherche.
-					</p>
+					<p className="n8n-panel__empty">Aucun nœud ne correspond à la recherche.</p>
 				) : null}
 			</div>
 		</aside>

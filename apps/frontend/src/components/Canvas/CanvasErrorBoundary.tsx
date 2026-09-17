@@ -31,18 +31,15 @@ export class CanvasErrorBoundary extends Component<
 
 	render() {
 		if (this.state.error) {
-			const className = [
-				"canvas-error-boundary",
-				this.props.className || "",
-			]
+			const className = ["canvas-error-boundary", this.props.className || ""]
 				.filter(Boolean)
 				.join(" ");
 			return (
 				<div className={className} role="alert">
 					<h3>Impossible d&apos;afficher le canvas</h3>
 					<p>
-						L&apos;import ou le graphe courant contient des données invalides.
-						Corrigez le JSON ou rechargez un workflow valide.
+						L&apos;import ou le graphe courant contient des données invalides. Corrigez
+						le JSON ou rechargez un workflow valide.
 					</p>
 					<pre>{this.state.error.message}</pre>
 					<button type="button" className="ghost-btn" onClick={this.handleRetry}>

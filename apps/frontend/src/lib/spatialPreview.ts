@@ -1,10 +1,6 @@
 import { API_BASE } from "./api";
 
-const SPATIAL_READERS = new Set([
-	"shapefile_reader",
-	"gpkg_reader",
-	"geojson_reader",
-]);
+const SPATIAL_READERS = new Set(["shapefile_reader", "gpkg_reader", "geojson_reader"]);
 
 export function isSparseSpatialPreview(preview: unknown): boolean {
 	if (!preview || typeof preview !== "object") return false;

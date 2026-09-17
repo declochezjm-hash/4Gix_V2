@@ -1,20 +1,12 @@
 import type { CatalogNode } from "./api";
 
-export type N8nGroupId =
-	| "ai"
-	| "data"
-	| "gis"
-	| "bim"
-	| "raster"
-	| "io";
+export type N8nGroupId = "ai" | "data" | "gis" | "bim" | "raster" | "io";
 
 const CONNECTOR_PREFIX = "connector_";
 
 function isConnectorNode(nodeType: string | undefined | null): boolean {
 	if (nodeType === "human_approval") return true;
-	return Boolean(
-		typeof nodeType === "string" && nodeType.startsWith(CONNECTOR_PREFIX),
-	);
+	return Boolean(typeof nodeType === "string" && nodeType.startsWith(CONNECTOR_PREFIX));
 }
 
 export type N8nGroup = {
@@ -65,8 +57,7 @@ export const N8N_GROUPS: N8nGroup[] = [
 		id: "io",
 		title: "Readers & Data Stores",
 		shortTitle: "Readers & data stores",
-		description:
-			"Excel, CSV, GeoPackage, GeoJSON, KML, DXF, Shapefile, PostGIS.",
+		description: "Excel, CSV, GeoPackage, GeoJSON, KML, DXF, Shapefile, PostGIS.",
 		color: "#22C55E",
 	},
 ];
@@ -181,9 +172,7 @@ export function groupCatalog(nodes: CatalogNode[]): {
 }[] {
 	return N8N_GROUPS.map((group) => ({
 		group,
-		nodes: sortCatalogNodes(
-			nodes.filter((node) => groupIdOf(node) === group.id),
-		),
+		nodes: sortCatalogNodes(nodes.filter((node) => groupIdOf(node) === group.id)),
 	}));
 }
 

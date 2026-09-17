@@ -13,13 +13,7 @@ import {
 	ReactFlowProvider,
 	useReactFlow,
 } from "@xyflow/react";
-import {
-	type DragEvent,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type DragEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useCanvasViewportSize } from "../../hooks/useCanvasViewportSize";
 import { canvasDotsColor, readColorTheme } from "../../lib/theme";
 import "@xyflow/react/dist/style.css";
@@ -57,7 +51,7 @@ const FIT_VIEW_OPTIONS = {
 
 function CanvasViewportSync() {
 	const nodes = useDagStore((s) => s.nodes);
-	const viewportFitRequest = useDagStore((s) => s.viewportFitRequest);
+	const _viewportFitRequest = useDagStore((s) => s.viewportFitRequest);
 	const canvasPaginationEnabled = useDagStore((s) => s.canvasPaginationEnabled);
 	const canvasPages = useDagStore((s) => s.canvasPages);
 	const canvasPageIndex = useDagStore((s) => s.canvasPageIndex);
@@ -78,14 +72,7 @@ function CanvasViewportSync() {
 			void fitView(FIT_VIEW_OPTIONS);
 		}, 60);
 		return () => window.clearTimeout(timer);
-	}, [
-		viewportFitRequest,
-		canvasPageIndex,
-		canvasPaginationEnabled,
-		canvasPages,
-		nodes,
-		fitView,
-	]);
+	}, [canvasPageIndex, canvasPaginationEnabled, canvasPages, nodes, fitView]);
 
 	return null;
 }
@@ -151,14 +138,8 @@ function FlowCanvasInner() {
 		return [...base, ...ghosts];
 	}, [nodes, mergedProposalNodes, visibleIdSet]);
 
-	const realNodeIds = useMemo(
-		() => new Set(nodes.map((node) => node.id)),
-		[nodes],
-	);
-	const realEdgeIds = useMemo(
-		() => new Set(edges.map((edge) => edge.id)),
-		[edges],
-	);
+	const realNodeIds = useMemo(() => new Set(nodes.map((node) => node.id)), [nodes]);
+	const realEdgeIds = useMemo(() => new Set(edges.map((edge) => edge.id)), [edges]);
 
 	const onDisplayNodesChange = useCallback(
 		(changes: NodeChange[]) => {
@@ -191,8 +172,7 @@ function FlowCanvasInner() {
 				visibleIdSet &&
 				(!visibleIdSet.has(edge.source) || !visibleIdSet.has(edge.target));
 			const running =
-				lastExecution?.status === "RUNNING" ||
-				lastExecution?.status === "running";
+				lastExecution?.status === "RUNNING" || lastExecution?.status === "running";
 			return {
 				...edge,
 				type: "n8nEdge",
@@ -224,13 +204,7 @@ function FlowCanvasInner() {
 			},
 		}));
 		return [...base, ...ghosts];
-	}, [
-		edges,
-		mergedProposalEdges,
-		visibleIdSet,
-		edgePathStyle,
-		lastExecution?.status,
-	]);
+	}, [edges, mergedProposalEdges, visibleIdSet, edgePathStyle, lastExecution?.status]);
 
 	const [edgeMenu, setEdgeMenu] = useState<{
 		edgeId: string;
@@ -238,9 +212,7 @@ function FlowCanvasInner() {
 		y: number;
 	} | null>(null);
 	const [canvasRenderKey, setCanvasRenderKey] = useState(0);
-	const [dotColor, setDotColor] = useState(() =>
-		canvasDotsColor(readColorTheme()),
-	);
+	const [dotColor, setDotColor] = useState(() => canvasDotsColor(readColorTheme()));
 
 	useEffect(() => {
 		const syncDots = () => setDotColor(canvasDotsColor(readColorTheme()));
@@ -318,9 +290,9 @@ function FlowCanvasInner() {
 		[edgePathStyle],
 	);
 
-	const isValidConnection = useCallback((connection: Connection) => {
-		if (!connection.source || !connection.target) return false;
-		if (connection.source === connection.target) return false;
+	const isValidConnection = useCallback((edge: Connection | Edge) => {
+		if (!edge.source || !edge.target) return false;
+		if (edge.source === edge.target) return false;
 		return true;
 	}, []);
 
@@ -374,11 +346,7 @@ function FlowCanvasInner() {
 					className="canvas-shell__flow-boundary"
 					onReset={() => setCanvasRenderKey((key) => key + 1)}
 				>
-					<div
-						ref={hostRef}
-						className="canvas-shell__rf-host"
-						style={flowStyle}
-					>
+					<div ref={hostRef} className="canvas-shell__rf-host" style={flowStyle}>
 						<ReactFlow
 							key={`${canvasRenderKey}-${flowHostSize.width}x${flowHostSize.height}`}
 							style={flowStyle}

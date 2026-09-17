@@ -28,9 +28,7 @@ export function useStepArchitect(
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [totalSteps, setTotalSteps] = useState(0);
 	const [isStepComplete, setIsStepComplete] = useState(false);
-	const [previousSteps, setPreviousSteps] = useState<
-		StepArchitectPreviousStep[]
-	>([]);
+	const [previousSteps, setPreviousSteps] = useState<StepArchitectPreviousStep[]>([]);
 	const [stepSummary, setStepSummary] = useState<string | null>(null);
 	const [nextStepHint, setNextStepHint] = useState<string | null>(null);
 	const [sourceNodeId, setSourceNodeId] = useState<string | null>(null);
@@ -119,9 +117,7 @@ export function useStepArchitect(
 				});
 				return result;
 			} catch (err) {
-				setStepError(
-					err instanceof Error ? err.message : "Échec step-architect.",
-				);
+				setStepError(err instanceof Error ? err.message : "Échec step-architect.");
 				throw err;
 			} finally {
 				setStepLoading(false);

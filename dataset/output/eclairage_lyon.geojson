@@ -1,0 +1,12 @@
+{
+"type": "FeatureCollection",
+"name": "eclairage_lyon",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "EP-001", "commune": "Lyon", "type_equipement": "LED", "latitude": 45.764043, "longitude": 4.835659, "puissance_w": 120 }, "geometry": { "type": "Point", "coordinates": [ 4.835659, 45.764043 ] } },
+{ "type": "Feature", "properties": { "id": "EP-002", "commune": "Lyon", "type_equipement": "Sodium", "latitude": 45.758, "longitude": 4.828, "puissance_w": 150 }, "geometry": { "type": "Point", "coordinates": [ 4.828, 45.758 ] } },
+{ "type": "Feature", "properties": { "id": "EP-003", "commune": "Lyon", "type_equipement": "LED", "latitude": 45.7701, "longitude": 4.8502, "puissance_w": 100 }, "geometry": { "type": "Point", "coordinates": [ 4.8502, 45.7701 ] } },
+{ "type": "Feature", "properties": { "id": "EP-008", "commune": "Lyon", "type_equipement": "LED", "latitude": 45.7485, "longitude": 4.8467, "puissance_w": 95 }, "geometry": { "type": "Point", "coordinates": [ 4.8467, 45.7485 ] } },
+{ "type": "Feature", "properties": { "id": "EP-011", "commune": "Lyon", "type_equipement": "LED", "latitude": 45.76, "longitude": 4.84, "puissance_w": 115 }, "geometry": { "type": "Point", "coordinates": [ 4.84, 45.76 ] } }
+]
+}

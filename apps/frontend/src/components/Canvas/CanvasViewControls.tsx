@@ -8,10 +8,7 @@ type CanvasViewControlsProps = {
 	onToggleLock: () => void;
 };
 
-export function CanvasViewControls({
-	locked,
-	onToggleLock,
-}: CanvasViewControlsProps) {
+export function CanvasViewControls({ locked, onToggleLock }: CanvasViewControlsProps) {
 	const { zoomIn, zoomOut, fitView } = useReactFlow();
 	const edgePathStyle = useDagStore((s) => s.edgePathStyle);
 	const setEdgePathStyle = useDagStore((s) => s.setEdgePathStyle);
@@ -66,11 +63,7 @@ export function CanvasViewControls({
 					className="is-active"
 					onClick={cycleEdgeStyle}
 				>
-					{edgePathStyle === "step"
-						? "⊿"
-						: edgePathStyle === "smoothstep"
-							? "⌐"
-							: "⌒"}
+					{edgePathStyle === "step" ? "⊿" : edgePathStyle === "smoothstep" ? "⌐" : "⌒"}
 				</button>
 			</div>
 			<MiniMap

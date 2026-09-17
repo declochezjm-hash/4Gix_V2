@@ -1,17 +1,19 @@
 {
-  "name": "4gix-v02",
-  "private": true,
-  "version": "0.1.0",
-  "description": "4GIx V02 — monorepo Desktop (preview navigateur + Electron)",
-  "scripts": {
-    "install:all": "npm install --prefix apps/frontend && npm install --prefix apps/desktop",
-    "build:ui": "npm run build --prefix apps/frontend",
-    "backend": "python apps/backend/main.py",
-    "dev:ui": "npm run dev --prefix apps/frontend",
-    "local": "npx --yes concurrently -k -n api,ui -c green,cyan \"npm run backend\" \"npm run dev:ui\"",
-    "desktop": "npm start --prefix apps/desktop",
-    "desktop:build": "npm run build:ui && npm run desktop",
-    "dev:desktop": "npx --yes concurrently -k -n ui,desktop -c cyan,magenta \"npm run dev:ui\" \"cross-env FOURGIX_DEV=1 npm run desktop\"",
-    "start": "npm run local"
-  }
+	"name": "4gix-v02",
+	"private": true,
+	"version": "0.1.0",
+	"description": "4GIx V02 — monorepo Desktop (preview navigateur + Electron)",
+	"scripts": {
+		"install:all": "npm install --prefix apps/frontend && npm install --prefix apps/desktop",
+		"build:ui": "npm run build --prefix apps/frontend",
+		"backend": "python apps/backend/main.py",
+		"dev:ui": "npm run dev --prefix apps/frontend",
+		"local": "npx --yes concurrently -k -n api,ui -c green,cyan \"npm run backend\" \"npm run dev:ui\"",
+		"desktop": "npm start --prefix apps/desktop",
+		"desktop:build": "npm run build:ui && npm run desktop",
+		"dev:desktop": "npx --yes concurrently -k -n ui,desktop -c cyan,magenta \"npm run dev:ui\" \"cross-env FOURGIX_DEV=1 npm run desktop\"",
+		"start": "npm run local",
+		"lint": "npx @biomejs/biome@latest check .",
+		"lint:fix": "npx @biomejs/biome@latest check --write --unsafe ."
+	}
 }

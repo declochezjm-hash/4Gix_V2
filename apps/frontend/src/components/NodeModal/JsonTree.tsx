@@ -6,6 +6,22 @@ type JsonTreeProps = {
 	depth?: number;
 };
 
+function arrayItemKey(item: unknown, index: number, depth: number): string {
+	if (item === null || item === undefined) {
+		return `${depth}:${index}:null`;
+	}
+	if (typeof item !== "object") {
+		return `${depth}:${index}:${String(item)}`;
+	}
+	if (Array.isArray(item)) {
+		return `${depth}:${index}:arr:${item.length}`;
+	}
+	const keys = Object.keys(item as Record<string, unknown>)
+		.slice(0, 4)
+		.join(",");
+	return `${depth}:${index}:obj:${keys}`;
+}
+
 export function JsonTree({ data, name = "root", depth = 0 }: JsonTreeProps) {
 	if (data === null || data === undefined) {
 		return (
@@ -27,7 +43,7 @@ export function JsonTree({ data, name = "root", depth = 0 }: JsonTreeProps) {
 							.slice(0, 80)
 							.map((item, index) => (
 								<JsonTree
-									key={index}
+									key={arrayItemKey(item, index, depth)}
 									name={String(index)}
 									data={item}
 									depth={depth + 1}

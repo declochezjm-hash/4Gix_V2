@@ -1,10 +1,10 @@
 import type { Connection, Edge, Node } from "@xyflow/react";
 
 import type { FlowNodeData, NodeSnapshot } from "./api";
-import { N8N_EDGE_TYPE } from "./canvasEdges";
 import {
 	buildCanvasEdge,
 	type EdgePathStyle,
+	N8N_EDGE_TYPE,
 	normalizeCanvasEdges,
 } from "./canvasEdges";
 
@@ -30,9 +30,7 @@ export function computeComposerRemoveIds(
 	return [...remove];
 }
 
-export function materializeComposerNode(
-	node: Node<FlowNodeData>,
-): Node<FlowNodeData> {
+export function materializeComposerNode(node: Node<FlowNodeData>): Node<FlowNodeData> {
 	const { isGhost: _ghost, ...data } = node.data;
 	return {
 		...node,
@@ -42,10 +40,7 @@ export function materializeComposerNode(
 	};
 }
 
-export function materializeComposerEdge(
-	edge: Edge,
-	pathStyle: EdgePathStyle,
-): Edge {
+export function materializeComposerEdge(edge: Edge, pathStyle: EdgePathStyle): Edge {
 	const connection: Connection = {
 		source: edge.source,
 		target: edge.target,
@@ -141,9 +136,7 @@ export function applyComposerGraphReplacement(
 						source: tail.id,
 						target: anchorOut.target,
 						sourceHandle:
-							tail.data.outputHandles?.[0] ??
-							anchorOut.sourceHandle ??
-							"output",
+							tail.data.outputHandles?.[0] ?? anchorOut.sourceHandle ?? "output",
 						targetHandle: anchorOut.targetHandle ?? "input",
 					},
 					pathStyle,
@@ -164,9 +157,7 @@ const GHOST_EDGE_STYLE = {
 
 function resolvedNodeType(node?: Node<FlowNodeData>): string {
 	if (!node?.data) return "";
-	return String(
-		node.data.nodeType || node.data.requestedNodeType || "",
-	).toLowerCase();
+	return String(node.data.nodeType || node.data.requestedNodeType || "").toLowerCase();
 }
 
 function isReaderNodeType(nodeType: string): boolean {
@@ -262,9 +253,7 @@ function asFlowNodeData(raw: Record<string, unknown>): FlowNodeData {
 		label: String(raw.label ?? "Nœud"),
 		nodeType: String(raw.nodeType ?? raw.node_type ?? "transformer"),
 		category:
-			category === "Reader" ||
-			category === "Transformer" ||
-			category === "Writer"
+			category === "Reader" || category === "Transformer" || category === "Writer"
 				? category
 				: "Transformer",
 		isSpatial: Boolean(raw.isSpatial ?? raw.is_spatial),
@@ -283,9 +272,7 @@ function asFlowNodeData(raw: Record<string, unknown>): FlowNodeData {
 export const ARCHITECT_STEP_OFFSET_X = 300;
 export const ARCHITECT_BRANCH_OFFSET_Y = 150;
 
-export function isAutoArchitectNode(
-	node?: Node<FlowNodeData>,
-): boolean {
+export function isAutoArchitectNode(node?: Node<FlowNodeData>): boolean {
 	return resolvedNodeType(node) === "auto_architect_agent";
 }
 
@@ -340,9 +327,7 @@ export function architectEdgeExists(
 	sourceId: string,
 	targetId: string,
 ): boolean {
-	return edges.some(
-		(edge) => edge.source === sourceId && edge.target === targetId,
-	);
+	return edges.some((edge) => edge.source === sourceId && edge.target === targetId);
 }
 
 export function createArchitectGhostEdge(
@@ -443,19 +428,13 @@ export function ghostNodeFromArchitectPayload(
 	};
 }
 
-export function ghostEdgeFromArchitectPayload(
-	result: Record<string, unknown>,
-): Edge {
+export function ghostEdgeFromArchitectPayload(result: Record<string, unknown>): Edge {
 	return {
 		id: String(result.id ?? `ghost-edge-${crypto.randomUUID()}`),
 		source: String(result.source),
 		target: String(result.target),
-		sourceHandle: String(
-			result.sourceHandle ?? result.source_handle ?? "output",
-		),
-		targetHandle: String(
-			result.targetHandle ?? result.target_handle ?? "input",
-		),
+		sourceHandle: String(result.sourceHandle ?? result.source_handle ?? "output"),
+		targetHandle: String(result.targetHandle ?? result.target_handle ?? "input"),
 		type: N8N_EDGE_TYPE,
 		animated: true,
 		data: { isGhost: true, pathStyle: "default" as const },
@@ -470,18 +449,14 @@ export function appendMaterializedProposals(
 	proposedNodes: Node<FlowNodeData>[],
 	proposedEdges: Edge[],
 ): { nodes: Node<FlowNodeData>[]; edges: Edge[] } {
-	const materialized = proposedNodes.map((node) =>
-		materializeComposerNode(node),
-	);
+	const materialized = proposedNodes.map((node) => materializeComposerNode(node));
 	const byId = new Map(nodes.map((node) => [node.id, node]));
 	for (const node of materialized) {
 		byId.set(node.id, node);
 	}
 	const mergedNodes = [...byId.values()];
 	const knownIds = new Set(mergedNodes.map((node) => node.id));
-	const seenLinks = new Set(
-		edges.map((edge) => `${edge.source}\0${edge.target}`),
-	);
+	const seenLinks = new Set(edges.map((edge) => `${edge.source}\0${edge.target}`));
 	const nextEdges = proposedEdges
 		.filter((edge) => knownIds.has(edge.source) && knownIds.has(edge.target))
 		.filter((edge) => {
@@ -524,11 +499,7 @@ export function resolveUpstreamDataSourceId(
 	}
 	const directIn = edges.find((edge) => edge.target === targetNodeId);
 	if (directIn?.source) {
-		const walked = resolveUpstreamDataSourceId(
-			nodes,
-			edges,
-			directIn.source,
-		);
+		const walked = resolveUpstreamDataSourceId(nodes, edges, directIn.source);
 		if (walked) return walked;
 		return directIn.source;
 	}
@@ -553,9 +524,7 @@ export function resolveArchitectSourceNodeId(
 			return selectedNodeId;
 		}
 	}
-	const reader = nodes.find((node) =>
-		isReaderNodeType(resolvedNodeType(node)),
-	);
+	const reader = nodes.find((node) => isReaderNodeType(resolvedNodeType(node)));
 	return reader?.id ?? selectedNodeId;
 }
 

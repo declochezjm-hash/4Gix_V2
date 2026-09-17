@@ -56,9 +56,7 @@ export function NodeActionBar({ nodeId, visible }: NodeActionBarProps) {
 			<button
 				type="button"
 				title="Menu"
-				onClick={(event) =>
-					openContextMenuFromEvent(event, nodeId, openContextMenu)
-				}
+				onClick={(event) => openContextMenuFromEvent(event, nodeId, openContextMenu)}
 			>
 				⋯
 			</button>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { PendingWorkflowExport } from "../../lib/workspaceExport";
 import { downloadWorkspaceExport } from "../../lib/workspaceExport";
 import { useDagStore } from "../../store/dagStore";
 
@@ -23,8 +22,8 @@ export function WorkflowExportModal() {
 				<header>
 					<h2>Exports prêts</h2>
 					<p>
-						Le traitement est terminé. Choisissez où enregistrer chaque fichier
-						sur votre ordinateur.
+						Le traitement est terminé. Choisissez où enregistrer chaque fichier sur
+						votre ordinateur.
 					</p>
 				</header>
 				{error ? <p className="workflow-export-modal__error">{error}</p> : null}

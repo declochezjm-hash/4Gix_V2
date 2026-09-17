@@ -21,9 +21,7 @@ function schemaDefaults(entry: CatalogNode): Record<string, unknown> {
 }
 
 function reactFlowTypeForNode(nodeType: string): string {
-	return nodeType === "direct_agent_processor"
-		? "direct_agent_processor"
-		: "etl";
+	return nodeType === "direct_agent_processor" ? "direct_agent_processor" : "etl";
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -132,12 +130,8 @@ export function coerceCanvasNode(
 			category: rawData.category || "Transformer",
 			params: rawData.params ?? {},
 			status: rawData.status || "idle",
-			inputHandles: rawData.inputHandles?.length
-				? rawData.inputHandles
-				: ["input"],
-			outputHandles: rawData.outputHandles?.length
-				? rawData.outputHandles
-				: ["output"],
+			inputHandles: rawData.inputHandles?.length ? rawData.inputHandles : ["input"],
+			outputHandles: rawData.outputHandles?.length ? rawData.outputHandles : ["output"],
 		},
 	};
 }
@@ -216,13 +210,9 @@ export function sanitizeReactFlowGraph(
 					category: rawData.category || "Transformer",
 					isSpatial: Boolean(rawData.isSpatial),
 					params:
-						rawData.params && typeof rawData.params === "object"
-							? rawData.params
-							: {},
+						rawData.params && typeof rawData.params === "object" ? rawData.params : {},
 					status: rawData.status || "idle",
-					inputHandles: rawData.inputHandles?.length
-						? rawData.inputHandles
-						: ["input"],
+					inputHandles: rawData.inputHandles?.length ? rawData.inputHandles : ["input"],
 					outputHandles: rawData.outputHandles?.length
 						? rawData.outputHandles
 						: ["output"],
@@ -246,8 +236,7 @@ export function sanitizeReactFlowGraph(
 		safeEdges.push({
 			...edge,
 			id: String(
-				edge.id ||
-					`e-${edge.source}-${edge.target}-${edge.sourceHandle || "output"}`,
+				edge.id || `e-${edge.source}-${edge.target}-${edge.sourceHandle || "output"}`,
 			),
 			source: String(edge.source),
 			target: String(edge.target),
@@ -274,19 +263,13 @@ export function normalizeImportedWorkflowDefinition(
 		const raw = asRecord(item);
 		const id = String(raw.id || `node-${index + 1}`);
 		const nodeType = resolveImportedNodeType(raw);
-		const rawType =
-			normalizeNodeTypeKey(resolveRawNodeType(raw)) || "unknown_node";
+		const rawType = normalizeNodeTypeKey(resolveRawNodeType(raw)) || "unknown_node";
 		const dataRaw = asRecord(raw.data);
 		const rootParams = asRecord(raw.params);
 		const dataParams = asRecord(dataRaw.params);
 		const mergedParams = { ...rootParams, ...dataParams };
-		if (
-			Object.keys(rootParams).length > 0 &&
-			Object.keys(dataParams).length === 0
-		) {
-			warnings.push(
-				`Nœud ${id} : paramètres racine fusionnés dans data.params.`,
-			);
+		if (Object.keys(rootParams).length > 0 && Object.keys(dataParams).length === 0) {
+			warnings.push(`Nœud ${id} : paramètres racine fusionnés dans data.params.`);
 		}
 
 		const entry = catalog.find((c) => c.node_type === nodeType);
@@ -326,10 +309,7 @@ export function normalizeImportedWorkflowDefinition(
 				? dataRaw.outputHandles
 				: entry?.output_handles) || ["output"],
 			paletteGroup: String(
-				dataRaw.paletteGroup ??
-					dataRaw.palette_group ??
-					entry?.palette_group ??
-					"",
+				dataRaw.paletteGroup ?? dataRaw.palette_group ?? entry?.palette_group ?? "",
 			),
 			notes: String(dataRaw.notes ?? ""),
 			disabled: Boolean(dataRaw.disabled),
@@ -356,16 +336,12 @@ export function normalizeImportedWorkflowDefinition(
 			warnings.push("Liaison ignorée : source ou cible manquante.");
 			continue;
 		}
-		const sourceHandle =
-			raw.sourceHandle != null ? String(raw.sourceHandle) : "output";
-		const targetHandle =
-			raw.targetHandle != null ? String(raw.targetHandle) : "input";
+		const sourceHandle = raw.sourceHandle != null ? String(raw.sourceHandle) : "output";
+		const targetHandle = raw.targetHandle != null ? String(raw.targetHandle) : "input";
 		let id = raw.id != null ? String(raw.id) : "";
 		if (!id) {
 			id = `e-${source}-${target}-${sourceHandle}-${targetHandle}`;
-			warnings.push(
-				`Liaison ${source} → ${target} : id généré automatiquement.`,
-			);
+			warnings.push(`Liaison ${source} → ${target} : id généré automatiquement.`);
 		}
 		let uniqueId = id;
 		let suffix = 0;
@@ -391,9 +367,7 @@ export function normalizeImportedWorkflowDefinition(
 	};
 }
 
-export async function readWorkflowJsonFile(
-	file: File,
-): Promise<WorkflowJsonDocument> {
+export async function readWorkflowJsonFile(file: File): Promise<WorkflowJsonDocument> {
 	const text = await file.text();
 	let parsed: unknown;
 	try {

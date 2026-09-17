@@ -5,9 +5,7 @@ export function CanvasPageNav() {
 	const pages = useDagStore((s) => s.canvasPages);
 	const pageIndex = useDagStore((s) => s.canvasPageIndex);
 	const setCanvasPage = useDagStore((s) => s.setCanvasPage);
-	const setCanvasPaginationEnabled = useDagStore(
-		(s) => s.setCanvasPaginationEnabled,
-	);
+	const setCanvasPaginationEnabled = useDagStore((s) => s.setCanvasPaginationEnabled);
 	const rebuildCanvasPages = useDagStore((s) => s.rebuildCanvasPages);
 	const tidyUpWorkflow = useDagStore((s) => s.tidyUpWorkflow);
 	const nodeCount = useDagStore((s) => s.nodes.length);
@@ -22,11 +20,7 @@ export function CanvasPageNav() {
 	const visibleCount = pages[pageIndex]?.length ?? 0;
 
 	return (
-		<div
-			className="canvas-page-nav"
-			role="navigation"
-			aria-label="Pages du workflow"
-		>
+		<nav className="canvas-page-nav" aria-label="Pages du workflow">
 			<button
 				type="button"
 				className="ghost-btn canvas-page-nav__btn"
@@ -80,6 +74,6 @@ export function CanvasPageNav() {
 			>
 				Réorganiser
 			</button>
-		</div>
+		</nav>
 	);
 }
